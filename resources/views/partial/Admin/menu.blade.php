@@ -152,8 +152,17 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
             @php
             $employee = App\Models\Employee::where('user_id', \Auth::user()->id)->first();
             @endphp
-            <li class="dash-item {{ Request::segment(1) == 'employee' ? 'active' : '' }}">
-                <a href="{{ route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span><span class="dash-mtext">{{ __('Employee') }}</span></a>
+            <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'schemes' ? 'dash-trigger active' : '' }}">
+                <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span>
+                    <span class="dash-mtext">Manage Employee</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
+                <ul class="dash-submenu ">
+                    <li class="dash-item {{ Request::segment(1) == 'employee' ? 'active' : '' }}">
+                        <a href="{{ route('employee.index') }}" class="dash-link"><span class="dash-mtext">{{ __('Employee') }}</span></a>
+                    </li>
+                    <li class="dash-item {{ Request::segment(1) == 'employementcheck' ? 'active' : '' }}">
+                        <a href="{{ route('employementcheck.index') }}" class="dash-link"><span class="dash-mtext">{{ __('Employement Checks') }}</span></a>
+                    </li>
+                </ul>
             </li>
             @else
             

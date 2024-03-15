@@ -12,7 +12,7 @@
         </div>
         <div class="form-group col-md-6">
             <input type="file" class="form-control" name="file"
-            accept="image/*" >
+            accept="pdf/*" >
         </div>
     </div>
 </div>

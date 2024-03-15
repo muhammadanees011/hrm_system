@@ -13,11 +13,6 @@ class EmployementCheckTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        EmployementCheckType::create([
-            'title' => 'ID CHECKS',
-            'created_by' => 1,
-        ]);
-
         $employementCheckTypes = [
             [
                 'title' => 'ID Checks',
