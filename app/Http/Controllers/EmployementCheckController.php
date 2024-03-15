@@ -19,7 +19,8 @@ class EmployementCheckController extends Controller
         if (\Auth::user()->can('Manage Employee')) {
             if (\Auth::user()->type == 'employee') {
                 $employementchecktypes = EmployementCheckType::where('created_by', '=', \Auth::user()->creatorId())->get();
-                $employementchecks = EmployementCheck::where('employee_id', '=', \Auth::user()->id)->with('employementcheckType')->get();
+                $employee = Employee::where('user_id', '=', \Auth::user()->id)->first();
+                $employementchecks = EmployementCheck::where('employee_id', '=',$employee->id)->with('employementcheckType')->get();
             } else {
                 $employementchecktypes = EmployementCheckType::where('created_by', '=', \Auth::user()->creatorId())->get();
                 $employementchecks = EmployementCheck::with('employementcheckType')->get();
@@ -37,9 +38,15 @@ class EmployementCheckController extends Controller
     {
         if(\Auth::user()->can('Manage Employee'))
         {
-            $employementchecktypes=EmployementCheckType::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');   
-            $employees = Employee::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-            return view('employementcheck.create', compact('employementchecktypes','employees'));
+            if (\Auth::user()->type == 'employee') {
+                $employementchecktypes=EmployementCheckType::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');   
+                $employees = Employee::where('user_id', '=', \Auth::user()->id)->get()->pluck('name', 'id');
+                return view('employementcheck.create', compact('employementchecktypes','employees'));
+            }else{
+                $employementchecktypes=EmployementCheckType::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');   
+                $employees = Employee::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+                return view('employementcheck.create', compact('employementchecktypes','employees'));
+            }
         }
         else
         {

@@ -146,7 +146,7 @@
         </a> -->
 
 
-    @can('Create Job Application')
+    @can('Manage Employee')
         <a href="#" data-url="{{ route('employementcheck.create') }}" data-ajax-popup="true" data-size="lg"
             data-title="{{ __('Create New Employement Check') }}" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
@@ -155,7 +155,7 @@
     @endcan
 @endsection
 @section('content')
-        <div class="col-sm-12">
+        <!-- <div class="col-sm-12">
             <div class="mt-2" id="multiCollapseExample1">
                 <div class="col">
                     <div class="row mb-2">
@@ -179,7 +179,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
     <div class="card  mt-0 pt-5">
         <div class="container-kanban">
@@ -210,18 +210,22 @@
                                     </a>
                                     </span>
                                     <span>
+                                    @can('Manage Employee')
                                     <a href="{{ route('employementcheck.download.file', ['filename' => $employementcheck->files]) }}" class="btn btn-md file-download"
                                         data-bs-toggle="tooltip" title="" data-bs-original-title="Download">
                                         <span class="btn-inner--icon text-warning">
                                             <i class="ti ti-download text-danger-off "></i>
                                         </span>
                                     </a>
+                                    @endcan
+                                    @can('Delete Employee')
                                     <a href="{{ route('employementcheck.delete', $employementcheck->id) }}" class="btn btn-md file-delete"
                                         data-bs-toggle="tooltip" title="" data-bs-original-title="Delete">
                                         <span class="btn-inner--icon text-danger">
                                             <i class="ti ti-trash-off text-danger-off "></i>
                                         </span>
                                     </a>
+                                    @endcan
                                     </span>
                                 </div>
                                 <hr>
