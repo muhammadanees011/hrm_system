@@ -49,6 +49,14 @@
             </a>
         <?php endif; ?>
 
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Manage Employee')): ?>
+            <a href="<?php echo e(route('employementchecktype.index')); ?>"
+                class="list-group-item list-group-item-action border-0 <?php echo e(request()->is('employementchecktype*') ? 'active' : ''); ?>"><?php echo e(__('Employement Check Type')); ?>
+
+                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+            </a>
+        <?php endif; ?>
+
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Manage Allowance Option')): ?>
             <a href="<?php echo e(route('allowanceoption.index')); ?>"
                 class="list-group-item list-group-item-action border-0 <?php echo e(request()->is('allowanceoption*') ? 'active' : ''); ?>"><?php echo e(__('Allowance Option')); ?>

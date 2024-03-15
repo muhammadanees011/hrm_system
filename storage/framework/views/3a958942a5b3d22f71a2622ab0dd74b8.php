@@ -152,8 +152,18 @@ $lang = Auth::user()->lang;
                 <a href="<?php echo e(route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id))); ?>" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span><span class="dash-mtext"><?php echo e(__('Employee')); ?></span></a>
             </li>
             <?php else: ?>
-            <li class="dash-item <?php echo e(Request::segment(1) == 'employee' ? 'active' : ''); ?>">
-                <a href="<?php echo e(route('employee.index')); ?>" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span><span class="dash-mtext"><?php echo e(__('Employee')); ?></span></a>
+            
+            <li class="dash-item dash-hasmenu  <?php echo e(Request::segment(1) == 'schemes' ? 'dash-trigger active' : ''); ?>">
+                <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span>
+                    <span class="dash-mtext">Manage Employee</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
+                <ul class="dash-submenu ">
+                    <li class="dash-item <?php echo e(Request::segment(1) == 'employee' ? 'active' : ''); ?>">
+                        <a href="<?php echo e(route('employee.index')); ?>" class="dash-link"><span class="dash-mtext"><?php echo e(__('Employees')); ?></span></a>
+                    </li>
+                    <li class="dash-item <?php echo e(Request::segment(1) == 'employementcheck' ? 'active' : ''); ?>">
+                        <a href="<?php echo e(route('employementcheck.index')); ?>" class="dash-link"><span class="dash-mtext"><?php echo e(__('Employement Checks')); ?></span></a>
+                    </li>
+                </ul>
             </li>
             <?php endif; ?>
             <li class="dash-item <?php echo e(Request::segment(1) == 'employee-probation' ? 'active' : ''); ?>">

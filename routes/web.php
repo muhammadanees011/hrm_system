@@ -99,6 +99,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\WarningController;
 use App\Http\Controllers\ZoomMeetingController;
+use App\Http\Controllers\EmployementCheckController;
+use App\Http\Controllers\EmployementCheckTypeController;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -493,6 +495,13 @@ Route::group(['middleware' => ['verified']], function () {
     Route::post('/selfcertification/{id}/file', [SelfCertificationController::class, 'fileUpload'])->name('selfcertification.file.upload')->middleware(['auth', 'XSS']);
     Route::get('/selfcertification/{id}/file/{fid}',  [SelfCertificationController::class, 'fileDownload'])->name('selfcertification.file.download')->middleware(['auth', 'XSS']);
     Route::get('/selfcertification/{id}/file/delete/{fid}', [SelfCertificationController::class, 'fileDelete'])->name('selfcertification.file.delete')->middleware(['auth', 'XSS']);
+
+    //employement checks
+    Route::resource('employementchecktype', EmployementCheckTypeController::class)->middleware(['auth','XSS',]);
+    Route::resource('employementcheck', EmployementCheckController::class)->except(['edit', 'destroy', 'update', 'show'])->middleware(['auth','XSS',]);
+    Route::get('employementcheck/{id}', [EmployementCheckController::class,'deleteFile'])->name('employementcheck.delete')->middleware(['auth','XSS',]);
+    Route::get('employementcheck/file/{filename}', [EmployementCheckController::class,'viewFile'])->name('employementcheck.view.file')->middleware(['auth','XSS',]);
+    Route::get('employementcheck/download/file/{filename}', [EmployementCheckController::class,'downloadFile'])->name('employementcheck.download.file')->middleware(['auth','XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
