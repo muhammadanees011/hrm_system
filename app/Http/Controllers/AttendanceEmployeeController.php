@@ -11,6 +11,8 @@ use App\Models\FlexiTime;
 use App\Models\IpRestrict;
 use App\Models\User;
 use App\Models\Utility;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,8 +20,44 @@ class AttendanceEmployeeController extends Controller
 {
     public function index(Request $request)
     {
+        $input_date = '2024-03';
+
+// Create a DateTime object from the input date
+$date_obj = new DateTime($input_date);
+
+// Modify the date object to get the previous month
+$date_obj->modify('first day of previous month');
+
+// Format the result back to 'YYYY-MM' format
+$previous_month = $date_obj->format('Y-m');
+
+        return$previous_month;
         if(\Auth::user()->can('Manage Attendance'))
         {
+            $employees =  Employee::all();
+            $employee_count = $employees->count();
+            $dates = [];
+            $attendancesCount = [];
+            $absentCount = [];
+    
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i)->toDateString();
+                $attendances = AttendanceEmployee::where('date', $date)->get();
+                $absentCount[] = $employee_count - $attendances->count();
+                $attendancesCount[] = $attendances->count();
+                $labels[] = $date;
+            }
+            $data = [
+                [
+                    'name' => 'Present',
+                    'data' => $attendancesCount
+                ],
+                [
+                    'name' => 'Absent',
+                    'data' => $absentCount
+                ],
+    
+            ];
             $branch = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $branch->prepend('Select Branch', '');
 
@@ -136,8 +174,7 @@ class AttendanceEmployeeController extends Controller
                 $attendanceEmployee = $attendanceEmployee->get();
 
             }
-
-            return view('attendance.index', compact('attendanceEmployee', 'branch', 'department'));
+            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department', 'data'));
         }
         else
         {

@@ -1,13 +1,12 @@
 @extends('layouts.admin')
 @section('page-title')
-    {{ __('Manage Attendance List') }}
+    {{ __('Manage Attendance Lists') }}
 @endsection
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
     <li class="breadcrumb-item">{{ __('Attendance List') }}</li>
 @endsection
-
 
 @push('script-page')
     <script>
@@ -70,8 +69,14 @@
             });
         }
 </script>
-
 @endpush
+
+<?php
+$data = $data;
+$labels = $labels;
+
+?>
+
 @section('content')
     @if (session('status'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -79,6 +84,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
+
     <div class="col-sm-12">
         <div class=" mt-2 " id="multiCollapseExample1">
             <div class="card">
@@ -178,8 +184,6 @@
         </div>
     </div>
 
-
-
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header card-body table-border-style">
@@ -258,8 +262,72 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-            </div>
+
+        <div id="user-chart" class="chart-container">
+            {{-- This is where the chart will be rendered --}}
         </div>
     </div>
 @endsection
+
+@push('script-page')
+    {{-- Include necessary JavaScript files --}}
+    <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Chart data and options
+            var data = {!! json_encode($data) !!};
+            var labels = {!! json_encode($labels) !!};
+            var options = {
+                chart: {
+                    height: 250,
+                    type: 'bar',
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '25%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    width: 2,
+                    curve: 'smooth'
+                },
+                series: data,
+                xaxis: {
+                    categories: labels,
+                },
+                colors: ['#3ec9d6', '#FF3A6E'],
+                fill: {
+                    type: 'solid',
+                },
+                grid: {
+                    strokeDashArray: 4,
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right',
+                },
+                markers: {
+                    size: 4,
+                    colors: ['#3ec9d6', '#FF3A6E'],
+                    opacity: 0.9,
+                    strokeWidth: 2,
+                    hover: {
+                        size: 7,
+                    }
+                }
+            };
+            var chart = new ApexCharts(document.querySelector("#user-chart"), options);
+            chart.render();
+        });
+    </script>
+@endpush
