@@ -7,6 +7,7 @@ use App\Models\AttendanceEmployee;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\FlexiTime;
 use App\Models\IpRestrict;
 use App\Models\User;
 use App\Models\Utility;
@@ -476,7 +477,6 @@ class AttendanceEmployeeController extends Controller
         if (Auth::user()->type == 'employee') {
 
             $date = date("Y-m-d");
-            $time = date("H:i:s");
 
             //early Leaving
             $totalEarlyLeavingSeconds = strtotime($date . $endTime) - time();
@@ -484,6 +484,20 @@ class AttendanceEmployeeController extends Controller
             $mins                     = floor($totalEarlyLeavingSeconds / 60 % 60);
             $secs                     = floor($totalEarlyLeavingSeconds % 60);
             $earlyLeaving             = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+
+            $flexiTime = FlexiTime::where('status','approved')->where('start_date', '>=', $date)->Where('end_date','<=', $date)->first();
+
+            if(!empty($flexiTime)){
+                $time = date('H:i:s', strtotime('+'.$flexiTime->hours.' hours'));
+                $totalEarlyLeavingSeconds = strtotime($date . $endTime) - strtotime($time);
+                $hours                    = floor($totalEarlyLeavingSeconds / 3600);
+                $mins                     = floor($totalEarlyLeavingSeconds / 60 % 60);
+                $secs                     = floor($totalEarlyLeavingSeconds % 60);
+                $earlyLeaving             = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+
+            }else {
+                $time = date("H:i:s");
+            }
 
             if (time() > strtotime($date . $endTime)) {
                 //Overtime
@@ -500,8 +514,24 @@ class AttendanceEmployeeController extends Controller
             $attendanceEmployee['early_leaving'] = $earlyLeaving;
             $attendanceEmployee['overtime']      = $overtime;
 
+
+
             if (!empty($request->date)) {
                 $attendanceEmployee['date']       =  $request->date;
+            }
+
+            // reset clockout time if user clockin and clockout multiple times in a day
+            $todayAttendanceArray = AttendanceEmployee::where([
+                'employee_id' => $employeeId,
+                'date' => $date
+            ])->where('id', '!=', $id)->get()->toArray();
+            
+            if(!empty($todayAttendanceArray)){
+                foreach ($todayAttendanceArray as $key => $value) {
+                    $newClockOutTime = strtotime($value['clock_out'].' -'.$flexiTime->hours.' hours');
+                    // echo 
+                    AttendanceEmployee::where('id', $value['id'])->update(['clock_out' => date('H:i:s', $newClockOutTime)]);
+                }
             }
             AttendanceEmployee::where('id', $id)->update($attendanceEmployee);
 
@@ -714,6 +744,8 @@ class AttendanceEmployeeController extends Controller
         }
 
         $checkDb = AttendanceEmployee::where('employee_id', '=', \Auth::user()->id)->get()->toArray();
+        $flexiTime = FlexiTime::where('status','approved')->where('start_date', '>=', $date)->Where('end_date','<=', $date)->first();
+        $requestedTime  = !empty($flexiTime) ? \Auth::user()->timeFormat($flexiTime->start_time).' - '.\Auth::user()->timeFormat($flexiTime->end_time): "";
 
         if (empty($checkDb)) {
             $employeeAttendance                = new AttendanceEmployee();
@@ -727,6 +759,7 @@ class AttendanceEmployeeController extends Controller
             $employeeAttendance->overtime      = '00:00:00';
             $employeeAttendance->total_rest    = '00:00:00';
             $employeeAttendance->created_by    = \Auth::user()->id;
+            $employeeAttendance->requested_time = $requestedTime;
 
             $employeeAttendance->save();
 

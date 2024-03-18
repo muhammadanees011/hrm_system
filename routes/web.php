@@ -101,6 +101,7 @@ use App\Http\Controllers\WarningController;
 use App\Http\Controllers\ZoomMeetingController;
 use App\Http\Controllers\EmployementCheckController;
 use App\Http\Controllers\EmployementCheckTypeController;
+use App\Http\Controllers\FlexiTimeController;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -1519,6 +1520,12 @@ Route::group(['middleware' => ['verified']], function () {
 
     // videos
     Route::resource('video', VideoController::class)->middleware(['auth',  'XSS']);
+
+     //Flexi Time
+    Route::post('flexi-time/save-reject-form/{id}', [FlexiTimeController::class, 'saveRejectionForm']);
+    Route::get('flexi-time/{id}/reject', [FlexiTimeController::class, 'rejectForm'])->name('flexi-time.reject');
+    Route::get('flexi-time/{id}/approve', [FlexiTimeController::class, 'approve'])->name('flexi-time.approve');
+    Route::resource('flexi-time', FlexiTimeController::class)->middleware(['auth',  'XSS']);
 
     // cache
     Route::get('/config-cache', function () {

@@ -279,6 +279,11 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                                     <a class="dash-link" href="{{ route('attendanceemployee.bulkattendance') }}">{{ __('Bulk Attendance') }}</a>
                                 </li>
                                 @endcan
+                                @can('Create FlexiTime')
+                                    <li class="dash-item">
+                                        <a class="dash-link" href="{{ route('flexi-time.index') }}">{{ __('Flexi Time') }}</a>
+                                    </li>
+                                @endcan
                             </ul>
                         </li>
                         @endcan

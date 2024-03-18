@@ -7,9 +7,10 @@ use App\Models\Announcement;
 use App\Models\AttendanceEmployee;
 use App\Models\Employee;
 use App\Models\Event;
+use App\Models\FlexiTime;
+use App\Models\Job;
 use App\Models\LandingPageSection;
 use App\Models\Meeting;
-use App\Models\Job;
 use App\Models\Payees;
 use App\Models\Payer;
 use App\Models\Ticket;
@@ -88,7 +89,8 @@ class HomeController extends Controller
                 $officeTime['startTime'] = Utility::getValByName('company_start_time');
                 $officeTime['endTime']   = Utility::getValByName('company_end_time');
 
-                return view('dashboard.dashboard', compact('arrEvents', 'announcements', 'employees', 'meetings', 'employeeAttendance', 'officeTime'));
+                $flexiTime = FlexiTime::where('status','approved')->where('start_date', '>=', $date)->Where('end_date','<=', $date)->first();
+                return view('dashboard.dashboard', compact('arrEvents', 'announcements', 'employees', 'meetings', 'employeeAttendance', 'officeTime','flexiTime'));
             }
             else
             {
