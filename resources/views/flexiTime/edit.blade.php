@@ -1,66 +1,50 @@
-{{ Form::model($eclaim, ['route' => ['eclaim.update', $eclaim->id], 'method' => 'put', 'enctype' => 'multipart/form-data']) }}
+{{ Form::model($flexiTime, ['route' => ['flexi-time.update', $flexiTime->id], 'method' => 'put', 'enctype' => 'multipart/form-data']) }}
 <div class="modal-body">
     <div class="row">
-        @if (\Auth::user()->type != 'employee')
-            <div class="col-md-12">
-                <div class="form-group">
-                    {{ Form::label('employee_id', __('Employee'), ['class' => 'col-form-label']) }}
-                    {{ Form::select('employee_id', $employees, $eclaim->employee_id, ['class' => 'form-control select2', 'id' => 'employee_id', 'placeholder' => __('Select Employee')]) }}
+        <div class="col-md-12">
+            @if (\Auth::user()->type != 'employee')
+                <div class="col-md-12">
+                    <div class="form-group">
+                        {{ Form::label('employee_id', __('Employeess'), ['class' => 'form-label']) }}
+                        {{ Form::select('employee_id', $employees, $flexiTime->employee_id, ['class' => 'form-control select2', 'id' => 'employee_id', 'placeholder' => __('Select Employee')]) }}
+                    </div>
                 </div>
-            </div>
-        @else
-            {{-- @foreach ($employees as $employee) --}}
-            {!! Form::hidden('employee_id', !empty($employees) ? $employees->id : 0, ['id' => 'employee_id']) !!}
-            {{-- @endforeach --}}
-        @endif
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="form-group">
-                {{ Form::label('type_id', __('Eclaim Type'), ['class' => 'form-label']) }}
-                <div class="form-icon-user">
-                    {{ Form::select('type_id', $eClaimTypes, null, ['class' => 'form-control select2', 'required' => 'required', 'placeholder' => __('Select Eclaim Type')]) }}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="form-group">
-                {{ Form::label('amount', __('Amount'), ['class' => 'form-label']) }}
-                <div class="form-icon-user">
-                    {{ Form::number('amount', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Amount')]) }}
-                </div>
-                @error('amount')
-                    <span class="invalid-amount" role="alert">
-                        <strong class="text-danger">{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
-        </div>
-
-        <div class="col-lg-12 col-md-12 col-sm-12">
-    <div class="form-group">
-        {{ Form::label('receipt', __('Receipt'), ['class' => 'col-form-label']) }}
-        <div class="choose-files">
-            <label for="receipt">
-                <div class="bg-primary receipt"> <i class="ti ti-upload px-1"></i>{{ __('Choose file here') }}</div>
-                {{ Form::file('receipt', ['class' => 'form-control file', 'onchange' => 'document.getElementById("blah").src = window.URL.createObjectURL(this.files[0])']) }}
-                @if($eclaim->receipt)
-                    <img id="blah" class="mt-3" width="100" src="{{ asset('eclaimreceipts/'.$eclaim->receipt) }}" />
-                @else
-                    <img id="blah" class="mt-3" width="100" src="{{ asset('placeholder-image.jpg') }}" />
-                @endif
-            </label>
+            @else
+                {!! Form::hidden('employee_id', !empty($employees) ? $employees->id : 0, ['id' => 'employee_id']) !!}
+            @endif
         </div>
     </div>
-</div>
-
-
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="form-group">
-                {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
-                {{ Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3']) }}
-            </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            {{ Form::label('hours', __('No. Of Hours'), ['class' => 'form-label']) }}
+            {{ Form::text('hours', $flexiTime->hours, ['class' => 'form-control ', 'required' => 'required','placeholder'=>'Enter No. Of Hours']) }}
         </div>
-
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            {{ Form::label('start_date', __('Start Date'), ['class' => 'form-label']) }}
+            {{ Form::text('start_date', $flexiTime->start_date, ['class' => 'month-btn form-control d_week current_date start_date', 'autocomplete' => 'off']) }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ Form::label('end_date', __('End Date'), ['class' => 'form-label']) }}
+            {{ Form::text('end_date', $flexiTime->end_date, ['class' => 'month-btn form-control d_week current_date end_date', 'autocomplete' => 'off']) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}
+            {{ Form::select('start_time', $hours, $flexiTime->start_time, ['class' => 'form-control select2', 'id' => 'start_time', 'placeholder' => __('Select Start Time')]) }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
+            {{ Form::select('end_time', $hours, $flexiTime->end_time, ['class' => 'form-control select2', 'id' => 'end_time', 'placeholder' => __('Select End Time')]) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            {{ Form::label('remark', __('Remark'), ['class' => 'form-label']) }}
+            {{ Form::textarea('remark', $flexiTime->remark, ['class' => 'form-control ', 'required' => 'required','placeholder'=>'Enter Remark', 'rows' => 3, 'id'=>'remark']) }}
+        </div>
     </div>
 </div>
 <div class="modal-footer">

@@ -2,29 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Eclaim;
-use App\Models\EclaimType;
 use App\Models\Employee;
 use App\Models\FlexiTime;
-use App\Notifications\EclaimNotification;
+use App\Models\Utility;
+use App\Notifications\SimpleNotification;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 class FlexiTimeController extends Controller
 {
-    protected $hours = ["9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"];
+    protected $hours = [];
+    // protected $hours = [
+    //     "9:00" => "9:00",
+    //     "10:00" => "10:00",
+    //     "11:00" => "11:00",
+    //     "12:00" => "12:00",
+    //     "13:00" => "13:00",
+    //     "14:00" => "14:00",
+    //     "15:00" => "15:00",
+    //     "16:00" => "16:00",
+    //     "17:00" => "17:00",
+    //     "18:00" => "18:00",
+    //     "19:00" => "19:00"
+    // ];
 
-    public function index()
+    public function __construct(){
+        $startTime = Utility::getValByName('company_start_time');
+        $endTime   = Utility::getValByName('company_end_time');
+        $start = Carbon::createFromTimeString($startTime);
+        $end = Carbon::createFromTimeString($endTime);
+
+        $hoursArray = [];
+        for ($hour = $start->copy(); $hour <= $end; $hour->addHour()) {
+            $hoursArray[$hour->format('H:i')] = $hour->format('H:i');
+        }
+        $this->hours = $hoursArray;
+    }
+
+    public function index(Request $request)
     {
         if (\Auth::user()->can('Manage FlexiTime')) {
-            $query = new FlexiTime();
-            if(\Auth::user()->type=="hr" && \Auth::user()->can('Approve FlexiTime')){
-                $query = $query->where('status', 'pending');
-            } else {
-                $query = $query->where('created_by', \Auth::user()->id);
+            $startDate = !empty($request->start_date) ? $request->input('start_date') : Carbon::now()->subDays(30)->toDateString();
+            $endDate = !empty($request->end_date) ? $request->input('end_date') : Carbon::now()->toDateString();
+            $employee = !empty($request->employee) ? $request->employee : null;
+
+            $query = FlexiTime::with('updatedUser')
+                    ->when(!empty($employee), function($query) use($employee){
+                        $query->where('employee_id', $employee);
+                    })
+                    ->whereBetween('start_date', [$startDate, $endDate])
+                    ->whereBetween('end_date', [$startDate, $endDate]);
+            if(\Auth::user()->type=="employee"){
+                $employeeAccount = Employee::where('user_id', \Auth::user()->id)->first();
+                $query = $query->where('employee_id', $employeeAccount->id);
             }
-            $records = $query->get();
-            return view('flexiTime.index', compact('records'));
+            $records = $query->orderByDesc('id')->get();
+            
+            $employees = Employee::get()->pluck('name', 'id');
+            return view('flexiTime.index', compact('records','employees','startDate','endDate','employee'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -33,9 +68,8 @@ class FlexiTimeController extends Controller
     public function create()
     {
         if (\Auth::user()->can('Create FlexiTime')) {
-            $eClaimTypes = EclaimType::get()->pluck('title', 'id');
-            $startDate = !empty($request->start_date) ? $request->input('start_date') : Carbon::now()->subDays(30)->toDateString();
-            $endDate = !empty($request->end_date) ? $request->input('end_date') : Carbon::now()->toDateString();
+            $startDate = Carbon::now()->toDateString();
+            $endDate = Carbon::now()->toDateString();
             if (Auth::user()->type == 'employee') {
                 $employees = Employee::where('user_id', '=', \Auth::user()->id)->first();
             } else {
@@ -75,7 +109,7 @@ class FlexiTimeController extends Controller
             'end_time' => $request->end_time,
             'hours' => $request->hours,
             'remark' => $request->remark,
-            'created_by' => \Auth::user()->id
+            'created_by' => \Auth::user()->creatorId()
         ]);
 
         return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request Generated Successfully.'));
@@ -85,7 +119,7 @@ class FlexiTimeController extends Controller
 }
 
 
-    public function show(EclaimType $eclaim)
+    public function show(FlexiTime $flexiTime)
     {
         return redirect()->route('flexi-time.index');
     }
@@ -93,18 +127,15 @@ class FlexiTimeController extends Controller
     public function edit($id)
     {
         if (\Auth::user()->can('Edit FlexiTime')) {
-            $eclaim = Eclaim::find($id);
-            if ((\Auth::user()->type=="employee" && $eclaim->created_by == \Auth::user()->id) || $eclaim->created_by== \Auth::user()->creatorId()) {
-                $eclaim = Eclaim::where('id', $id)->first();
-                $eClaimTypes = EclaimType::get()->pluck('title', 'id');
-
+            $flexiTime = FlexiTime::find($id);
+            if ((\Auth::user()->type=="employee" && $flexiTime->employee_id == \Auth::user()->id) || $flexiTime->created_by== \Auth::user()->creatorId()) {
                 if (Auth::user()->type == 'employee') {
                     $employees = Employee::where('user_id', '=', \Auth::user()->id)->first();
                 } else {
                     $employees = Employee::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
                 }
-
-                return view('eclaim.edit', compact('eclaim', 'eClaimTypes', 'employees'));
+                $hours = $this->hours;
+                return view('flexiTime.edit', compact('flexiTime', 'employees','hours'));
             } else {
                 return response()->json(['error' => __('Permission denied.')], 401);
             }
@@ -113,42 +144,35 @@ class FlexiTimeController extends Controller
         }
     }
 
-    public function update(Request $request, Eclaim $eclaim)
+    public function update(Request $request, FlexiTime $flexiTime)
 {
     if (\Auth::user()->can('Edit FlexiTime')) {
-        if ((\Auth::user()->type=="employee" && $eclaim->created_by == \Auth::user()->id) || $eclaim->created_by== \Auth::user()->creatorId()) {
-            $eclaim_id =  $eclaim->id;
-            $validator = \Validator::make(
-                $request->all(),
+        if ((\Auth::user()->type=="employee" && $flexiTime->employee_id == \Auth::user()->id) || $flexiTime->created_by== \Auth::user()->creatorId()) {
+            
+            $validator = \Validator::make($request->all(),
                 [
-                    'type_id' => 'required',
-                    'amount' => 'required',
-                    'description' => 'required',
+                    'start_date' => 'required|string',
+                    'end_date' => 'required|string',
+                    'start_time' => 'required|string',
+                    'end_time' => 'required|string',
+                    'remark'=> 'required|string',
+                    'hours' => 'required|string'
                 ]
             );
             if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-                return redirect()->back()->with('error', $messages->first());
+                return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            if ($request->hasFile('receipt')) {  
-                    $file = $request->file('receipt');
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    $path = public_path() . '/eclaimreceipts';
-                    $file->move($path,$fileName);
-            }
+            $flexiTime->employee_id = $request->employee_id;
+            $flexiTime->start_date = $request->start_date;
+            $flexiTime->end_date = $request->end_date;
+            $flexiTime->start_time = $request->start_time;
+            $flexiTime->end_time = $request->end_time;
+            $flexiTime->hours = $request->hours;
+            $flexiTime->remark = $request->remark;
+            $flexiTime->update();
 
-            $history = [['time' => now(), 'message' => 'New Eclaim Requested Generated', 'comment' => '', 'username' => \Auth::user()->name]];
-            $eClaimType               = Eclaim::find($eclaim_id);
-            $eClaimType->type_id = $request->type_id;
-            $eClaimType->amount = $request->amount;
-            $eClaimType->description = $request->description;
-            $eClaimType->receipt = $fileName ?? $eClaimType->receipt;
-            $eClaimType->history = json_encode($history);
-            $eClaimType->update();
-
-            // Redirect to the appropriate route after updating
-            return redirect()->route('eclaim.index')->with('success', __('Eclaim successfully updated.'));
+            return redirect()->route('flexi-time.index')->with('success', __('Flexi Time Request successfully updated.'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -158,14 +182,12 @@ class FlexiTimeController extends Controller
 }
 
 
-    public function destroy(Eclaim $eclaim)
+    public function destroy(FlexiTime $flexiTime)
     {
         if (\Auth::user()->can('Delete FlexiTime')) {
-            if ((\Auth::user()->type=="employee" && $eclaim->created_by == \Auth::user()->id) || $eclaim->created_by== \Auth::user()->creatorId()) {
-                $id =  $eclaim->id;
-                $eclaim = Eclaim::find($id);
-                $eclaim->delete();
-                return redirect()->route('eclaim.index')->with('success', __('EclaimType successfully deleted.'));
+            if ((\Auth::user()->type=="employee" && $flexiTime->employee_id == \Auth::user()->id) || $flexiTime->created_by== \Auth::user()->creatorId()) {
+                $flexiTime->delete();
+                return redirect()->route('flexi-time.index')->with('success', __('Flexi Time Request successfully deleted.'));
             } else {
                 return redirect()->back()->with('error', __('Permission denied.'));
             }
@@ -173,24 +195,12 @@ class FlexiTimeController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
-
-    public function showHistory(Eclaim $eclaim, $id)
-    {
-            $eclaim = Eclaim::find($id);
-            $history = !empty($eclaim['history']) ? json_decode($eclaim['history'], true) : [];
-            return view('eclaim.history', compact('history'));
-    }
-    public function showReceipt(Eclaim $eclaim, $id)
-    {
-            $eclaim = Eclaim::find($id);
-            return view('eclaim.receipt', compact('FlexiTime'));
-    }
     
     public function rejectForm(Request $request, $id){
         if (\Auth::user()->can('Manage FlexiTime')) {
-            $eclaim = Eclaim::find($id);
-            $url = "eclaim/save-reject-form/".$eclaim->id;
-            return view('eclaim.comment-form', compact('url'));
+            $flexiTime = FlexiTime::find($id);
+            $url = "flexi-time/save-reject-form/".$flexiTime->id;
+            return view('flexiTime.comment-form', compact('url'));
         } else {
             return response()->json(['error' => __('Permission denied.')], 401);
         }
@@ -198,7 +208,7 @@ class FlexiTimeController extends Controller
 
 
     public function saveRejectionForm(Request $request, $id){
-        if (\Auth::user()->can('Manage FlexiTime')) {
+        if (\Auth::user()->can('Approve FlexiTime')) {
             $validator = \Validator::make(
                 $request->all(),
                 [
@@ -210,89 +220,30 @@ class FlexiTimeController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
+            $exceptionMsg = "";
+            try {
+                $flexiTime = FlexiTime::find($id);
+                $flexiTime->status = "rejected";
+                $flexiTime->updated_user = \Auth::user()->id;
+                $flexiTime->updated_user_comment = $request->comment;
+                $flexiTime->save();
 
-            $eclaim = Eclaim::find($id);
-            $history = json_decode($eclaim->history, true);
-            $history[] = [
-                'time' => now(),
-                'username' => \Auth::user()->name,
-                'message' => \Auth::user()->type=="hr" ? "Eclaim Rejected By HR Manager" : "Eclaim Rejected By Finance Manager",
-                'comment' => $request->comment
-            ];
+                \Notification::route('mail', $flexiTime->employee->email)
+                ->notify(new SimpleNotification(['subject' => "FlexiTime Request Rejection Notification", "message"=> "Your FlexiTime Request got rejected. Please see below comment for detail information", "comment" => $request->comment]));
+            } catch (\Exception $e) {
+                   $exceptionMsg = __('E-Mail has been not sent due to SMTP configuration');
+            }
 
-            $eclaim->history = json_encode($history);
-            $eclaim->status = "rejected";
-            $eclaim->save();
-
-            \Notification::route('mail', $eclaim->employee->email)
-            ->notify(new EclaimNotification(['subject' => "Claim Request Rejection Notification", "message"=> "Your Claim Request got rejected. Please see below comment for detail information", "comment" => $request->comment]));
-
-            return redirect()->route('eclaim.index')->with('success', __('Eclaim status successfully updated.'));
+            return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request status successfully updated.'). (!empty($exceptionMsg) ? '<br> <span class="text-danger">' . $exceptionMsg . '</span>' : ''));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
 
-
-    public function renderApprovalForm(Request $request, $id){
-        if (\Auth::user()->can('Manage FlexiTime')) {
-            $eclaim = Eclaim::find($id);
-            $url = "eclaim/save-approval-form/".$eclaim->id;
-            return view('eclaim.comment-form', compact('url'));
-        } else {
-            return response()->json(['error' => __('Permission denied.')], 401);
-        }
-    }
-
-    public function saveApprovalForm(Request $request, $id){
-        if (\Auth::user()->can('Manage FlexiTime')) {
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'comment' => 'required',
-                ]
-            );
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-
-                return redirect()->back()->with('error', $messages->first());
-            }
-
-            $eclaim = Eclaim::with('employee')->find($id);
-            $history = json_decode($eclaim->history, true);
-            $message = \Auth::user()->type=="hr" ? "Eclaim Approved By HR Manager" : "Eclaim Approved By Finance Manager";
-            $history[] = [
-                'time' => now(),
-                'username' => \Auth::user()->name,
-                'message' => $message,
-                'comment' => $request->comment
-            ];
-
-            $eclaim->history = json_encode($history);
-            $eclaim->status = \Auth::user()->type=="hr" ? "approved by HR" : "approved";
-            $eclaim->save();
-
-            if(\Auth::user()->type !="hr"){
-                \Notification::route('mail', $eclaim->employee->email)
-                ->notify(new EclaimNotification(['subject' => "Claim Request Approval Notification", "message"=> "Your Claim Request got approved by the Finance Manager.", "comment" => $request->comment]));
-            }
-
-            return redirect()->route('eclaim.index')->with('success', __('Eclaim status successfully updated.'));
-        } else {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
-    }
     public function approve($id)
     {
         $FlexiTime = FlexiTime::find($id);
         $FlexiTime->status = "approved";
-        $FlexiTime->update();
-        return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request Updated Successfully.'));
-    }
-    public function reject($id)
-    {
-        $FlexiTime = FlexiTime::find($id);
-        $FlexiTime->status = "rejected";
         $FlexiTime->update();
         return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request Updated Successfully.'));
     }

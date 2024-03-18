@@ -1522,9 +1522,10 @@ Route::group(['middleware' => ['verified']], function () {
     Route::resource('video', VideoController::class)->middleware(['auth',  'XSS']);
 
      //Flexi Time
-    Route::resource('flexi-time', FlexiTimeController::class)->middleware(['auth',  'XSS']);
+    Route::post('flexi-time/save-reject-form/{id}', [FlexiTimeController::class, 'saveRejectionForm']);
+    Route::get('flexi-time/{id}/reject', [FlexiTimeController::class, 'rejectForm'])->name('flexi-time.reject');
     Route::get('flexi-time/{id}/approve', [FlexiTimeController::class, 'approve'])->name('flexi-time.approve');
-    Route::get('flexi-time/{id}/reject', [FlexiTimeController::class, 'reject'])->name('flexi-time.reject');
+    Route::resource('flexi-time', FlexiTimeController::class)->middleware(['auth',  'XSS']);
 
     // cache
     Route::get('/config-cache', function () {
