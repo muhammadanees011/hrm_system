@@ -20,18 +20,6 @@ class AttendanceEmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        $input_date = '2024-03';
-
-// Create a DateTime object from the input date
-$date_obj = new DateTime($input_date);
-
-// Modify the date object to get the previous month
-$date_obj->modify('first day of previous month');
-
-// Format the result back to 'YYYY-MM' format
-$previous_month = $date_obj->format('Y-m');
-
-        return$previous_month;
         if(\Auth::user()->can('Manage Attendance'))
         {
             $employees =  Employee::all();
@@ -39,19 +27,30 @@ $previous_month = $date_obj->format('Y-m');
             $dates = [];
             $attendancesCount = [];
             $absentCount = [];
-    
-            for ($i = 6; $i >= 0; $i--) {
-                $date = Carbon::now()->subDays($i)->toDateString();
-                $attendances = AttendanceEmployee::where('date', $date)->get();
+
+            if($request->date != null){
+                $attendances = AttendanceEmployee::where('date', $request->date)->get();
                 $absentCount[] = $employee_count - $attendances->count();
                 $attendancesCount[] = $attendances->count();
-                $labels[] = $date;
+                $labels[] = $request->date;
+            }else{
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = Carbon::now()->subDays($i)->toDateString();
+                    $attendances = AttendanceEmployee::where('date', $date)->get();
+                    $absentCount[] = $employee_count - $attendances->count();
+                    $attendancesCount[] = $attendances->count();
+                    $labels[] = $date;
+                }
             }
-            $data = [
+    
+            $attendanceData = [
                 [
                     'name' => 'Present',
                     'data' => $attendancesCount
                 ],
+    
+            ];
+            $absentData = [
                 [
                     'name' => 'Absent',
                     'data' => $absentCount
@@ -174,7 +173,7 @@ $previous_month = $date_obj->format('Y-m');
                 $attendanceEmployee = $attendanceEmployee->get();
 
             }
-            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department', 'data'));
+            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData', 'absentData'));
         }
         else
         {
