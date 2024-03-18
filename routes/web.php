@@ -478,30 +478,30 @@ Route::group(['middleware' => ['verified']], function () {
     Route::resource('exitprocedure', ExitProcedureController::class)->middleware(['auth', 'XSS',]);
 
     //health and fitness
-    Route::resource('healthassessment', HealthAssessmentController::class)->middleware(['auth','XSS',]);
-    Route::post('healthassessment/result/{id}',[ HealthAssessmentController::class,'assessmentResultStore'])->name('healthassessment.result.store')->middleware(['auth','XSS',]);
+    Route::resource('healthassessment', HealthAssessmentController::class)->middleware(['auth', 'XSS',]);
+    Route::post('healthassessment/result/{id}', [HealthAssessmentController::class, 'assessmentResultStore'])->name('healthassessment.result.store')->middleware(['auth', 'XSS',]);
     Route::post('/healthassessment/{id}/file', [HealthAssessmentController::class, 'fileUpload'])->name('healthassessment.file.upload')->middleware(['auth', 'XSS']);
     Route::get('/healthassessment/{id}/file/{fid}',  [HealthAssessmentController::class, 'fileDownload'])->name('healthassessment.file.download')->middleware(['auth', 'XSS']);
     Route::get('/healthassessment/{id}/file/delete/{fid}', [HealthAssessmentController::class, 'fileDelete'])->name('healthassessment.file.delete')->middleware(['auth', 'XSS']);
 
-    Route::resource('gpnote', GPNoteController::class)->middleware(['auth','XSS',]);
-    Route::post('gpnote/details/{id}',[ GPNoteController::class,'assessmentDetailsStore'])->name('gpnote.detail.store')->middleware(['auth','XSS',]);
+    Route::resource('gpnote', GPNoteController::class)->middleware(['auth', 'XSS',]);
+    Route::post('gpnote/details/{id}', [GPNoteController::class, 'assessmentDetailsStore'])->name('gpnote.detail.store')->middleware(['auth', 'XSS',]);
     Route::post('/gpnote/{id}/file', [GPNoteController::class, 'fileUpload'])->name('gpnote.file.upload')->middleware(['auth', 'XSS']);
     Route::get('/gpnote/{id}/file/{fid}',  [GPNoteController::class, 'fileDownload'])->name('gpnote.file.download')->middleware(['auth', 'XSS']);
     Route::get('/gpnote/{id}/file/delete/{fid}', [GPNoteController::class, 'fileDelete'])->name('gpnote.file.delete')->middleware(['auth', 'XSS']);
 
-    Route::resource('selfcertification', SelfCertificationController::class)->middleware(['auth','XSS',]);
-    Route::post('selfcertification/details/{id}',[ SelfCertificationController::class,'detailsStore'])->name('selfcertification.detail.store')->middleware(['auth','XSS',]);
+    Route::resource('selfcertification', SelfCertificationController::class)->middleware(['auth', 'XSS',]);
+    Route::post('selfcertification/details/{id}', [SelfCertificationController::class, 'detailsStore'])->name('selfcertification.detail.store')->middleware(['auth', 'XSS',]);
     Route::post('/selfcertification/{id}/file', [SelfCertificationController::class, 'fileUpload'])->name('selfcertification.file.upload')->middleware(['auth', 'XSS']);
     Route::get('/selfcertification/{id}/file/{fid}',  [SelfCertificationController::class, 'fileDownload'])->name('selfcertification.file.download')->middleware(['auth', 'XSS']);
     Route::get('/selfcertification/{id}/file/delete/{fid}', [SelfCertificationController::class, 'fileDelete'])->name('selfcertification.file.delete')->middleware(['auth', 'XSS']);
 
     //employement checks
-    Route::resource('employementchecktype', EmployementCheckTypeController::class)->middleware(['auth','XSS',]);
-    Route::resource('employementcheck', EmployementCheckController::class)->except(['edit', 'destroy', 'update', 'show'])->middleware(['auth','XSS',]);
-    Route::get('employementcheck/{id}', [EmployementCheckController::class,'deleteFile'])->name('employementcheck.delete')->middleware(['auth','XSS',]);
-    Route::get('employementcheck/file/{filename}', [EmployementCheckController::class,'viewFile'])->name('employementcheck.view.file')->middleware(['auth','XSS',]);
-    Route::get('employementcheck/download/file/{filename}', [EmployementCheckController::class,'downloadFile'])->name('employementcheck.download.file')->middleware(['auth','XSS',]);
+    Route::resource('employementchecktype', EmployementCheckTypeController::class)->middleware(['auth', 'XSS',]);
+    Route::resource('employementcheck', EmployementCheckController::class)->except(['edit', 'destroy', 'update', 'show'])->middleware(['auth', 'XSS',]);
+    Route::get('employementcheck/{id}', [EmployementCheckController::class, 'deleteFile'])->name('employementcheck.delete')->middleware(['auth', 'XSS',]);
+    Route::get('employementcheck/file/{filename}', [EmployementCheckController::class, 'viewFile'])->name('employementcheck.view.file')->middleware(['auth', 'XSS',]);
+    Route::get('employementcheck/download/file/{filename}', [EmployementCheckController::class, 'downloadFile'])->name('employementcheck.download.file')->middleware(['auth', 'XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
@@ -1266,6 +1266,20 @@ Route::group(['middleware' => ['verified']], function () {
     );
 
     Route::resource('question-template', QuestionTemplateController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::get('question-template/branching/{id}', [QuestionTemplateController::class, 'manageBranching'])->name('question-template.branching')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::post('question-template/branching/{id}', [QuestionTemplateController::class, 'processBranchingLogic'])->name('question-template.branching.store')->middleware(
         [
             'auth',
             'XSS',
