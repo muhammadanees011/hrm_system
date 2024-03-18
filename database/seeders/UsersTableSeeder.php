@@ -2164,7 +2164,36 @@ class UsersTableSeeder extends Seeder
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
             ],
-        
+            [
+                "name" => "Manage Question Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Question Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Question Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Delete Question Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Manage Branching",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],        
         ];
         Permission::insert($arrPermissions);
 
@@ -2522,6 +2551,11 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Health And Fitness"],
             ["name" => "Edit Health And Fitness"],
             ["name" => "Delete Health And Fitness"],
+            ["Manage Question Template"],
+            ["Create Question Template"],
+            ["name" => "Edit Question Template"],
+            ["name" => "Delete Question Template"],
+            ["name" => "Manage Branching"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -2829,6 +2863,11 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Health And Fitness"],
             ["name" => "Edit Health And Fitness"],
             ["name" => "Delete Health And Fitness"],
+            ["Manage Question Template"],
+            ["Create Question Template"],
+            ["name" => "Edit Question Template"],
+            ["name" => "Delete Question Template"],
+            ["name" => "Manage Branching"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);

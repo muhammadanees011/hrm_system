@@ -534,9 +534,9 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                             </li>
                             @endcan
 
-                            @can('Manage Custom Question')
+                            @can('Manage Question Template')
                             <li class="dash-item">
-                                <a class="dash-link" href="{{ route('custom-question.index') }}">{{ __('Question Templates') }}</a>
+                                <a class="dash-link" href="{{ route('question-template.index') }}">{{ __('Question Templates') }}</a>
                             </li>
                             @endcan
 
