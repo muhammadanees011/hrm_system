@@ -71,11 +71,7 @@
 </script>
 @endpush
 
-<?php
-$data = $data;
-$labels = $labels;
 
-?>
 
 @section('content')
     @if (session('status'))
@@ -271,10 +267,15 @@ $labels = $labels;
     {{-- Include necessary JavaScript files --}}
     <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
     <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
-    <script>
+    
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <script>
         $(document).ready(function() {
             // Chart data and options
-            var data = {!! json_encode($data) !!};
+            var data = {!! json_encode($attendanceData) !!};
             var labels = {!! json_encode($labels) !!};
             var options = {
                 chart: {
@@ -328,4 +329,64 @@ $labels = $labels;
             chart.render();
         });
     </script>
+    </div>
+        <div class="col-md-6"><script>
+        $(document).ready(function() {
+            // Chart data and options
+            var data = {!! json_encode($absentData) !!};
+            var labels2 = {!! json_encode($labels) !!};
+            var options = {
+                chart: {
+                    height: 250,
+                    type: 'bar',
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '25%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    width: 2,
+                    curve: 'smooth'
+                },
+                series: data,
+                xaxis: {
+                    categories: labels2,
+                },
+                colors: ['#FF0000'],
+                fill: {
+                    type: 'solid',
+                },
+                grid: {
+                    strokeDashArray: 4,
+                },
+                legend: {
+                    show: true,
+                    position: 'top',
+                    horizontalAlign: 'right',
+                },
+                markers: {
+                    size: 4,
+                    colors: ['#3ec9d6', '#FF3A6E'],
+                    opacity: 0.9,
+                    strokeWidth: 2,
+                    hover: {
+                        size: 7,
+                    }
+                }
+            };
+            var chart = new ApexCharts(document.querySelector("#user-chart"), options);
+            chart.render();
+        });
+    </script></div>
+    </div>
+    
 @endpush
