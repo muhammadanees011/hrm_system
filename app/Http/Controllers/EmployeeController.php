@@ -107,7 +107,7 @@ class EmployeeController extends Controller
                     'designation_id' => 'required',
                     'document.*' => 'required',
                     'employee_type' => 'required',
-                    'probation_days' => 'required_if:employee_type,Probation|numeric|min:1',
+                    'probation_days' => 'nullable|required_if:employee_type,Probation|numeric|min:1',
                 ]
             );
             if ($validator->fails()) {
@@ -279,7 +279,7 @@ class EmployeeController extends Controller
                     'address' => 'required',
                     'document.*' => 'required',
                     'employee_type' => 'required',
-                    'probation_days' => 'required_if:employee_type,Probation|numeric|min:1',
+                    'probation_days' => 'nullable|required_if:employee_type,Probation|numeric|min:1',
                 ]
             );
             if ($validator->fails()) {
