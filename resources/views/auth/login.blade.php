@@ -87,7 +87,7 @@
     </div>
 </div>
 @endsection
-@push('custom-scripts')
+<!-- @push('custom-scripts')
     <script src="{{ asset('custom/libs/jquery/dist/jquery.min.js') }}"></script>
     <script>
         $(document).ready(function() {
@@ -100,4 +100,4 @@
     @if (isset($settings['recaptcha_module']) && $settings['recaptcha_module'] == 'yes')
         {!! NoCaptcha::renderJs() !!}
     @endif
-@endpush
+@endpush -->
