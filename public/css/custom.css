@@ -788,3 +788,8 @@ body.no-scroll{
     font-size: 0.8rem;
     font-weight: 900;
 }
+.files-hr{
+    color: white;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
