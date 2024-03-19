@@ -181,6 +181,70 @@
             </div>
         </div> -->
 
+        <div class="card  mt-0 pt-1 pb-1">
+            <div class="container-kanban">
+                <div class="row" style=" height:80vh;">
+                    <div class="col-md-3 doc-folders ms-2 me-2">
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>DBS Checks</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>ID Checks</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Right To Work</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Employement History</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>References</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Medical History</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Eclaims</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Resumes</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Payslips</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Contracts</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Health Assessments</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>GP Notes</p>
+                        </div>
+                        <div class="folder-name">
+                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                            <p>Self Certifications</p>
+                        </div>
+                    </div>
+                    <div class="col-md-8 doc-folders">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <div class="card  mt-0 pt-5">
         <div class="container-kanban">
             <div class="row pt- kanban-wrapper horizontal-scroll-cards" style=" height:90vh;">

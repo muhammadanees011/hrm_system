@@ -36,15 +36,19 @@
                         <tbody>
                             @foreach ($roles as $role)
                                 <tr>
-                                    <td>{{ $role->name }}</td>
-                                    <td style="white-space: inherit">
+                                    <td style="display:flex; justify-content:center; align-items:center;color:white;">
+                                        <div style="display:flex; justify-content:center; align-items:center; background-color:#A9A9A9; border-radius:20px; height:3rem; width:auto; padding:1rem; font-weight:900;font-size:25px;">
+                                            {{ $role->name }}
+                                        </div>
+                                    </td>
+                                    <td style="white-space: inherit;">
                                         @foreach ($role->permissions()->pluck('name') as $permission)
                                             <span class="badge rounded p-2 m-1 px-3 bg-primary ">
                                                 <a href="#" class="text-white">{{ $permission }}</a>
                                             </span>
                                         @endforeach
                                     </td>
-                                    <td class="Action">
+                                    <td class="Action" style="display:flex; align-item:start;">
                                         <span>
                                             @can('Edit Role')
                                                 <div class="action-btn bg-info ms-2">

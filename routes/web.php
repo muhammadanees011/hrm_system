@@ -102,6 +102,8 @@ use App\Http\Controllers\ZoomMeetingController;
 use App\Http\Controllers\EmployementCheckController;
 use App\Http\Controllers\EmployementCheckTypeController;
 use App\Http\Controllers\FlexiTimeController;
+use App\Http\Controllers\CompanyGoalTrackingController;
+use App\Http\Controllers\PerformanceCycleController;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -503,6 +505,10 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('employementcheck/{id}', [EmployementCheckController::class, 'deleteFile'])->name('employementcheck.delete')->middleware(['auth', 'XSS',]);
     Route::get('employementcheck/file/{filename}', [EmployementCheckController::class, 'viewFile'])->name('employementcheck.view.file')->middleware(['auth', 'XSS',]);
     Route::get('employementcheck/download/file/{filename}', [EmployementCheckController::class, 'downloadFile'])->name('employementcheck.download.file')->middleware(['auth', 'XSS',]);
+
+    //performance
+    Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth','XSS',]);
+    Route::resource('companygoaltracking', CompanyGoalTrackingController::class)->middleware(['auth','XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
