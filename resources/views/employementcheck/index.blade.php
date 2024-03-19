@@ -12,6 +12,7 @@
 @push('css-page')
     <link href="{{ asset('libs/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/dragula.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}"> -->
 @endpush
 
 
@@ -238,8 +239,38 @@
                             <p>Self Certifications</p>
                         </div>
                     </div>
-                    <div class="col-md-8 doc-folders">
-
+                    <div class="col-md-8 doc-folders pt-3">
+                    <div class="checks-file">
+                        @for($i=0; $i < 9; $i++ )
+                        <div>
+                            <span>
+                            <a class="file-name" href="#" target="_blank">
+                                <img src="{{asset( '/assets/images/pdf.svg' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
+                                dbs-checks-anees
+                            </a>
+                            </span>
+                            <span>
+                            @can('Manage Employee')
+                            <a href="#" class="btn btn-md file-download"
+                                data-bs-toggle="tooltip" title="" data-bs-original-title="Download">
+                                <span class="btn-inner--icon text-warning">
+                                    <i class="ti ti-download text-danger-off "></i>
+                                </span>
+                            </a>
+                            @endcan
+                            @can('Delete Employee')
+                            <a href="#" class="btn btn-md file-delete"
+                                data-bs-toggle="tooltip" title="" data-bs-original-title="Delete">
+                                <span class="btn-inner--icon text-danger">
+                                    <i class="ti ti-trash-off text-danger-off "></i>
+                                </span>
+                            </a>
+                            @endcan
+                            </span>
+                        </div>
+                        <hr class="files-hr">
+                        @endfor
+                        </div>
                     </div>
                 </div>
             </div>
