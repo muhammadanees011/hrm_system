@@ -273,122 +273,128 @@
 
 
     <div class="row">
-        <div class="col-md-6">
-            <script>
-        $(document).ready(function() {
-            // Chart data and options
-            var data = {!! json_encode($attendanceData) !!};
-            var labels = {!! json_encode($labels) !!};
-            var options = {
-                chart: {
-                    height: 250,
-                    type: 'bar',
-                    toolbar: {
-                        show: false,
-                    },
+    <div class="col">
+        <div id="attendance-chart" style="margin-left: 350px;"></div>
+    </div>
+    <div class="col">
+        <div id="absent-chart"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Chart data and options for attendance chart
+        var attendanceData = {!! json_encode($attendanceData) !!};
+        var labels = {!! json_encode($labels) !!};
+        var attendanceOptions = {
+            chart: {
+                height: 250,
+                type: 'line',
+                width: 450,
+                toolbar: {
+                    show: false,
                 },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '25%',
-                        endingShape: 'rounded'
-                    },
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '25%',
+                    endingShape: 'rounded'
                 },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    width: 2,
-                    curve: 'smooth'
-                },
-                series: data,
-                xaxis: {
-                    categories: labels,
-                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 2,
+                curve: 'smooth'
+            },
+            series: attendanceData,
+            xaxis: {
+                categories: labels,
+            },
+            colors: ['#3ec9d6', '#FF3A6E'],
+            fill: {
+                type: 'solid',
+            },
+            grid: {
+                strokeDashArray: 4,
+            },
+            legend: {
+                show: true,
+                position: 'top',
+                horizontalAlign: 'right',
+            },
+            markers: {
+                size: 4,
                 colors: ['#3ec9d6', '#FF3A6E'],
-                fill: {
-                    type: 'solid',
-                },
-                grid: {
-                    strokeDashArray: 4,
-                },
-                legend: {
-                    show: true,
-                    position: 'top',
-                    horizontalAlign: 'right',
-                },
-                markers: {
-                    size: 4,
-                    colors: ['#3ec9d6', '#FF3A6E'],
-                    opacity: 0.9,
-                    strokeWidth: 2,
-                    hover: {
-                        size: 7,
-                    }
+                opacity: 0.9,
+                strokeWidth: 2,
+                hover: {
+                    size: 7,
                 }
-            };
-            var chart = new ApexCharts(document.querySelector("#user-chart"), options);
-            chart.render();
-        });
-    </script>
-    </div>
-        <div class="col-md-6"><script>
-        $(document).ready(function() {
-            // Chart data and options
-            var data = {!! json_encode($absentData) !!};
-            var labels2 = {!! json_encode($labels) !!};
-            var options = {
-                chart: {
-                    height: 250,
-                    type: 'bar',
-                    toolbar: {
-                        show: false,
-                    },
+            }
+        };
+
+        // Chart data and options for absent chart
+        var absentData = {!! json_encode($absentData) !!};
+        var absentOptions = {
+            chart: {
+                height: 250,
+                type: 'line',
+                width: 450,
+                toolbar: {
+                    show: false,
                 },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '25%',
-                        endingShape: 'rounded'
-                    },
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '25%',
+                    endingShape: 'rounded'
                 },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    width: 2,
-                    curve: 'smooth'
-                },
-                series: data,
-                xaxis: {
-                    categories: labels2,
-                },
-                colors: ['#FF0000'],
-                fill: {
-                    type: 'solid',
-                },
-                grid: {
-                    strokeDashArray: 4,
-                },
-                legend: {
-                    show: true,
-                    position: 'top',
-                    horizontalAlign: 'right',
-                },
-                markers: {
-                    size: 4,
-                    colors: ['#3ec9d6', '#FF3A6E'],
-                    opacity: 0.9,
-                    strokeWidth: 2,
-                    hover: {
-                        size: 7,
-                    }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 2,
+                curve: 'smooth'
+            },
+            series: absentData,
+            xaxis: {
+                categories: labels,
+            },
+            colors: ['#FF0000'],
+            fill: {
+                type: 'solid',
+            },
+            grid: {
+                strokeDashArray: 4,
+            },
+            legend: {
+                show: true,
+                position: 'top',
+                horizontalAlign: 'right',
+            },
+            markers: {
+                size: 4,
+                colors: ['#3ec9d6', '#FF3A6E'],
+                opacity: 0.9,
+                strokeWidth: 2,
+                hover: {
+                    size: 7,
                 }
-            };
-            var chart = new ApexCharts(document.querySelector("#user-chart"), options);
-            chart.render();
-        });
-    </script></div>
-    </div>
+            }
+        };
+
+        var attendanceChart = new ApexCharts(document.querySelector("#attendance-chart"), attendanceOptions);
+        attendanceChart.render();
+
+        var absentChart = new ApexCharts(document.querySelector("#absent-chart"), absentOptions);
+        absentChart.render();
+    });
+</script>
+
     
 @endpush
