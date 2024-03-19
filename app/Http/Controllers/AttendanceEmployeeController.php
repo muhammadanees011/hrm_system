@@ -27,11 +27,31 @@ class AttendanceEmployeeController extends Controller
             $attendancesCount = [];
             $absentCount = [];
 
+            
+            
+
             if($request->date != null){
                 $attendances = AttendanceEmployee::where('date', $request->date)->get();
                 $absentCount[] = $employee_count - $attendances->count();
                 $attendancesCount[] = $attendances->count();
                 $labels[] = $request->date;
+            }elseif($request->type == "monthly" && $request->month != null) {
+                $monthYear = $request->month; // Format: YYYY-MM
+            list($year, $month) = explode('-', $monthYear);
+
+            // Get the number of days in the specified month and year
+            $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
+
+            // Create an array to store the dates of the month
+            $datesOfMonth = [];
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $date = Carbon::createFromDate($year, $month, $day)->format('Y-m-d');
+                $attendances = AttendanceEmployee::where('date', $date)->get();
+                $absentCount[] = $employee_count - $attendances->count();
+                $attendancesCount[] = $attendances->count();
+                $labels[] = $date;
+                $datesOfMonth[] = $date;
+            }
             }else{
                 for ($i = 6; $i >= 0; $i--) {
                     $date = Carbon::now()->subDays($i)->toDateString();
