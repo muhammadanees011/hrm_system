@@ -12,7 +12,7 @@
 @push('css-page')
     <link href="{{ asset('libs/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/dragula.min.css') }}">
-    <!-- <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}"> -->
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 @endpush
 
 
