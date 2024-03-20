@@ -68,6 +68,10 @@ class AttendanceEmployeeController extends Controller
                     'name' => 'Present',
                     'data' => $attendancesCount
                 ],
+                [
+                    'name' => 'Absent',
+                    'data' => $absentCount
+                ],
     
             ];
             $absentData = [

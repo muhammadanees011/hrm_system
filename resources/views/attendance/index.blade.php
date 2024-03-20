@@ -180,6 +180,22 @@
         </div>
     </div>
 
+    
+    <div class="col-xl-12">
+        <div class="card">
+        <div class="row">
+    <div class="col">
+        <div id="attendance-chart" ></div>
+    </div>
+    <div class="col">
+        <div id="absent-chart"></div>
+    </div>
+</div>
+        </div>
+    </div>
+                                        
+
+
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header card-body table-border-style">
@@ -265,6 +281,7 @@
     </div>
 @endsection
 
+
 @push('script-page')
     {{-- Include necessary JavaScript files --}}
     <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
@@ -272,14 +289,7 @@
     
 
 
-    <div class="row">
-    <div class="col">
-        <div id="attendance-chart" style="margin-left: 350px;"></div>
-    </div>
-    <div class="col">
-        <div id="absent-chart"></div>
-    </div>
-</div>
+     
 
 <script>
     $(document).ready(function() {
@@ -290,7 +300,7 @@
             chart: {
                 height: 250,
                 type: 'line',
-                width: 450,
+                width: 900,
                 toolbar: {
                     show: false,
                 },
@@ -391,8 +401,8 @@
         var attendanceChart = new ApexCharts(document.querySelector("#attendance-chart"), attendanceOptions);
         attendanceChart.render();
 
-        var absentChart = new ApexCharts(document.querySelector("#absent-chart"), absentOptions);
-        absentChart.render();
+        // var absentChart = new ApexCharts(document.querySelector("#absent-chart"), absentOptions);
+        // absentChart.render();
     });
 </script>
 
