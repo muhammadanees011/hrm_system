@@ -44,8 +44,9 @@ class SimpleNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->greeting('Hello!')
             ->subject($this->message['subject'])
             ->line($this->message['message'])
-            ->line('Comment: ' . $this->message['comment']);
+            ->lineIf(!empty($this->message['description']), "Description: {$this->message['description']}");
     }
 }

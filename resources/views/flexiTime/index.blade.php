@@ -99,13 +99,13 @@
                                     <td>{{ $record->hours ?? ""}}</td>
                                     <td>
                                         @if($record->status=="pending")
-                                            <button class="btn bg-warning btn-sm">{{ucfirst($record->status)}}</button>
+                                            <button class="btn bg-warning btn-sm text-white">{{ucfirst($record->status)}}</button>
                                         @elseif($record->status=="approved by HR")
-                                            <button class="btn bg-info btn-sm">{{ucfirst($record->status)}}</button>
+                                            <button class="btn bg-info btn-sm text-white">{{ucfirst($record->status)}}</button>
                                         @elseif($record->status=="approved")
-                                            <button class="btn bg-success btn-sm">{{ucfirst($record->status)}}</button>
+                                            <button class="btn bg-success btn-sm text-white">{{ucfirst($record->status)}}</button>
                                         @else
-                                            <button class="btn bg-danger btn-sm">{{ucfirst($record->status)}}</button>
+                                            <button class="btn bg-danger btn-sm text-white">{{ucfirst($record->status)}}</button>
                                         @endif
                                     </td>
                                     <td>
@@ -119,18 +119,20 @@
                                     </td>
                                     <td class="Action">
                                         <span>
-                                            @can('Edit FlexiTime')
-                                                <div class="action-btn bg-info ms-2">
-                                                    <a href="#" class="mx-3 btn btn-sm  align-items-center"
-                                                        data-size="lg"
-                                                        data-url="{{ URL::to('flexi-time/' . $record->id . '/edit') }}"
-                                                        data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip" title=""
-                                                        data-title="{{ __('Edit FlexiTime') }}"
-                                                        data-bs-original-title="{{ __('Edit') }}">
-                                                        <i class="ti ti-pencil text-white"></i>
-                                                    </a>
-                                                </div>
-                                            @endcan
+                                            @if($record->status=="pending")
+                                                @can('Edit FlexiTime')
+                                                    <div class="action-btn bg-info ms-2">
+                                                        <a href="#" class="mx-3 btn btn-sm  align-items-center"
+                                                            data-size="lg"
+                                                            data-url="{{ URL::to('flexi-time/' . $record->id . '/edit') }}"
+                                                            data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip" title=""
+                                                            data-title="{{ __('Edit FlexiTime') }}"
+                                                            data-bs-original-title="{{ __('Edit') }}">
+                                                            <i class="ti ti-pencil text-white"></i>
+                                                        </a>
+                                                    </div>
+                                                @endcan
+                                            @endif
 
                                             @can('Delete FlexiTime')
                                                 <div class="action-btn bg-danger ms-2">

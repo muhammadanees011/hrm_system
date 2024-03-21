@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\FlexiTime;
+use App\Models\User;
 use App\Models\Utility;
 use App\Notifications\SimpleNotification;
 use Auth;
@@ -12,19 +13,6 @@ use Illuminate\Http\Request;
 class FlexiTimeController extends Controller
 {
     protected $hours = [];
-    // protected $hours = [
-    //     "9:00" => "9:00",
-    //     "10:00" => "10:00",
-    //     "11:00" => "11:00",
-    //     "12:00" => "12:00",
-    //     "13:00" => "13:00",
-    //     "14:00" => "14:00",
-    //     "15:00" => "15:00",
-    //     "16:00" => "16:00",
-    //     "17:00" => "17:00",
-    //     "18:00" => "18:00",
-    //     "19:00" => "19:00"
-    // ];
 
     public function __construct(){
         $startTime = Utility::getValByName('company_start_time');
@@ -101,7 +89,7 @@ class FlexiTimeController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        FlexiTime::create([
+        $flexiTime = FlexiTime::create([
             'employee_id' => $request->employee_id,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
@@ -112,7 +100,33 @@ class FlexiTimeController extends Controller
             'created_by' => \Auth::user()->creatorId()
         ]);
 
-        return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request Generated Successfully.'));
+        $successMessage = __('FlexiTime Request Generated Successfully.');
+        if(\Auth::user()->type=="employee"){
+            $department = isset(\Auth::user()->employee) ? \Auth::user()->employee->department_id : 0;
+            $hrs  = User::where('type', 'hr')->get();
+            $toEmail  = "";
+            if(!empty($department)){
+                $departmentUser = $hrs->filter(function($row) use($department){
+                    return !empty($row['assigned_departments']) ? in_array($department, $row['assigned_departments']) : null;
+                })->all();
+                if(!empty($departmentUser)){
+                    $toEmail = $departmentUser[0]['email'];
+                }else{
+                    $firstRecord = $hrs->first();
+                    $toEmail = $firstRecord->email;
+                }
+            }else{
+                $firstRecord = $hrs->first();
+                $toEmail = $firstRecord->email;
+            }
+            
+            $sendNotification = $this->sendNotification($toEmail,"new", $flexiTime);
+            if($sendNotification['success']==false){
+                $successMessage .= '<br> <span class="text-danger">' . $sendNotification['message'] . '</span>';
+            }
+        }
+
+        return redirect()->route('flexi-time.index')->with('success', $successMessage);
     } else {
         return redirect()->back()->with('error', __('Permission denied.'));
     }
@@ -220,21 +234,18 @@ class FlexiTimeController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
-            $exceptionMsg = "";
-            try {
-                $flexiTime = FlexiTime::find($id);
-                $flexiTime->status = "rejected";
-                $flexiTime->updated_user = \Auth::user()->id;
-                $flexiTime->updated_user_comment = $request->comment;
-                $flexiTime->save();
+            $flexiTime = FlexiTime::find($id);
+            $flexiTime->status = "rejected";
+            $flexiTime->updated_user = \Auth::user()->id;
+            $flexiTime->updated_user_comment = $request->comment;
+            $flexiTime->save();
+            $sendNotification = $this->sendNotification($flexiTime->employee->email, "rejected", $flexiTime);
+            $successMessage = __('FlexiTime Request status successfully updated.');
 
-                \Notification::route('mail', $flexiTime->employee->email)
-                ->notify(new SimpleNotification(['subject' => "FlexiTime Request Rejection Notification", "message"=> "Your FlexiTime Request got rejected. Please see below comment for detail information", "comment" => $request->comment]));
-            } catch (\Exception $e) {
-                   $exceptionMsg = __('E-Mail has been not sent due to SMTP configuration');
+            if($sendNotification['success']==false){
+                $successMessage .= '<br> <span class="text-danger">' . $sendNotification['message'] . '</span>';
             }
-
-            return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request status successfully updated.'). (!empty($exceptionMsg) ? '<br> <span class="text-danger">' . $exceptionMsg . '</span>' : ''));
+            return redirect()->route('flexi-time.index')->with('success', $successMessage);
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -244,7 +255,55 @@ class FlexiTimeController extends Controller
     {
         $FlexiTime = FlexiTime::find($id);
         $FlexiTime->status = "approved";
+        $FlexiTime->updated_user = \Auth::user()->id;
         $FlexiTime->update();
-        return redirect()->route('flexi-time.index')->with('success', __('FlexiTime Request Updated Successfully.'));
+
+        $sendNotification = $this->sendNotification($FlexiTime->employee->email, "approved", $FlexiTime);
+        $successMessage = __('FlexiTime Request Updated Successfully.');
+        
+        if($sendNotification['success']==false){
+            $successMessage .= '<br> <span class="text-danger">' . $sendNotification['message'] . '</span>';
+        }
+        return redirect()->route('flexi-time.index')->with('success', $successMessage);
+    }
+
+    private function sendNotification($to, $type="", $flexiTime){
+        $response = [];
+        try {
+                $message = $description = "";
+                switch ($type) {
+                    case 'new':
+                        $subject = "A Flexi Time Approval Request";
+                        $message = $flexiTime->employee->name.' requests approval for a flexiTime on date '.$flexiTime->start_date.'-'.$flexiTime->end_date;
+                        $description = $flexiTime->remark;
+                        break;
+                    
+                    case "approved":
+                        $subject = "Your FlexiTime Request got Approved";
+                        $message = "Your FlexiTime Request for the date ".$flexiTime->start_date.'-'.$flexiTime->end_date." got approved by ". $flexiTime->updatedUser->name;
+                        break;
+                    case "rejected":
+                        $subject = "Your FlexiTime Request got Rejected";
+                        $message = "Your FlexiTime Request for the date ".$flexiTime->start_date.'-'.$flexiTime->end_date." got rejected by ". $flexiTime->updatedUser->name;
+                        $description = $flexiTime->updated_user_comment;
+                        break;
+                    default:
+                        break;
+                }
+
+               \Notification::route('mail', $to)
+                ->notify(new SimpleNotification(['subject' => $subject, "message"=> $message,'description' => $description]));
+                $response = [
+                    'success' => true,
+                    'message' => 'Mail Send successfully'
+                ];
+           } catch (\Exception $e) {
+               echo $e->getMessage();die;
+               $response = [
+                    'success' => false,
+                    'message' => __('E-Mail has been not sent due to SMTP configuration')
+                ];
+           }
+        return $response;
     }
 }
