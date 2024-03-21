@@ -36,22 +36,6 @@ class JobController extends Controller
         }
     }
 
-    public function template()
-    {
-        if (\Auth::user()->can('Manage Job Category')) {
-            $jobs = Job::where('created_by', '=', \Auth::user()->creatorId())->with(['branches'])->get();
-
-            $data['total']     = Job::where('created_by', '=', \Auth::user()->creatorId())->count();
-            $data['active']    = Job::where('status', 'active')->where('created_by', '=', \Auth::user()->creatorId())->count();
-            $data['in_active'] = Job::where('status', 'in_active')->where('created_by', '=', \Auth::user()->creatorId())->count();
-
-            return view('job.templates', compact('jobs', 'data'));
-        } else {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
-    }
-
-
     public function create()
     {
         $categories = JobCategory::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');

@@ -101,7 +101,9 @@ use App\Http\Controllers\WarningController;
 use App\Http\Controllers\ZoomMeetingController;
 use App\Http\Controllers\EmployementCheckController;
 use App\Http\Controllers\EmployementCheckTypeController;
+use App\Http\Controllers\JobTemplateController;
 use App\Models\Employee;
+use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -1123,7 +1125,18 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
 
-    Route::get('job/templates', [JobController::class, 'template'])->name('job.template');
+    // Route::get('job/templates', [JobTemp::class, 'template'])->name('job.template');
+    Route::resource('job-template', JobTemplateController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::post('job-template/make-job/{id}', [JobTemplateController::class, 'makeJob'])->name('job-template.make-job');
+    Route::post('job-template/files/upload', [JobTemplateController::class, 'filesUpload'])->name('job-template.files.upload');
+    Route::post('job-template/edit/files/upload', [JobTemplateController::class, 'editFilesUpload'])->name('job-template.edit.files.upload');
+    Route::delete('job-template/files/delete/{id}/{redirect}', [JobTemplateController::class, 'fileDelete'])->name('job-template.files.delete');
+
     Route::get('job/copy/{id}', [JobController::class, 'copyJob'])->name('job.copy');
 
     Route::resource('job', JobController::class)->middleware(
