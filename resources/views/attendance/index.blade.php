@@ -180,14 +180,19 @@
         </div>
     </div>
 
-    
-    <div class="col-md-8 ">
-        <div class="card">
+    {{-- Graphs --}}
+    <div class="col-xl-12">
         <div class="row">
-    <div class="col">
-        <div id="attendance-chart" ></div>
-    </div>
-</div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div id="line-chart"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div id="donut-chart"></div>
+                </div>
+            </div>
         </div>
     </div>
                                         
@@ -345,10 +350,57 @@
         };
 
         
-        var attendanceChart = new ApexCharts(document.querySelector("#attendance-chart"), attendanceOptions);
+        var attendanceChart = new ApexCharts(document.querySelector("#line-chart"), attendanceOptions);
         attendanceChart.render();
 
     });
+</script>
+
+<script type="text/javascript">
+    const data = @json($attendanceOverview);
+    var options = {
+          chart: {
+          width: 350,
+          type: 'donut',
+        },
+        colors: ['#00E396', '#FF4560', '#008FFB', '#FEB019', '#775DD0'],
+        labels: ["Present","Absent","Leaves","Late","FlexiTime"],
+        series: data,
+        plotOptions: {
+          pie: {
+            startAngle: -90,
+            endAngle: 270
+          }
+        },
+        dataLabels: {
+          enabled: true
+        },
+        fill: {
+          type: 'gradient',
+        },
+        legend: {
+          formatter: function(val, opts) {
+            return val + " - " + opts.w.globals.series[opts.seriesIndex]
+          }
+        },
+        title: {
+          text: ''
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#donut-chart"), options);
+        chart.render();
 </script>
 
     

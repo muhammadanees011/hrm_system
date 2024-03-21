@@ -221,7 +221,18 @@ class AttendanceEmployeeController extends Controller
                 $attendanceEmployee = $attendanceEmployee->get();
 
             }
-            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData'));
+            $todayDate = date('Y-m-d');
+            $todayAttendance = AttendanceEmployee::where('date', $todayDate)->where('created_by', \Auth::user()->creatorId())->get();
+            $totalPresents = $todayAttendance->where('status', 'Present')->where('late','00:00:00')->whereNull('requested_time')->count();
+            $totalOnLeaves = $todayAttendance->where('status', 'Leave')->count();
+            $late = $todayAttendance->where('status','Present')->where('late','!=','00:00:00')->whereNull('requested_time')->count();
+            $totalFlexiTime = $todayAttendance->where('status','Present')->whereNotNull('requested_time')->count();
+
+            $employeeIds = $todayAttendance->pluck('employee_id');
+            $absentEmployees = Employee::whereNotIn('id', $employeeIds)->where('created_by', \Auth::user()->creatorId())->count();
+
+            $attendanceOverview = [$totalPresents, $absentEmployees, $totalOnLeaves,$late,$totalFlexiTime];
+            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData', 'absentData','attendanceOverview'));
         }
         else
         {
