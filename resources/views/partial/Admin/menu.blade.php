@@ -530,8 +530,8 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                                 <a class="dash-link" href="{{ route('job.create') }}">{{ __('Job Create') }}</a>
                             </li>
 
-                            <li class="dash-item {{ Request::route()->getName() == 'job.template' ? 'active' : '-' }}">
-                                <a class="dash-link" href="{{ route('job.template') }}">{{ __('Job Templates') }}</a>
+                            <li class="dash-item {{ Request::route()->getName() == 'job-template.index' ? 'active' : '-' }}">
+                                <a class="dash-link" href="{{ route('job-template.index') }}">{{ __('Job Templates') }}</a>
                             </li>
                             @endcan
 

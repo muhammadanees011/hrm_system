@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 @section('page-title')
-{{ __('Manage Job') }}
+{{ __('Manage Job Template') }}
 @endsection
 
 @section('breadcrumb')
 <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-<li class="breadcrumb-item">{{ __('Manage Job') }}</li>
+<li class="breadcrumb-item">{{ __('Manage Job Template') }}</li>
 @endsection
 
 
@@ -27,8 +27,8 @@
 @endpush
 @section('action-button')
 
-@can('Create Job')
-<a href="{{ route('job.create') }}" data-ajax-popup="true" data-size="md" data-title="{{ __('Create New Job') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+@can('Create Job Template')
+<a href="{{ route('job-template.create') }}" data-ajax-popup="true" data-size="md" data-title="{{ __('Create New Job Template') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
     <i class="ti ti-plus"></i>
 </a>
 @endcan

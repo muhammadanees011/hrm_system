@@ -16,6 +16,7 @@ use App\Models\JobWordCount;
 use App\Models\QuestionTemplate;
 use App\Models\Utility;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class JobController extends Controller
 {
@@ -34,22 +35,6 @@ class JobController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
-
-    public function template()
-    {
-        if (\Auth::user()->can('Manage Job Category')) {
-            $jobs = Job::where('created_by', '=', \Auth::user()->creatorId())->with(['branches'])->get();
-
-            $data['total']     = Job::where('created_by', '=', \Auth::user()->creatorId())->count();
-            $data['active']    = Job::where('status', 'active')->where('created_by', '=', \Auth::user()->creatorId())->count();
-            $data['in_active'] = Job::where('status', 'in_active')->where('created_by', '=', \Auth::user()->creatorId())->count();
-
-            return view('job.templates', compact('jobs', 'data'));
-        } else {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
-    }
-
 
     public function create()
     {
@@ -538,6 +523,62 @@ class JobController extends Controller
             }
         } else {
             return redirect()->back()->with('error', __('Permission Denied.'));
+        }
+    }
+    public function copyJob($id)
+    {
+        if (\Auth::user()->can('Copy Job')) {
+
+            $jobRefer = Job::where('id', $id)->first();
+
+            $job                  = new Job();
+            $job->title           = $jobRefer->title;
+            $job->branch          = $jobRefer->branch;
+            $job->department      = $jobRefer->department;
+            $job->contract_type   = $jobRefer->contract_type;
+            $job->category        = $jobRefer->category;
+            $job->skill           = $jobRefer->skill;
+            $job->position        = $jobRefer->position;
+            $job->status          = $jobRefer->status;
+            $job->start_date      = $jobRefer->start_date;
+            $job->end_date        = $jobRefer->end_date;
+            $job->description     = $jobRefer->description;
+            $job->requirement     = $jobRefer->requirement;
+            $job->code            = uniqid();
+            $job->applicant       = $jobRefer->applicant;
+            $job->visibility      = $jobRefer->visibility;
+            $job->custom_question = $jobRefer->custom_question;
+            $job->question_template_id = $jobRefer->question_template_id;
+            $job->created_by      = \Auth::user()->creatorId();
+            $job->save();
+
+            $jobReferAttachments = JobAttachment::where('job_code', $jobRefer->code)->get();
+
+            if ($jobReferAttachments->isNotEmpty()) {
+                foreach ($jobReferAttachments as $attachment) {
+                    // Get the original file path
+                    $originalFilePath = 'job_attachment/' . $attachment->files;
+
+                    // Generate the destination file path
+                    $newFileName = time() . $attachment->files;
+                    $destinationFilePath = 'job_attachment/' . $newFileName;
+
+                    // Copy the file to the new location
+                    Storage::copy($originalFilePath, $destinationFilePath);
+
+                    JobAttachment::create(
+                        [
+                            'job_code' => $job->code,
+                            'created_by' => \Auth::user()->id,
+                            'files' => $newFileName,
+                        ]
+                    );
+                }
+            }
+
+            return redirect()->route('job.index')->with('success', __('Job  successfully copied.'));
+        } else {
+            return redirect()->route('job.index')->with('error', __('Permission denied.'));
         }
     }
 }
