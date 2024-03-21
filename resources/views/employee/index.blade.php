@@ -33,7 +33,6 @@
                 <table class="table" id="pc-dt-simple">
                     <thead>
                         <tr>
-                            <th>{{ __('Employee ID') }}</th>
                             <th>{{ __('Name') }}</th>
                             <th>{{ __('Email') }}</th>
                             <th>{{ __('Branch') }}</th>
@@ -50,13 +49,11 @@
                         @foreach ($employees as $employee)
                         <tr>
                             <td>
-                                @can('Show Employee')
-                                <a class="btn btn-outline-primary" href="{{ route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}">{{ \Auth::user()->employeeIdFormat($employee->employee_id) }}</a>
-                                @else
-                                <a href="#" class="btn btn-outline-primary">{{ \Auth::user()->employeeIdFormat($employee->employee_id) }}</a>
-                                @endcan
+                                <a href="{{ route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}">
+                                    <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
+                                    {{ $employee->name }}
+                                </a>
                             </td>
-                            <td>{{ $employee->name }}</td>
                             <td>{{ !empty($employee->email) ? $employee->email : '-' }}</td>
                             <td>
                                 {{ !empty($employee->branch_id) ? $employee->branch->name : '-' }}

@@ -147,4 +147,17 @@ class DocumentController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+
+
+    public function documentDirectory()
+    {
+        if(\Auth::user()->can('Manage Document Type'))
+        {
+            return view('document.directory');
+        }
+        else
+        {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+    }
 }

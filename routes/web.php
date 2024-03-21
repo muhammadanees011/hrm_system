@@ -103,7 +103,6 @@ use App\Http\Controllers\EmployementCheckController;
 use App\Http\Controllers\EmployementCheckTypeController;
 use App\Http\Controllers\JobTemplateController;
 use App\Http\Controllers\FlexiTimeController;
-use App\Http\Controllers\CompanyGoalTrackingController;
 use App\Http\Controllers\PerformanceCycleController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
@@ -353,6 +352,7 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+    Route::get('/documentDirectory', [DocumentController::class,'documentDirectory'])->name('document.directory')->middleware(['auth','XSS',]);
     Route::resource('branch', BranchController::class)->middleware(
         [
             'auth',
@@ -510,7 +510,6 @@ Route::group(['middleware' => ['verified']], function () {
 
     //performance
     Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth','XSS',]);
-    Route::resource('companygoaltracking', CompanyGoalTrackingController::class)->middleware(['auth','XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
@@ -996,12 +995,9 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::resource('goaltracking', GoalTrackingController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
+    Route::resource('goaltracking', GoalTrackingController::class)->middleware( ['auth', 'XSS',]);
+    Route::get('goaltracking/goals/{id?}',[GoalTrackingController::class,'goals'])->name('goaltracking.goals')->middleware( ['auth', 'XSS',]);
+
     Route::resource('company-policy', CompanyPolicyController::class)->middleware(
         [
             'auth',

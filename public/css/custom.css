@@ -793,3 +793,22 @@ body.no-scroll{
     margin-top: 0px;
     margin-bottom: 0px;
 }
+.add-btn{
+    display: flex;
+    justify-content: space-between;
+}
+.files-list-doc{
+    border-bottom: 1px solid white;
+    display: flex;
+    justify-content: space-between;
+}
+.files-list-doc:hover {
+    background-color: white;
+    border-radius: 5px;
+}
+.folder-open{
+    margin-left:0.5rem;
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
