@@ -23,6 +23,7 @@ class Job extends Model
         'visibility',
         'code',
         'custom_question',
+        'question_template_id',
         'created_by',
     ];
 

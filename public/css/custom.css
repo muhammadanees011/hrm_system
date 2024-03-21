@@ -740,3 +740,56 @@ body.no-scroll{
 .color-wrp .color-picker-wrp{
     width: 70px;
 }
+
+.employement-checks-list{
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.2rem;
+}
+.employement-checks-list .checks-file{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 0rem;
+    margin-right: 0.5rem;
+    height: 1rem;
+}
+.employement-checks-list .file-name{
+    margin-left: 0.5rem;
+}
+.employement-checks-list .file-delete{
+    margin-top: 0.1rem;
+    margin-right: 0.7rem;
+    padding: 0px;
+}
+.employement-checks-list .file-download{
+    margin-top: 0.1rem;
+    margin-right: 0.2rem;
+    padding: 0px;
+}
+.doc-folders{
+    background-color: #F5F3F4;
+    border-radius: 5%;
+}
+.folder-name{
+    height:1.5rem;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-top: 0.6rem;
+}
+.folder-name:hover{
+   background-color: #a3afbb;
+   padding: 15px;
+   border-radius: 4px;
+}
+.folder-name p{
+    margin-left:0.5rem;
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+.files-hr{
+    color: white;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

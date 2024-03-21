@@ -6,12 +6,14 @@ use App\Models\Branch;
 use App\Models\CustomQuestion;
 use App\Models\Job;
 use App\Models\JobApplication;
+use App\Models\JobApplicationAnswer;
 use App\Models\JobApplicationNote;
 use App\Models\JobAttachment;
 use App\Models\JobCategory;
 use App\Models\User;
 use App\Models\JobStage;
 use App\Models\JobWordCount;
+use App\Models\QuestionTemplate;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 
@@ -61,7 +63,9 @@ class JobController extends Controller
 
         $customQuestion = CustomQuestion::where('created_by', \Auth::user()->creatorId())->get();
 
-        return view('job.create', compact('categories', 'status', 'branches', 'customQuestion'));
+        $questionTemplate = QuestionTemplate::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');
+
+        return view('job.create', compact('categories', 'status', 'branches', 'customQuestion', 'questionTemplate'));
     }
 
 
@@ -110,6 +114,7 @@ class JobController extends Controller
             $job->applicant       = !empty($request->applicant) ? implode(',', $request->applicant) : '';
             $job->visibility      = !empty($request->visibility) ? implode(',', $request->visibility) : '';
             $job->custom_question = !empty($request->custom_question) ? implode(',', $request->custom_question) : '';
+            $job->question_template_id = !empty($request->question_template_id) ? $request->question_template_id : '';
             $job->created_by      = \Auth::user()->creatorId();
             $job->save();
 
@@ -149,7 +154,10 @@ class JobController extends Controller
 
         $customQuestion = CustomQuestion::where('created_by', \Auth::user()->creatorId())->get();
 
-        return view('job.edit', compact('categories', 'status', 'branches', 'job', 'customQuestion'));
+        $questionTemplate = QuestionTemplate::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');
+
+
+        return view('job.edit', compact('categories', 'status', 'branches', 'job', 'customQuestion', 'questionTemplate'));
     }
 
     public function update(Request $request, Job $job)
@@ -194,6 +202,7 @@ class JobController extends Controller
             $job->applicant       = !empty($request->applicant) ? implode(',', $request->applicant) : '';
             $job->visibility      = !empty($request->visibility) ? implode(',', $request->visibility) : '';
             $job->custom_question = !empty($request->custom_question) ? implode(',', $request->custom_question) : '';
+            $job->question_template_id = !empty($request->question_template_id) ? $request->question_template_id : '';
             $job->save();
 
             return redirect()->route('job.index')->with('success', __('Job  successfully updated.'));
@@ -290,6 +299,7 @@ class JobController extends Controller
         $que = !empty($job->custom_question) ? explode(",", $job->custom_question) : [];
 
         $questions = CustomQuestion::wherein('id', $que)->get();
+        $questionTemplate = QuestionTemplate::where('id', $job->question_template_id)->with(['questions', 'questions.options'])->first();
 
         $getUserJobCreatedBy = User::where('id', $job->createdBy->id)->first()->created_by;
         $getWordCountCreatedBy = User::where('id', $getUserJobCreatedBy == 0 ? 1 : $getUserJobCreatedBy)->first()->id;
@@ -303,19 +313,17 @@ class JobController extends Controller
         }
 
 
-        return view('job.apply', compact('companySettings', 'job', 'questions', 'languages', 'currantLang', 'wordCounts'));
+        return view('job.apply', compact('companySettings', 'job', 'questions', 'languages', 'currantLang', 'wordCounts', 'questionTemplate'));
     }
 
     public function jobApplyData(Request $request, $code)
     {
-
         $validator = \Validator::make(
             $request->all(),
             [
                 'name' => 'required',
                 'email' => 'required',
                 'phone' => 'required',
-
             ]
         );
 
@@ -396,6 +404,26 @@ class JobController extends Controller
         $jobApplication->custom_question = json_encode($request->question);
         $jobApplication->created_by      = $job->created_by;
         $jobApplication->save();
+
+        $requestData = $request->all();
+        $questionResponses = collect($requestData)->filter(function ($value, $key) {
+            return strpos($key, 'question_') === 0; // Filter keys starting with 'question_'
+        })->map(function ($answer, $key) use ($jobApplication) {
+            // Extract question ID from the key
+            $questionId = (int) substr($key, strlen('question_'));
+
+            // Create a JobApplicationAnswer model instance
+            return new JobApplicationAnswer([
+                'job_application_id' =>  $jobApplication->id,
+                'question_id' => $questionId,
+                'answer' => $answer
+            ]);
+        });
+
+        // Save the question responses in the database
+        $questionResponses->each(function ($response) {
+            $response->save();
+        });
 
         return redirect()->back()->with('success', __('Job application successfully send.'));
     }
@@ -490,7 +518,7 @@ class JobController extends Controller
                 $file->delete();
                 if ($redirect == 1) {
                     return redirect()->back()->with('success', __('Attachment successfully deleted!'));
-                }else{
+                } else {
                     return response()->json(
                         [
                             'is_success' => true,

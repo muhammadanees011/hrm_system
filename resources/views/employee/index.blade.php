@@ -40,6 +40,7 @@
                             <th>{{ __('Department') }}</th>
                             <th>{{ __('Designation') }}</th>
                             <th>{{ __('Date Of Joining') }}</th>
+                            <th>{{ __('Type') }}</th>
                             @if (Gate::check('Edit Employee') || Gate::check('Delete Employee'))
                             <th width="200px">{{ __('Action') }}</th>
                             @endif
@@ -68,6 +69,9 @@
                             </td>
                             <td>
                                 {{ \Auth::user()->dateFormat($employee->company_doj) }}
+                            </td>
+                            <td>
+                                {{ $employee->employee_type }}
                             </td>
                             @if (Gate::check('Edit Employee') || Gate::check('Delete Employee'))
                             <td class="Action">

@@ -43,6 +43,13 @@
             </a>
         @endcan
 
+        @can('Manage Employee')
+            <a href="{{ route('employementchecktype.index') }}"
+                class="list-group-item list-group-item-action border-0 {{ request()->is('employementchecktype*') ? 'active' : '' }}">{{ __('Employement Check Type') }}
+                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+            </a>
+        @endcan
+
         @can('Manage Allowance Option')
             <a href="{{ route('allowanceoption.index') }}"
                 class="list-group-item list-group-item-action border-0 {{ request()->is('allowanceoption*') ? 'active' : '' }}">{{ __('Allowance Option') }}

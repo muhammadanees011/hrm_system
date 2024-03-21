@@ -56,6 +56,9 @@
                     <h5>{{ __('Mark Attandance') }}</h5>
                 </div>
                 <div class="card-body">
+                    @if(!empty($flexiTime))
+                        <p class="text-warning p-1">Your request time of {{$flexiTime->hours}} hours for today will be adjusted when you clockout.</p> 
+                    @endif
                     <p class="text-muted pb-0-5">
                         {{ __('My Office Time: ' . $officeTime['startTime'] . ' to ' . $officeTime['endTime']) }}</p>
                     <div class="row">

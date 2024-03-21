@@ -188,22 +188,34 @@ $enable_cookie = \App\Models\Utility::getCookieSetting('enable_cookie');
                                 @endif
 
                                 @if (!empty($job->visibility) && in_array('letter', explode(',', $job->visibility)))
-                                <div class="form-group col-md-12 ">
+                                <div class="form-group col-md-6">
                                     {{ Form::label('cover_letter', __('Cover Letter'), ['class' => 'form-label']) }}
                                     {{ Form::textarea('cover_letter', null, ['class' => 'form-control', 'rows' => '3', 'id'=> 'coverLetter']) }}
                                     <span id="wordCount"></span>
                                 </div>
                                 @endif
 
+                                @if (!empty($questionTemplate))
+                                <div id="question-data" data-questions="{{ json_encode($questionTemplate->questions) }}" style="display: none;"></div>
+                                <div class="col-md-6">
+                                    <h5>Questions:</h5>
+                                    <div class="form-group" id="questions-container">
+                                        <!-- Questions will be dynamically appended here -->
+                                    </div>
+                                    <button id="next-question" class="btn btn-info">Next Question</button>
+                                </div>
+                                @endif
+
+
                                 @foreach ($questions as $question)
-                                <div class="form-group col-md-12  question question_{{ $question->id }}">
+                                <div class="form-group col-md-6  question question_{{ $question->id }}">
                                     {{ Form::label($question->question, $question->question, ['class' => 'form-label']) }}
                                     <input type="text" class="form-control" name="question[{{ $question->question }}]" {{ $question->is_required == 'yes' ? 'required' : '' }}>
                                 </div>
                                 @endforeach
                                 <div class="col-12">
                                     <div class="text-center mt-4">
-                                        <button type="submit" class="btn btn-primary">{{ __('Submit your application') }}</button>
+                                        <button type="submit" class="btn btn-primary" @if (!empty($questionTemplate)) style="display: none;" @endif id="application-submit-btn">{{ __('Submit your application') }}</button>
                                     </div>
                                 </div>
 
@@ -236,6 +248,250 @@ $enable_cookie = \App\Models\Utility::getCookieSetting('enable_cookie');
     <script src="{{ asset('js/custom.js') }}"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionsContainer = document.getElementById('questions-container');
+            const nextButton = document.getElementById('next-question');
+            const questionData = JSON.parse(document.getElementById('question-data').dataset.questions);
+
+            let currentQuestionIndex = 0; // Initialize currentQuestionIndex
+            let currentQuestionId = null; // Initialize currentQuestionId
+
+            // Function to append a question to the container
+            // Function to append a question to the container
+            function appendQuestion(index, isBranching, selectedOptionId) {
+                const question = questionData[index];
+                const questionsContainer = document.getElementById('questions-container');
+
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.dataset.type = question.type;
+                questionDiv.dataset.questionId = question.id;
+
+                let html = `<h4>${question.name}</h4>`;
+
+                if (isBranching) {
+                    questionDiv.classList.add('branching-question-' + selectedOptionId); // Add a separate class for branching questions
+                }
+
+                // Append different types of input fields based on the question type
+                switch (question.type) {
+                    case 'text':
+                        html += `<input type="text" name="question_${question.id}" class="form-control" required>`;
+                        break;
+                    case 'textarea':
+                        html += `
+                <textarea name="question_${question.id}" class="form-control" required data-word-count="${question.word_count}"></textarea>
+                <div class="word-count" id="wordCount_${question.id}">Word Count: 0/${question.word_count}</div>
+            `;
+                        break;
+                    case 'radio':
+                        question.options.forEach((option, idx) => {
+                            html += `
+                    <div class="form-check">
+                        <input type="radio" id="option_${option.id}" name="question_${question.id}" value="${option.id}" class="form-check-input">
+                        <label for="option_${option.id}" class="form-check-label">${option.option_text}</label>
+                    </div>
+                `;
+                        });
+                        break;
+                        // Add cases for other question types if needed
+                }
+
+                questionDiv.innerHTML = html;
+                questionsContainer.appendChild(questionDiv);
+
+                currentQuestionId = question.id;
+
+                // If the question is a textarea, add word count functionality
+                if (question.type === 'textarea') {
+                    const textarea = questionDiv.querySelector(`textarea[name="question_${question.id}"]`);
+                    const wordCountDisplay = questionDiv.querySelector(`#wordCount_${question.id}`);
+                    const maxWords = parseInt(textarea.dataset.wordCount, 10);
+
+                    textarea.addEventListener('input', function() {
+                        const words = this.value.trim().split(/\s+/);
+                        const wordCount = words.length;
+                        wordCountDisplay.textContent = `Word Count: ${wordCount}/${maxWords}`;
+
+                        if (wordCount > maxWords) {
+                            const truncatedText = words.slice(0, maxWords).join(' ');
+                            this.value = truncatedText;
+                        }
+                    });
+                }
+
+                // Add event listener to radio buttons
+                const radioButtons = questionDiv.querySelectorAll('input[type="radio"]');
+                radioButtons.forEach(radioButton => {
+                    radioButton.addEventListener('change', function() {
+                        const selectedOptionId = this.value;
+                        const selectedOption = question.options.find(option => option.id == selectedOptionId);
+                        const nextQuestionId = selectedOption.branching_logic;
+
+                        // Remove previously appended questions with the 'branching-question' class
+                        const appendedQuestions = questionsContainer.querySelectorAll('.branching-question-' + selectedOption.question_id);
+                        appendedQuestions.forEach(appendedQuestion => appendedQuestion.remove());
+
+                        // Find the next question based on branching logic
+                        const nextQuestionIndex = questionData.findIndex(question => question.id === nextQuestionId);
+                        if (nextQuestionIndex !== -1) {
+                            appendQuestion(nextQuestionIndex, true, selectedOption.question_id);
+                        } else {
+                            console.error('Next question not found!');
+                        }
+                    });
+                });
+            }
+
+            // function appendQuestion(index, isBranching, selectedOptionId) {
+            //     const question = questionData[index];
+            //     const questionsContainer = document.getElementById('questions-container');
+
+            //     const questionDiv = document.createElement('div');
+            //     questionDiv.classList.add('question');
+            //     questionDiv.dataset.type = question.type;
+            //     questionDiv.dataset.questionId = question.id;
+
+            //     let html = `<h4>${question.name}</h4>`;
+
+            //     if (isBranching) {
+            //         questionDiv.classList.add('branching-question-' + selectedOptionId); // Add a separate class for branching questions
+            //     }
+
+
+            //     // Append different types of input fields based on the question type
+            //     switch (question.type) {
+            //         case 'text':
+            //             html += `<input type="text" name="question_${question.id}" class="form-control" required>`;
+            //             break;
+            //         case 'textarea':
+            //             html += `<textarea name="question_${question.id}" class="form-control" required></textarea>`;
+            //             break;
+            //         case 'radio':
+            //             question.options.forEach((option, idx) => {
+            //                 html += `
+            //         <div class="form-check">
+            //             <input type="radio" id="option_${option.id}" name="question_${question.id}" value="${option.id}" class="form-check-input">
+            //             <label for="option_${option.id}" class="form-check-label">${option.option_text}</label>
+            //         </div>
+            //     `;
+            //             });
+            //             break;
+            //             // Add cases for other question types if needed
+            //     }
+
+            //     questionDiv.innerHTML = html;
+            //     questionsContainer.appendChild(questionDiv);
+
+            //     currentQuestionId = question.id;
+
+            //     // Add event listener to radio buttons
+            //     const radioButtons = questionDiv.querySelectorAll('input[type="radio"]');
+            //     radioButtons.forEach(radioButton => {
+            //         radioButton.addEventListener('change', function() {
+            //             const selectedOptionId = this.value;
+            //             const selectedOption = question.options.find(option => option.id == selectedOptionId);
+            //             const nextQuestionId = selectedOption.branching_logic;
+
+            //             // Remove previously appended questions with the 'branching-question' class
+            //             const appendedQuestions = questionsContainer.querySelectorAll('.branching-question-' + selectedOption.question_id);
+            //             appendedQuestions.forEach(appendedQuestion => appendedQuestion.remove());
+
+            //             // Find the next question based on branching logic
+            //             const nextQuestionIndex = questionData.findIndex(question => question.id === nextQuestionId);
+            //             if (nextQuestionIndex !== -1) {
+            //                 appendQuestion(nextQuestionIndex, true, selectedOption.question_id);
+            //             } else {
+            //                 console.error('Next question not found!');
+            //             }
+            //         });
+            //     });
+
+            // }
+
+
+            // Initial check if there are questions available
+            if (questionData.length > 0) {
+                appendQuestion(currentQuestionIndex, false, 0);
+            }
+
+            // Event listener for the "Next" button
+            nextButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Check if the user has answered the current question
+                const currentQuestionInput = questionsContainer.querySelector(`input[type="text"][name="question_${currentQuestionId}"]`);
+                const currentQuestionTextarea = questionsContainer.querySelector(`textarea[name="question_${currentQuestionId}"]`);
+                const currentQuestionRadio = questionsContainer.querySelector(`input[type="radio"][name="question_${currentQuestionId}"]:checked`);
+
+                if (currentQuestionInput && currentQuestionInput.value.trim() !== '') {
+                    // If the current question is a text input and it has a value
+                    appendNextQuestion();
+                } else if (currentQuestionTextarea && currentQuestionTextarea.value.trim() !== '') {
+                    // If the current question is a textarea and it has a value
+                    appendNextQuestion();
+                } else if (currentQuestionRadio !== null) {
+                    // If the current question is a radio button and an option is selected
+                    appendNextQuestion();
+                } else {
+                    // If the user hasn't answered the current question
+                    alert('Please answer the current question before proceeding.');
+                }
+            });
+
+            function appendNextQuestion() {
+                currentQuestionIndex++;
+
+                while (currentQuestionIndex < questionData.length) {
+                    let nextQuestion = questionData[currentQuestionIndex];
+                    let foundMatch = false;
+
+                    // Check if any option's branching_logic matches the next question's id
+                    for (const question of questionData) {
+                        for (const option of question.options) {
+                            if (option.branching_logic === nextQuestion.id) {
+                                foundMatch = true;
+                                break;
+                            }
+                        }
+                        if (foundMatch) break; // Exit loop if a match is found
+                    }
+
+                    if (foundMatch) {
+                        // Skip appending this question and move to the next one
+                        currentQuestionIndex++;
+                    } else {
+                        // Append the next question and exit the loop
+                        appendQuestion(currentQuestionIndex, false, 0);
+                        return;
+                    }
+                }
+
+                // Handle the end of questions (e.g., submit the form)
+                alert('All questions completed!');
+                document.getElementById('application-submit-btn').style.display = 'inline';
+                document.getElementById('next-question').style.display = 'none';
+            }
+
+
+
+
+            // function appendNextQuestion() {
+            //     // Proceed to append the next question
+            //     currentQuestionIndex++;
+            //     if (currentQuestionIndex < questionData.length) {
+            //         appendQuestion(currentQuestionIndex, false, 0);
+            //     } else {
+            //         // Handle the end of questions (e.g., submit the form)
+            //         alert('All questions completed!');
+            //         document.getElementById('application-submit-btn').style.display = 'inline';
+            //         document.getElementById('next-question').style.display = 'none';
+            //     }
+            // }
+        });
+    </script>
+
+
+    <script>
         $(document).ready(function() {
             // Set the maximum word limit
             var maxWords = @json($wordCounts[0]['limit']);
@@ -261,12 +517,14 @@ $enable_cookie = \App\Models\Utility::getCookieSetting('enable_cookie');
 
     @if ($message = Session::get('success'))
     <script>
-        show_toastr('{{ 'success' }}', '{!! $message !!}');
+        show_toastr('{{ '
+            success ' }}', '{!! $message !!}');
     </script>
     @endif
     @if ($message = Session::get('error'))
     <script>
-        show_toastr('{{ 'error' }}', '{!! $message !!}');
+        show_toastr('{{ '
+            error ' }}', '{!! $message !!}');
     </script>
     @endif
 

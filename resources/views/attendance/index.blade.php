@@ -213,6 +213,7 @@
                                 <th>{{ __('Late') }}</th>
                                 <th>{{ __('Early Leaving') }}</th>
                                 <th>{{ __('Overtime') }}</th>
+                                <th>{{ __('FlexiTime') }}</th>
                                 @if (Gate::check('Edit Attendance') || Gate::check('Delete Attendance'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -234,6 +235,7 @@
                                     <td>{{ $attendance->late }}</td>
                                     <td>{{ $attendance->early_leaving }}</td>
                                     <td>{{ $attendance->overtime }}</td>
+                                    <td>{{$attendance->requested_time ?? ""}}</td>
                                     <td class="Action">
                                         @if (Gate::check('Edit Attendance') || Gate::check('Delete Attendance'))
                                             <span>
