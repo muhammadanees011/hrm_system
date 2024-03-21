@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\Employee;
 use App\Models\GoalTracking;
 use App\Models\GoalType;
+use App\Models\PerformanceCycle;
 use Illuminate\Http\Request;
 
 class GoalTrackingController extends Controller
@@ -19,17 +20,12 @@ class GoalTrackingController extends Controller
             if($user->type == 'employee')
             {
                 $employee      = Employee::where('user_id', $user->id)->first();
-                $goalTrackings = GoalTracking::where('created_by', '=', \Auth::user()->creatorId())->where('branch', $employee->branch_id)->get();
+                $goalTrackings = GoalTracking::where('employee_id', '=', $user->id)->get();
+            }else{
+                $goalTrackings = GoalTracking::where('created_by', '=', \Auth::user()->creatorId())->with(['employee', 'performanceCycle'])->get();
             }
-            else
-            {
-                $goalTrackings = GoalTracking::where('created_by', '=', \Auth::user()->creatorId())->with(['goalType', 'branches'])->get();
-            }
-
             return view('goaltracking.index', compact('goalTrackings'));
-        }
-        else
-        {
+        }else{
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
@@ -39,16 +35,10 @@ class GoalTrackingController extends Controller
     {
         if(\Auth::user()->can('Create Goal Tracking'))
         {
-
-            $brances = Branch::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-            $brances->prepend('Select Branch', '');
-            $goalTypes = GoalType::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-            $goalTypes->prepend('Select Goal Type', '');
-
-            return view('goaltracking.create', compact('brances', 'goalTypes'));
-        }
-        else
-        {
+            $performancecycles = PerformanceCycle::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');
+            $employees         = Employee::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            return view('goaltracking.create', compact('employees','performancecycles'));
+        }else{
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
@@ -58,35 +48,33 @@ class GoalTrackingController extends Controller
     {
         if(\Auth::user()->can('Create Goal Tracking'))
         {
-
             $validator = \Validator::make(
                 $request->all(), [
-                                   'branch'     => 'required',
-                                   'goal_type'  => 'required',
-                                   'start_date' => 'required',
-                                   'end_date' => 'required|after_or_equal:start_date',
-                                   'subject'    => 'required',
-                               ]
+                    'employee_id'          => 'required',
+                    'performancecycle_id'  => 'required',
+                    'start_date'           => 'required',
+                    'end_date'             => 'required|after_or_equal:start_date',
+                    'title'                => 'required',
+                    'description'          => 'required',
+                ]
             );
             if($validator->fails())
             {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
             $goalTracking                     = new GoalTracking();
-            $goalTracking->branch             = $request->branch;
-            $goalTracking->goal_type          = $request->goal_type;
+            $goalTracking->employee_id        = $request->employee_id;
+            $goalTracking->performancecycle_id= $request->performancecycle_id;
             $goalTracking->start_date         = $request->start_date;
             $goalTracking->end_date           = $request->end_date;
-            $goalTracking->subject            = $request->subject;
-            $goalTracking->target_achievement = $request->target_achievement;
+            $goalTracking->title              = $request->title;
             $goalTracking->description        = $request->description;
             $goalTracking->created_by         = \Auth::user()->creatorId();
             $goalTracking->save();
 
-            return redirect()->route('goaltracking.index')->with('success', __('Goal tracking successfully created.'));
+            return redirect()->route('goaltracking.index')->with('success', __('Goal successfully created.'));
         }
         else
         {
@@ -187,5 +175,10 @@ class GoalTrackingController extends Controller
         {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
+    }
+
+    public function goals($id)
+    {
+        return view('goaltracking.goals');
     }
 }

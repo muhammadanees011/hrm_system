@@ -13,20 +13,18 @@ class CreateGoalTrackingsTable extends Migration
      */
     public function up()
     {
-        Schema::create(
-            'goal_trackings', function (Blueprint $table){
+        Schema::create('goal_trackings', function (Blueprint $table){
             $table->bigIncrements('id');
-            $table->integer('branch');
-            $table->integer('goal_type');
+            $table->integer('employee_id');
+            $table->integer('performancecycle_id');
+            $table->string('title');
+            $table->text('description');
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('subject')->nullable();
             $table->string('rating')->nullable();
-            $table->string('target_achievement')->nullable();
-            $table->text('description')->nullable();
-            $table->integer('status')->default(0);
             $table->integer('progress')->default(0);
-            $table->integer('created_by')->default(0);
+            $table->integer('status')->default(0);
+            $table->integer('created_by');
             $table->timestamps();
         }
         );

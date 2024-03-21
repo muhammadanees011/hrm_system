@@ -210,46 +210,36 @@
                             <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
                             <p>Medical History</p>
                         </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>Eclaims</p>
-                        </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>Resumes</p>
-                        </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>Payslips</p>
-                        </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>Contracts</p>
-                        </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>Health Assessments</p>
-                        </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>GP Notes</p>
-                        </div>
-                        <div class="folder-name">
-                            <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
-                            <p>Self Certifications</p>
-                        </div>
                     </div>
                     <div class="col-md-8 doc-folders pt-3">
+                    <div class="add-btn mb-3">
+                        <div class="folder-open">
+                            <p>Health Assessments</p>
+                        </div>
+                        <div>
+                            <input type="text" class="me-2" placeholder="Search..."/>
+                            <a href="#" data-url="{{ route('employementcheck.create') }}" data-ajax-popup="true" data-size="lg"
+                                data-title="{{ __('Create New Employement Check') }}" data-bs-toggle="tooltip" title=""
+                                class="me-2 btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
+                                <i class="ti ti-search"></i>
+                            </a>
+                            <a href="#" data-url="{{ route('employementcheck.create') }}" data-ajax-popup="true" data-size="lg"
+                                data-title="{{ __('Create New Employement Check') }}" data-bs-toggle="tooltip" title=""
+                                class="me-2 btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
+                                <i class="ti ti-plus"></i>
+                            </a>
+                        </div>
+                    </div>
                     <div class="checks-file">
                         @for($i=0; $i < 9; $i++ )
-                        <div>
-                            <span>
+                        <div class="files-list-doc">
+                            <span class="pt-2">
                             <a class="file-name" href="#" target="_blank">
                                 <img src="{{asset( '/assets/images/pdf.svg' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
                                 dbs-checks-anees
                             </a>
                             </span>
-                            <span>
+                            <span class="action-btns">
                             @can('Manage Employee')
                             <a href="#" class="btn btn-md file-download"
                                 data-bs-toggle="tooltip" title="" data-bs-original-title="Download">

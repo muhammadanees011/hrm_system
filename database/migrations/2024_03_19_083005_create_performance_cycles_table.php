@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('performance_cycles', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
+            $table->string('title')->nullable();
+            $table->json('participants')->nullable();
+            $table->integer('progress')->nullable();
+            $table->enum('status', ['draft', 'ended', 'running']);
+            $table->integer('created_by');
             $table->timestamps();
         });
     }
