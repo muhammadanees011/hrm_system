@@ -766,3 +766,30 @@ body.no-scroll{
     margin-right: 0.2rem;
     padding: 0px;
 }
+.doc-folders{
+    background-color: #F5F3F4;
+    border-radius: 5%;
+}
+.folder-name{
+    height:1.5rem;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-top: 0.6rem;
+}
+.folder-name:hover{
+   background-color: #a3afbb;
+   padding: 15px;
+   border-radius: 4px;
+}
+.folder-name p{
+    margin-left:0.5rem;
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+.files-hr{
+    color: white;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

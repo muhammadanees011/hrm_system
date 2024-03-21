@@ -2587,8 +2587,8 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Health And Fitness"],
             ["name" => "Edit Health And Fitness"],
             ["name" => "Delete Health And Fitness"],
-            ["Manage Question Template"],
-            ["Create Question Template"],
+            ["name" => "Manage Question Template"],
+            ["name" => "Create Question Template"],
             ["name" => "Edit Question Template"],
             ["name" => "Delete Question Template"],
             ["name" => "Manage Branching"],
@@ -2598,6 +2598,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Job Template"],
             ["name" => "Make Job"],
             ["name" => "Copy Job"],
+            ["name" => "Manage Retirement"],
+            ["name" => "Create Retirement"],
+            ["name" => "Edit Retirement"],
+            ["name" => "Delete Retirement"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -2905,8 +2909,8 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Health And Fitness"],
             ["name" => "Edit Health And Fitness"],
             ["name" => "Delete Health And Fitness"],
-            ["Manage Question Template"],
-            ["Create Question Template"],
+            ["name" => "Manage Question Template"],
+            ["name" => "Create Question Template"],
             ["name" => "Edit Question Template"],
             ["name" => "Delete Question Template"],
             ["name" => "Manage Branching"],
@@ -2916,6 +2920,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Job Template"],
             ["name" => "Make Job"],
             ["name" => "Copy Job"],
+            ["name" => "Manage Retirement"],
+            ["name" => "Create Retirement"],
+            ["name" => "Edit Retirement"],
+            ["name" => "Delete Retirement"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);
@@ -3069,6 +3077,8 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Health And Fitness"],
             ["name" => "Edit Health And Fitness"],
             ["name" => "Delete Health And Fitness"],
+            ["name" => "Manage Retirement"],
+            ["name" => "Create Retirement"],
         ];
 
         $managerRole->givePermissionTo($managerPermission);
@@ -3147,6 +3157,8 @@ class UsersTableSeeder extends Seeder
             ["name" => "Manage Health And Fitness"],
             ["name" => "Create Health And Fitness"],
             ["name" => "Edit Health And Fitness"],
+            ["name" => "Manage Retirement"],
+            ["name" => "Create Retirement"],
         ];
 
         $employeeRole->givePermissionTo($employeePermission);

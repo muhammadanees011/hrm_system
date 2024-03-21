@@ -102,6 +102,9 @@ use App\Http\Controllers\ZoomMeetingController;
 use App\Http\Controllers\EmployementCheckController;
 use App\Http\Controllers\EmployementCheckTypeController;
 use App\Http\Controllers\JobTemplateController;
+use App\Http\Controllers\FlexiTimeController;
+use App\Http\Controllers\CompanyGoalTrackingController;
+use App\Http\Controllers\PerformanceCycleController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
@@ -504,6 +507,10 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('employementcheck/{id}', [EmployementCheckController::class, 'deleteFile'])->name('employementcheck.delete')->middleware(['auth', 'XSS',]);
     Route::get('employementcheck/file/{filename}', [EmployementCheckController::class, 'viewFile'])->name('employementcheck.view.file')->middleware(['auth', 'XSS',]);
     Route::get('employementcheck/download/file/{filename}', [EmployementCheckController::class, 'downloadFile'])->name('employementcheck.download.file')->middleware(['auth', 'XSS',]);
+
+    //performance
+    Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth','XSS',]);
+    Route::resource('companygoaltracking', CompanyGoalTrackingController::class)->middleware(['auth','XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
@@ -1533,6 +1540,12 @@ Route::group(['middleware' => ['verified']], function () {
 
     // videos
     Route::resource('video', VideoController::class)->middleware(['auth',  'XSS']);
+
+     //Flexi Time
+    Route::post('flexi-time/save-reject-form/{id}', [FlexiTimeController::class, 'saveRejectionForm']);
+    Route::get('flexi-time/{id}/reject', [FlexiTimeController::class, 'rejectForm'])->name('flexi-time.reject');
+    Route::get('flexi-time/{id}/approve', [FlexiTimeController::class, 'approve'])->name('flexi-time.approve');
+    Route::resource('flexi-time', FlexiTimeController::class)->middleware(['auth',  'XSS']);
 
     // cache
     Route::get('/config-cache', function () {

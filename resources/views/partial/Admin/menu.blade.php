@@ -56,7 +56,6 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                     <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
                         <a class="dash-link" href="{{ route('home') }}">{{ __('Overview') }}</a>
                     </li>
-
                     @if (Gate::check('Manage Report'))
                     <li class="dash-item dash-hasmenu">
                         <a href="#!" class="dash-link"><span class=""><i class=""></i></span><span class="dash-mtext">{{ __('Report') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
@@ -267,6 +266,11 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                             <a class="dash-link" href="{{ route('timesheet.index') }}">{{ __('Timesheet') }}</a>
                         </li>
                         @endcan
+                        @can('Manage FlexiTime')
+                            <li class="dash-item">
+                                <a class="dash-link" href="{{ route('flexi-time.index') }}">{{ __('Flexi Time') }}</a>
+                            </li>
+                        @endcan
                         @can('Manage Attendance')
                         <li class="dash-item dash-hasmenu">
                             <a href="#!" class="dash-link"><span class="dash-mtext">{{ __('Attendance') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
@@ -335,6 +339,21 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 <li class="dash-item dash-hasmenu">
                     <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-3d-cube-sphere"></i></span><span class="dash-mtext">{{ __('Performance') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
                     <ul class="dash-submenu">
+                        @can('Manage Goal Tracking')
+                        <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
+                            <a class="dash-link" href="{{ route('performancecycle.index') }}">{{ __('Manage Cycles') }}</a>
+                        </li>
+                        <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
+                            <a class="dash-link" href="{{ route('companygoaltracking.index') }}">{{ __('Goals') }}</a>
+                        </li>
+                        <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
+                            <a class="dash-link" href="{{ route('companygoaltracking.index') }}">{{ __('Goal Tracking') }}</a>
+                        </li>
+                        <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
+                            <a class="dash-link" href="{{ route('companygoaltracking.index') }}">{{ __('Employee LifeCycle Feedback') }}</a>
+                        </li>
+                        @endcan
+
                         @can('Manage Indicator')
                         <li class="dash-item">
                             <a class="dash-link" href="{{ route('indicator.index') }}">{{ __('Indicator') }}</a>
