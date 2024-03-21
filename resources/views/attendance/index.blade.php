@@ -181,14 +181,11 @@
     </div>
 
     
-    <div class="col-xl-12">
+    <div class="col-md-8 ">
         <div class="card">
         <div class="row">
     <div class="col">
         <div id="attendance-chart" ></div>
-    </div>
-    <div class="col">
-        <div id="absent-chart"></div>
     </div>
 </div>
         </div>
@@ -323,7 +320,7 @@
             xaxis: {
                 categories: labels,
             },
-            colors: ['#3ec9d6', '#FF3A6E'],
+            colors: ['#3ec9d6', '#FF3A6E', '#FFD700', '#32CD32'],
             fill: {
                 type: 'solid',
             },
@@ -336,7 +333,7 @@
                 horizontalAlign: 'right',
             },
             markers: {
-                size: 4,
+                size: 6, // Show four markers
                 colors: ['#3ec9d6', '#FF3A6E'],
                 opacity: 0.9,
                 strokeWidth: 2,
@@ -344,65 +341,13 @@
                     size: 7,
                 }
             }
+
         };
 
-        // Chart data and options for absent chart
-        var absentData = {!! json_encode($absentData) !!};
-        var absentOptions = {
-            chart: {
-                height: 250,
-                type: 'line',
-                width: 450,
-                toolbar: {
-                    show: false,
-                },
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '25%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                width: 2,
-                curve: 'smooth'
-            },
-            series: absentData,
-            xaxis: {
-                categories: labels,
-            },
-            colors: ['#FF0000'],
-            fill: {
-                type: 'solid',
-            },
-            grid: {
-                strokeDashArray: 4,
-            },
-            legend: {
-                show: true,
-                position: 'top',
-                horizontalAlign: 'right',
-            },
-            markers: {
-                size: 4,
-                colors: ['#3ec9d6', '#FF3A6E'],
-                opacity: 0.9,
-                strokeWidth: 2,
-                hover: {
-                    size: 7,
-                }
-            }
-        };
-
+        
         var attendanceChart = new ApexCharts(document.querySelector("#attendance-chart"), attendanceOptions);
         attendanceChart.render();
 
-        // var absentChart = new ApexCharts(document.querySelector("#absent-chart"), absentOptions);
-        // absentChart.render();
     });
 </script>
 
