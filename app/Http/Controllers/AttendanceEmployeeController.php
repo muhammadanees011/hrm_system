@@ -1180,4 +1180,50 @@ class AttendanceEmployeeController extends Controller
         }
     }
 
+    public function userGraph(Request $request)
+    {
+        $employee_id =  $request->id;
+        $employees =  Employee::all();
+            $employee_count = $employees->count();
+            // Create an array to store the dates of the month
+            
+            $datesOfMonth = [];
+            $labels = [];
+            
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i)->toDateString();
+                $attendances = AttendanceEmployee::where('date', '2024-03-16')->where('employee_id', $employee_id)->get();
+                $on_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '00:00:00')->get();
+                $late_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '!=', '00:00:00')->get();
+                $leaves = Leave::where('start_date', $date)->where('employee_id', $employee_id)->get();
+                $leave_count[] = $leaves->count();
+                $attendancesCount[] = $attendances->count();
+                $absentCount[] = $employee_count - $attendances->count();
+                $onTimeattendancesCount[] = $on_time_attendances->count();
+                $lateTimeattendancesCount[] = $late_time_attendances->count();
+                $labels[] = $date;
+                $datesOfMonth[] = $date;
+            }
+            
+            $attendanceData = [
+                [
+                    'name' => 'On Time',
+                    'data' => $onTimeattendancesCount
+                ],
+                [
+                    'name' => 'Late',
+                    'data' => $lateTimeattendancesCount
+                ],
+                [
+                    'name' => 'Absent',
+                    'data' => $absentCount
+                ],
+                [
+                    'name' => 'Leaves',
+                    'data' => $leave_count
+                ],
+    
+            ];
+        return view('attendance.user-graph', compact('attendanceData', 'labels'));  
+        }
 }

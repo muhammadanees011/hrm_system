@@ -327,9 +327,14 @@
 
                             @foreach ($attendanceEmployee as $attendance)
                                 <tr>
-                                    @if (\Auth::user()->type != 'employee')
-                                        <td>{{ !empty($attendance->employee) ? $attendance->employee->name : '' }}</td>
-                                    @endif
+                                                    <td><a href="#"
+                                                        data-url="{{ URL::to('user-graph/' . $attendance->employee_id) }}"
+                                                        data-ajax-popup="true" data-size="lg" data-bs-toggle="tooltip" title=""
+                                                        data-title="{{ __('Attendance History of User') }}"
+                                                        data-bs-original-title="{{ __('View History') }}">
+                                                        {{ !empty($attendance->employee) ? $attendance->employee->name : '' }}
+                                                    </a></td>
+                                            
                                     <td>{{ \Auth::user()->dateFormat($attendance->date) }}</td>
                                     <td>{{ $attendance->status }}</td>
                                     <td>{{ $attendance->clock_in != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_in) : '00:00' }}
