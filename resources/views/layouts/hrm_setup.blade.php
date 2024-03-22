@@ -106,12 +106,12 @@
             </a>
         @endcan
 
-        @can('Manage Exit Procedure')
+        <!-- @can('Manage Exit Procedure') -->
             <a href="{{ route('exitprocedure.index') }}"
                 class="list-group-item list-group-item-action border-0 {{ request()->is('exitprocedure*') ? 'active' : '' }}">{{ __('Exit Procedures') }}
                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
             </a>
-        @endcan
+        <!-- @endcan -->
 
         @can('Manage Job Category')
             <a href="{{ route('job-category.index') }}"
