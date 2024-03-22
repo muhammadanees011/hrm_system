@@ -40,8 +40,10 @@
                             @foreach ($goalTrackings as $goalTracking)
                                 <tr>
                                     <td>
+                                        <a href="{{ route('goaltracking.goals', $goalTracking->employee->id)}}" data-url="{{ route('goaltracking.goals', $goalTracking->employee->id) }}">
                                         <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
                                         {{ !empty($goalTracking->employee) ? $goalTracking->employee->name : '' }}
+                                        </a>
                                     </td>
                                     <td>{{ !empty($goalTracking->employee) ? $goalTracking->employee->department->name : '' }}
                                     <td>{{ !empty($goalTracking->employee) ? $goalTracking->employee->employee_type : '' }}

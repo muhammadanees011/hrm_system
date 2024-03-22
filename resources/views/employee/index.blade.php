@@ -10,21 +10,145 @@
 @endsection
 
 @section('action-button')
-<a href="{{ route('employee.export') }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Export') }}" class="btn btn-sm btn-primary">
-    <i class="ti ti-file-export"></i>
-</a>
 
-<a href="#" data-url="{{ route('employee.file.import') }}" data-ajax-popup="true" data-title="{{ __('Import  employee CSV file') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Import') }}">
-    <i class="ti ti-file"></i>
-</a>
-@can('Create Employee')
-<a href="{{ route('employee.create') }}" data-title="{{ __('Create New Employee') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
-    <i class="ti ti-plus"></i>
-</a>
-@endcan
+<div class="employees-actions">
+
+<div class="employees-nav me-2">
+    <div class="nav-titles">
+        <div class="dropdown">
+        <button class="dropbtn">Documents &#9660;</button>
+        <div class="dropdown-content">
+            <a href="{{ route('document-upload.index') }}" target="_blank">Documents </a>
+            <a href="{{ route('document.directory') }}" target="_blank">New Documents</a>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="employees-nav me-2">
+    <div class="nav-titles">
+        <div class="dropdown">
+        <button class="dropbtn">Leaves &#9660;</button>
+        <div class="dropdown-content">
+            <a href="{{ route('leave.index') }}" target="_blank">Leave Request </a>
+            <a href="{{ route('carryover.index') }}" target="_blank">CarryOver Request</a>
+            <a href="{{ route('leave.team') }}" target="_blank">Team Time Off</a>
+            <a href="{{ route('holiday.index') }}" target="_blank">Holidays</a>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="employees-nav me-2">
+    <div class="nav-titles">
+        <div class="dropdown">
+        <button class="dropbtn">Payrolls &#9660;</button>
+        <div class="dropdown-content">
+        <a href="{{ route('setsalary.index') }}" target="_blank">Set Salary </a>
+        <a href="{{ route('payslip.index') }}" target="_blank">Payslip </a>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="employees-nav me-2">
+    <div class="nav-titles">
+        <div class="dropdown">
+        <button class="dropbtn">Performance &#9660;</button>
+        <div class="dropdown-content">
+            <a href="{{ route('performancecycle.index') }}" target="_blank">Manage Cycles </a>
+            <a href="{{ route('goaltracking.index') }}" target="_blank">People's Goals </a>
+            <a href="#">Employee Reviews</a>
+            <a href="#">Componsation Reviews</a>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a href="{{ route('employee.export') }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Export') }}" class="btn btn-sm btn-warning">
+        <i class="ti ti-file-export"></i>
+    </a>
+    <a href="#" data-url="{{ route('employee.file.import') }}" data-ajax-popup="true" data-title="{{ __('Import  employee CSV file') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Import') }}">
+        <i class="ti ti-file"></i>
+    </a>
+    @can('Create Employee')
+    <a href="{{ route('employee.create') }}" data-title="{{ __('Create New Employee') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
+        <i class="ti ti-plus"></i>
+    </a>
+    @endcan
+</div>
+
+</div>
+
 @endsection
 
 @section('content')
+
+
+<style>
+
+.employees-actions{
+    display:flex;
+    justify-content:space-between;
+}
+
+/* Dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown button */
+  .dropbtn {
+    background-color: orange;
+    color: white;
+    padding: 6px;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  /* Dropdown content */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 1px;
+    font-size: 12px;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black !important;
+    padding: 5px 12px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of links on hover */
+  .dropdown-content a:hover {background-color: orange;}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {color: white;}
+  
+
+
+
+</style>
+
+
+
+
 <div class="col-xl-12">
     <div class="card">
         <div class="card-header card-body table-border-style">
@@ -76,7 +200,7 @@
                                 <span>
 
                                     @can('Show Personal File')
-                                    <div class="action-btn bg-primary ms-2">
+                                    <div class="action-btn bg-warning ms-2">
                                         <a href="{{ route('employee.personalFile', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}" class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Personal File') }}">
                                             <i class="ti ti-file text-white"></i>
                                         </a>
