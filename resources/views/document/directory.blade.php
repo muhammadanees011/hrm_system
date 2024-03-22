@@ -35,10 +35,10 @@
 @endsection
 @section('content')
 
-        <div class="card  mt-0 pt-1 pb-1">
+        <div class="card  mt-0 pt-1 pb-1" style="background-color: #E5E4E2;">
             <div class="container-kanban">
                 <div class="row" style=" height:80vh;">
-                    <div class="col-md-3 doc-folders ms-2 me-2">
+                    <div class="col-md-3 doc-folders " style="border-right:3px solid white !important;">
                         <div class="folder-name">
                             <img src="{{asset( '/assets/images/folder.png' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
                             <p>DBS Checks</p>
@@ -92,7 +92,7 @@
                             <p>Self Certifications</p>
                         </div>
                     </div>
-                    <div class="col-md-8 doc-folders pt-3">
+                    <div class="col-md-9 doc-folders pt-3">
                     <div class="add-btn mb-3">
                         <div class="folder-open">
                             <p>Health Assessments</p>
@@ -114,7 +114,7 @@
                     <div class="checks-file">
                         @for($i=0; $i < 9; $i++ )
                         <div class="files-list-doc">
-                            <span class="pt-2">
+                            <span class="pt-2 mx-3 my-2">
                             <a class="file-name" href="#" target="_blank">
                                 <img src="{{asset( '/assets/images/pdf.svg' )}}" height="20" width="20" alt="pdf" class="pdf-icon">
                                 dbs-checks-anees
@@ -122,24 +122,17 @@
                             </span>
                             <span class="action-btns">
                             @can('Manage Employee')
-                            <a href="#" class="btn btn-md file-download"
-                                data-bs-toggle="tooltip" title="" data-bs-original-title="Download">
-                                <span class="btn-inner--icon text-warning">
-                                    <i class="ti ti-download text-danger-off "></i>
-                                </span>
-                            </a>
-                            @endcan
-                            @can('Delete Employee')
-                            <a href="#" class="btn btn-md file-delete"
-                                data-bs-toggle="tooltip" title="" data-bs-original-title="Delete">
-                                <span class="btn-inner--icon text-danger">
-                                    <i class="ti ti-trash-off text-danger-off "></i>
-                                </span>
-                            </a>
+                            <div class="dropdown mx-3 my-2">
+                                    <i class="fas fa-bars " id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href="#">Download file</a></li>
+                                    <li><a class="dropdown-item" href="#">Delete file</a></li>
+                                </ul>
+                            </div>
                             @endcan
                             </span>
                         </div>
-                        <hr class="files-hr">
+                        <!-- <hr class="files-hr"> -->
                         @endfor
                         </div>
                     </div>

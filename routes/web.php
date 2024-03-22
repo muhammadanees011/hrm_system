@@ -997,6 +997,7 @@ Route::group(['middleware' => ['verified']], function () {
     );
     Route::resource('goaltracking', GoalTrackingController::class)->middleware( ['auth', 'XSS',]);
     Route::get('goaltracking/goals/{id?}',[GoalTrackingController::class,'goals'])->name('goaltracking.goals')->middleware( ['auth', 'XSS',]);
+    Route::get('goaltracking/details/{id?}',[GoalTrackingController::class,'goaldetails'])->name('goaltracking.goal.details')->middleware( ['auth', 'XSS',]);
 
     Route::resource('company-policy', CompanyPolicyController::class)->middleware(
         [
