@@ -100,8 +100,9 @@
         @endcan
 
         @can('Manage Retirement')
-             <a href="{{ route('exitprocedure.index') }}"
-                class="list-group-item list-group-item-action border-0 {{ request()->is('exitprocedure*') ? 'active' : '' }}">{{ __('Exit Procedures') }}
+
+            <a href="{{ route('retirementtype.index') }}"
+                class="list-group-item list-group-item-action border-0 {{ request()->is('retirementtype*') ? 'active' : '' }}">{{ __('Retirement Typesss') }}
                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
             </a>
         @endcan
