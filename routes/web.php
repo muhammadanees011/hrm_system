@@ -853,6 +853,13 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
 
+    Route::post('attendanceemployee/getoverview', [AttendanceEmployeeController::class, 'getOverView'])->name('attendanceemployee.getoverview')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
     Route::resource('attendanceemployee', AttendanceEmployeeController::class)->middleware(
         [
             'auth',

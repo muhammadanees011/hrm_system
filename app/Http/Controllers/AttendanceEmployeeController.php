@@ -1160,4 +1160,24 @@ class AttendanceEmployeeController extends Controller
         }
     }
 
+    public function getOverView(Request $request){
+        try {
+            $date = date('Y-m-d',strtotime($request->date));
+
+            $todayAttendance = AttendanceEmployee::where('date', $date)->where('created_by', \Auth::user()->creatorId())->get();
+            $totalPresents = $todayAttendance->where('status', 'Present')->where('late','00:00:00')->whereNull('requested_time')->count();
+            $totalOnLeaves = $todayAttendance->where('status', 'Leave')->count();
+            $late = $todayAttendance->where('status','Present')->where('late','!=','00:00:00')->whereNull('requested_time')->count();
+            $totalFlexiTime = $todayAttendance->where('status','Present')->whereNotNull('requested_time')->count();
+
+            $employeeIds = $todayAttendance->pluck('employee_id');
+            $absentEmployees = Employee::whereNotIn('id', $employeeIds)->where('created_by', \Auth::user()->creatorId())->count();
+
+            $data = [$totalPresents, $absentEmployees, $totalOnLeaves,$late,$totalFlexiTime];
+            return response()->json(['success' => true, 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 200);
+        }
+    }
+
 }

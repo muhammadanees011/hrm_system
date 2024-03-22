@@ -29,10 +29,15 @@
         $('input[name="type"]:radio:checked').trigger('change');
     </script>
 
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
             var b_id = $('#branch_id').val();
             // getDepartment(b_id);
+
+            // RENDERING OVERVIEW CHART
+            // const data = @json($attendanceOverview);  
+            const data = [20, 5, 8, 11, 9];
+            renderOverviewChart(data)
         });
         $(document).on('change', 'select[name=branch]', function() {
             var branch_id = $(this).val();
@@ -68,7 +73,83 @@
                 }
             });
         }
-</script>
+
+        $(document).on('change','.overview-date', function(){
+            const selectedDate = $(this).val();
+            $.ajax({
+                url: '{{ route('attendanceemployee.getoverview') }}',
+                type: 'POST',
+                data: {
+                    "date": selectedDate,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    if(response.success){
+                        renderOverviewChart(response.data, true)
+                    }else{
+                        show_toastr('error', response.message)
+                    }
+                }
+            });
+        });
+
+        function renderOverviewChart(data, reRender=false){
+            console.log('data is', data)
+            var options = {
+              chart: {
+              width: 380,
+              type: 'donut',
+            },
+            colors: ['#00E396', '#FF4560', '#008FFB', '#FEB019', '#775DD0'],
+            labels: ["Present","Absent","Leaves","Late","FlexiTime"],
+            series: data,
+            plotOptions: {
+              pie: {
+                startAngle: -90,
+                endAngle: 270
+              }
+            },
+            dataLabels: {
+              enabled: true
+            },
+            fill: {
+              type: 'gradient',
+            },
+            legend: {
+                formatter: function(val, opts) {
+                    return val + " - " + opts.w.globals.series[opts.seriesIndex]
+                },
+                position: 'bottom',
+                horizontalAlign: 'left',
+            },
+            title: {
+              text: ''
+            },
+            responsive: [{
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 200
+                },
+              }
+            }]
+            };
+
+            var chart = new ApexCharts(document.querySelector("#donut-chart"), options);
+            chart.render();
+
+            if(reRender){
+                chart.destroy();
+                const newData = data
+                // Create a new chart with updated data
+                var newChart = new ApexCharts(document.querySelector("#donut-chart"), {
+                    ...options,
+                    series: newData
+                });
+                newChart.render();
+            }
+        }
+    </script>
 @endpush
 
 
@@ -183,21 +264,21 @@
     {{-- Graphs --}}
     <div class="col-xl-12">
         <div class="row">
-            <div class="col-xl-8">
+            <div class="col-xl-7">
                 <div class="card">
                     <div class="card-header">
-                        <div class="row">
+                        <div class="card-title">
                             <div class="col-lg-10 col-md-10 col-sm-10">
                                 <h6>{{ __('Previous 7 Days Attendance') }}</h6>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div id="line-chart" style="height: 350px;"></div>
+                        <div id="line-chart" style="height: 300px;"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4">
+            <div class="col-xl-5">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
@@ -207,6 +288,9 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="form-group col-md-12">
+                            {{ Form::date('overview_date', isset($_GET['overview_date']) ? $_GET['overview_date'] : date('Y-m-d'), ['class' => 'form-control month-btn overview-date']) }}
+                        </div>
                         <div id="donut-chart"></div>
                     </div>
                 </div>
@@ -306,10 +390,6 @@
     {{-- Include necessary JavaScript files --}}
     <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
     <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
-    
-
-
-     
 
 <script>
     $(document).ready(function() {
@@ -353,7 +433,7 @@
             legend: {
                 show: true,
                 position: 'top',
-                horizontalAlign: 'right',
+                horizontalAlign: 'left',
             },
             markers: {
                 size: 6, // Show four markers
@@ -375,52 +455,7 @@
 </script>
 
 <script type="text/javascript">
-    // const data = @json($attendanceOverview);
-    const data = [20, 5, 8, 11, 9];
-    var options = {
-          chart: {
-          width: 380,
-          type: 'donut',
-        },
-        colors: ['#00E396', '#FF4560', '#008FFB', '#FEB019', '#775DD0'],
-        labels: ["Present","Absent","Leaves","Late","FlexiTime"],
-        series: data,
-        plotOptions: {
-          pie: {
-            // startAngle: -90,
-            // endAngle: 270
-            // offsetY: 20
-          }
-        },
-        dataLabels: {
-          enabled: true
-        },
-        fill: {
-          type: 'gradient',
-        },
-        legend: {
-          formatter: function(val, opts) {
-            return val + " - " + opts.w.globals.series[opts.seriesIndex]
-          }
-        },
-        title: {
-          text: ''
-        },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
-        };
 
-        var chart = new ApexCharts(document.querySelector("#donut-chart"), options);
-        chart.render();
 </script>
 
     
