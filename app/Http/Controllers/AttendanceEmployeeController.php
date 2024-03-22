@@ -8,9 +8,12 @@ use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\FlexiTime;
+use App\Models\Leave;
 use App\Models\IpRestrict;
 use App\Models\User;
 use App\Models\Utility;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +23,88 @@ class AttendanceEmployeeController extends Controller
     {
         if(\Auth::user()->can('Manage Attendance'))
         {
+            $employees =  Employee::all();
+            $employee_count = $employees->count();
+            $dates = [];
+            $on_time_attendances = [];
+            $late_time_attendances = [];
+            $leave_count = [];
+            $absentCount = [];
+            
+            
+            
+
+            if($request->date != null){
+        
+                $attendances = AttendanceEmployee::where('date', $request->date)->get();
+                $on_time_attendances = AttendanceEmployee::where('date', $request->date)->where('late', '00:00:00')->get();
+                $late_time_attendances = AttendanceEmployee::where('date', $request->date)->where('late', '!=', '00:00:00')->get();
+                $leaves = Leave::where('start_date', $request->date)->get();
+                $leave_count[] = $leaves->count();
+                $absentCount[] = $employee_count - $attendances->count();
+                $onTimeattendancesCount[] = $on_time_attendances->count();
+                $lateTimeattendancesCount[] = $late_time_attendances->count();
+                $attendancesCount[] = $attendances->count();
+                $labels[] = $request->date;
+            }elseif($request->type == "monthly" && $request->month != null) {
+                $monthYear = $request->month; // Format: YYYY-MM
+            list($year, $month) = explode('-', $monthYear);
+
+            // Get the number of days in the specified month and year
+            $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
+
+            // Create an array to store the dates of the month
+            $datesOfMonth = [];
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                
+                $date = Carbon::createFromDate($year, $month, $day)->format('Y-m-d');
+                $attendances = AttendanceEmployee::where('date', $date)->get();
+                $on_time_attendances = AttendanceEmployee::where('date', $date)->where('late', '00:00:00')->get();
+                $late_time_attendances = AttendanceEmployee::where('date', $date)->where('late', '!=', '00:00:00')->get();
+                $leaves = Leave::where('start_date', $date)->get();
+                $leave_count[] = $leaves->count();
+                $attendancesCount[] = $attendances->count();
+                $absentCount[] = $employee_count - $attendances->count();
+                $onTimeattendancesCount[] = $on_time_attendances->count();
+                $lateTimeattendancesCount[] = $late_time_attendances->count();
+                $labels[] = $date;
+                $datesOfMonth[] = $date;
+            }
+            }else{
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = Carbon::now()->subDays($i)->toDateString();
+                    $attendances = AttendanceEmployee::where('date', $date)->get();
+                    $on_time_attendances = AttendanceEmployee::where('date', $date)->where('late', '00:00:00')->get();
+                    $late_time_attendances = AttendanceEmployee::where('date', $date)->where('late', '!=', '00:00:00')->get();
+                    $leaves = Leave::where('start_date', $date)->get();
+                    $leave_count[] = $leaves->count();
+                    $onTimeattendancesCount[] = $on_time_attendances->count();
+                    $lateTimeattendancesCount[] = $late_time_attendances->count();
+                    $absentCount[] = $employee_count - $attendances->count();
+                    $attendancesCount[] = $attendances->count();
+                    $labels[] = $date;
+                }
+            }
+            $attendanceData = [
+                [
+                    'name' => 'On Time',
+                    'data' => $onTimeattendancesCount
+                ],
+                [
+                    'name' => 'Late',
+                    'data' => $lateTimeattendancesCount
+                ],
+                [
+                    'name' => 'Absent',
+                    'data' => $absentCount
+                ],
+                [
+                    'name' => 'Leaves',
+                    'data' => $leave_count
+                ],
+    
+            ];
+            
             $branch = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $branch->prepend('Select Branch', '');
 
@@ -136,8 +221,18 @@ class AttendanceEmployeeController extends Controller
                 $attendanceEmployee = $attendanceEmployee->get();
 
             }
+            $todayDate = date('Y-m-d');
+            $todayAttendance = AttendanceEmployee::where('date', $todayDate)->where('created_by', \Auth::user()->creatorId())->get();
+            $totalPresents = $todayAttendance->where('status', 'Present')->where('late','00:00:00')->whereNull('requested_time')->count();
+            $totalOnLeaves = $todayAttendance->where('status', 'Leave')->count();
+            $late = $todayAttendance->where('status','Present')->where('late','!=','00:00:00')->whereNull('requested_time')->count();
+            $totalFlexiTime = $todayAttendance->where('status','Present')->whereNotNull('requested_time')->count();
 
-            return view('attendance.index', compact('attendanceEmployee', 'branch', 'department'));
+            $employeeIds = $todayAttendance->pluck('employee_id');
+            $absentEmployees = Employee::whereNotIn('id', $employeeIds)->where('created_by', \Auth::user()->creatorId())->count();
+
+            $attendanceOverview = [$totalPresents, $absentEmployees, $totalOnLeaves,$late,$totalFlexiTime];
+            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData','attendanceOverview'));
         }
         else
         {
@@ -1065,4 +1160,70 @@ class AttendanceEmployeeController extends Controller
         }
     }
 
+    public function getOverView(Request $request){
+        try {
+            $date = date('Y-m-d',strtotime($request->date));
+
+            $todayAttendance = AttendanceEmployee::where('date', $date)->where('created_by', \Auth::user()->creatorId())->get();
+            $totalPresents = $todayAttendance->where('status', 'Present')->where('late','00:00:00')->whereNull('requested_time')->count();
+            $totalOnLeaves = $todayAttendance->where('status', 'Leave')->count();
+            $late = $todayAttendance->where('status','Present')->where('late','!=','00:00:00')->whereNull('requested_time')->count();
+            $totalFlexiTime = $todayAttendance->where('status','Present')->whereNotNull('requested_time')->count();
+
+            $employeeIds = $todayAttendance->pluck('employee_id');
+            $absentEmployees = Employee::whereNotIn('id', $employeeIds)->where('created_by', \Auth::user()->creatorId())->count();
+
+            $data = [$totalPresents, $absentEmployees, $totalOnLeaves,$late,$totalFlexiTime];
+            return response()->json(['success' => true, 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 200);
+        }
+    }
+
+    public function userGraph(Request $request)
+    {
+        $employee_id =  $request->id;
+        $employees =  Employee::all();
+            $employee_count = $employees->count();
+            // Create an array to store the dates of the month
+            
+            $datesOfMonth = [];
+            $labels = [];
+            
+            for ($i = 6; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i)->toDateString();
+                $attendances = AttendanceEmployee::where('date', '2024-03-16')->where('employee_id', $employee_id)->get();
+                $on_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '00:00:00')->get();
+                $late_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '!=', '00:00:00')->get();
+                $leaves = Leave::where('start_date', $date)->where('employee_id', $employee_id)->get();
+                $leave_count[] = $leaves->count();
+                $attendancesCount[] = $attendances->count();
+                $absentCount[] = $employee_count - $attendances->count();
+                $onTimeattendancesCount[] = $on_time_attendances->count();
+                $lateTimeattendancesCount[] = $late_time_attendances->count();
+                $labels[] = $date;
+                $datesOfMonth[] = $date;
+            }
+            
+            $attendanceData = [
+                [
+                    'name' => 'On Time',
+                    'data' => $onTimeattendancesCount
+                ],
+                [
+                    'name' => 'Late',
+                    'data' => $lateTimeattendancesCount
+                ],
+                [
+                    'name' => 'Absent',
+                    'data' => $absentCount
+                ],
+                [
+                    'name' => 'Leaves',
+                    'data' => $leave_count
+                ],
+    
+            ];
+        return view('attendance.user-graph', compact('attendanceData', 'labels'));  
+        }
 }

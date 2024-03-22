@@ -1,13 +1,12 @@
 @extends('layouts.admin')
 @section('page-title')
-    {{ __('Manage Attendance List') }}
+    {{ __('Manage Attendance Lists') }}
 @endsection
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
     <li class="breadcrumb-item">{{ __('Attendance List') }}</li>
 @endsection
-
 
 @push('script-page')
     <script>
@@ -30,10 +29,15 @@
         $('input[name="type"]:radio:checked').trigger('change');
     </script>
 
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
             var b_id = $('#branch_id').val();
             // getDepartment(b_id);
+
+            // RENDERING OVERVIEW CHART
+            // const data = @json($attendanceOverview);  
+            const data = [20, 5, 8, 11, 9];
+            renderOverviewChart(data)
         });
         $(document).on('change', 'select[name=branch]', function() {
             var branch_id = $(this).val();
@@ -69,9 +73,87 @@
                 }
             });
         }
-</script>
 
+        $(document).on('change','.overview-date', function(){
+            const selectedDate = $(this).val();
+            $.ajax({
+                url: '{{ route('attendanceemployee.getoverview') }}',
+                type: 'POST',
+                data: {
+                    "date": selectedDate,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    if(response.success){
+                        renderOverviewChart(response.data, true)
+                    }else{
+                        show_toastr('error', response.message)
+                    }
+                }
+            });
+        });
+
+        function renderOverviewChart(data, reRender=false){
+            console.log('data is', data)
+            var options = {
+              chart: {
+              width: 380,
+              type: 'donut',
+            },
+            colors: ['#00E396', '#FF4560', '#008FFB', '#FEB019', '#775DD0'],
+            labels: ["Present","Absent","Leaves","Late","FlexiTime"],
+            series: data,
+            plotOptions: {
+              pie: {
+                startAngle: -90,
+                endAngle: 270
+              }
+            },
+            dataLabels: {
+              enabled: true
+            },
+            fill: {
+              type: 'gradient',
+            },
+            legend: {
+                formatter: function(val, opts) {
+                    return val + " - " + opts.w.globals.series[opts.seriesIndex]
+                },
+                position: 'bottom',
+                horizontalAlign: 'left',
+            },
+            title: {
+              text: ''
+            },
+            responsive: [{
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 200
+                },
+              }
+            }]
+            };
+
+            var chart = new ApexCharts(document.querySelector("#donut-chart"), options);
+            chart.render();
+
+            if(reRender){
+                chart.destroy();
+                const newData = data
+                // Create a new chart with updated data
+                var newChart = new ApexCharts(document.querySelector("#donut-chart"), {
+                    ...options,
+                    series: newData
+                });
+                newChart.render();
+            }
+        }
+    </script>
 @endpush
+
+
+
 @section('content')
     @if (session('status'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -79,6 +161,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
+
     <div class="col-sm-12">
         <div class=" mt-2 " id="multiCollapseExample1">
             <div class="card">
@@ -178,6 +261,43 @@
         </div>
     </div>
 
+    {{-- Graphs --}}
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-xl-7">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="col-lg-10 col-md-10 col-sm-10">
+                                <h6>{{ __('Previous 7 Days Attendance') }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="line-chart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10 col-sm-10">
+                                <h6>{{ __('Attendance Overview') }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group col-md-12">
+                            {{ Form::date('overview_date', isset($_GET['overview_date']) ? $_GET['overview_date'] : date('Y-m-d'), ['class' => 'form-control month-btn overview-date']) }}
+                        </div>
+                        <div id="donut-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                                        
 
 
     <div class="col-xl-12">
@@ -207,9 +327,14 @@
 
                             @foreach ($attendanceEmployee as $attendance)
                                 <tr>
-                                    @if (\Auth::user()->type != 'employee')
-                                        <td>{{ !empty($attendance->employee) ? $attendance->employee->name : '' }}</td>
-                                    @endif
+                                                    <td><a href="#"
+                                                        data-url="{{ URL::to('user-graph/' . $attendance->employee_id) }}"
+                                                        data-ajax-popup="true" data-size="lg" data-bs-toggle="tooltip" title=""
+                                                        data-title="{{ __('Attendance History of User') }}"
+                                                        data-bs-original-title="{{ __('View History') }}">
+                                                        {{ !empty($attendance->employee) ? $attendance->employee->name : '' }}
+                                                    </a></td>
+                                            
                                     <td>{{ \Auth::user()->dateFormat($attendance->date) }}</td>
                                     <td>{{ $attendance->status }}</td>
                                     <td>{{ $attendance->clock_in != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_in) : '00:00' }}
@@ -258,8 +383,85 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-            </div>
+
+        <div id="user-chart" class="chart-container">
+            {{-- This is where the chart will be rendered --}}
         </div>
     </div>
 @endsection
+
+
+@push('script-page')
+    {{-- Include necessary JavaScript files --}}
+    <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        // Chart data and options for attendance chart
+        var attendanceData = {!! json_encode($attendanceData) !!};
+        var labels = {!! json_encode($labels) !!};
+        var attendanceOptions = {
+            chart: {
+                // height: 400,
+                type: 'line',
+                width: '100%',
+                toolbar: {
+                    show: false,
+                },
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '25%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: 2,
+                curve: 'smooth'
+            },
+            series: attendanceData,
+            xaxis: {
+                categories: labels,
+            },
+            colors: ['#3ec9d6', '#FF3A6E', '#FFD700', '#32CD32'],
+            fill: {
+                type: 'solid',
+            },
+            grid: {
+                strokeDashArray: 4,
+            },
+            legend: {
+                show: true,
+                position: 'top',
+                horizontalAlign: 'left',
+            },
+            markers: {
+                size: 6, // Show four markers
+                colors: ['#3ec9d6', '#FF3A6E'],
+                opacity: 0.9,
+                strokeWidth: 2,
+                hover: {
+                    size: 7,
+                }
+            }
+
+        };
+
+        
+        var attendanceChart = new ApexCharts(document.querySelector("#line-chart"), attendanceOptions);
+        attendanceChart.render();
+
+    });
+</script>
+
+<script type="text/javascript">
+
+</script>
+
+    
+@endpush

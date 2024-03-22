@@ -840,6 +840,8 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+    Route::get('user-graph/{id}', [AttendanceEmployeeController::class, 'userGraph']);
+
     Route::post('attendanceemployee/bulkattendance', [AttendanceEmployeeController::class, 'bulkAttendanceData'])->name('attendanceemployee.bulkattendance')->middleware(
         [
             'auth',
@@ -848,6 +850,13 @@ Route::group(['middleware' => ['verified']], function () {
     );
 
     Route::post('attendanceemployee/attendance', [AttendanceEmployeeController::class, 'attendance'])->name('attendanceemployee.attendance')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::post('attendanceemployee/getoverview', [AttendanceEmployeeController::class, 'getOverView'])->name('attendanceemployee.getoverview')->middleware(
         [
             'auth',
             'XSS',
