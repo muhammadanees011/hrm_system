@@ -18,8 +18,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('requirement')->nullable();
             $table->integer('branch')->default(0);
-            $table->integer('department')->nullable()->after('branch');
-            $table->string('contract_type')->nullable()->after('department');
+            $table->integer('department')->nullable();
+            $table->string('contract_type')->nullable();
             $table->integer('category')->default(0);
             $table->text('skill')->nullable();
             $table->integer('position')->nullable();
