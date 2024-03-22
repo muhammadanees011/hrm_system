@@ -18,7 +18,7 @@ class Department extends Model
 
     protected static function booted(){
         static::addGlobalScope(function(Builder $builder){
-            if(\Auth::user()->type=="manager" && !empty(\Auth::user()->assigned_departments)){
+            if(\Auth::user() && \Auth::user()->type=="manager" && !empty(\Auth::user()->assigned_departments)){
                 $builder->whereIn('id',\Auth::user()->assigned_departments);
             }
         });
