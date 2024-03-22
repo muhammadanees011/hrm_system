@@ -183,14 +183,32 @@
     {{-- Graphs --}}
     <div class="col-xl-12">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-xl-8">
                 <div class="card">
-                    <div id="line-chart"></div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10 col-sm-10">
+                                <h6>{{ __('Previous 7 Days Attendance') }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="line-chart" style="height: 350px;"></div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-xl-4">
                 <div class="card">
-                    <div id="donut-chart"></div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10 col-sm-10">
+                                <h6>{{ __('Attendance Overview') }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="donut-chart"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -300,9 +318,9 @@
         var labels = {!! json_encode($labels) !!};
         var attendanceOptions = {
             chart: {
-                height: 250,
+                // height: 400,
                 type: 'line',
-                width: 900,
+                width: '100%',
                 toolbar: {
                     show: false,
                 },
@@ -357,10 +375,11 @@
 </script>
 
 <script type="text/javascript">
-    const data = @json($attendanceOverview);
+    // const data = @json($attendanceOverview);
+    const data = [20, 5, 8, 11, 9];
     var options = {
           chart: {
-          width: 350,
+          width: 380,
           type: 'donut',
         },
         colors: ['#00E396', '#FF4560', '#008FFB', '#FEB019', '#775DD0'],
@@ -368,8 +387,9 @@
         series: data,
         plotOptions: {
           pie: {
-            startAngle: -90,
-            endAngle: 270
+            // startAngle: -90,
+            // endAngle: 270
+            // offsetY: 20
           }
         },
         dataLabels: {

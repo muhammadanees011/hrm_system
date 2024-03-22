@@ -232,7 +232,7 @@ class AttendanceEmployeeController extends Controller
             $absentEmployees = Employee::whereNotIn('id', $employeeIds)->where('created_by', \Auth::user()->creatorId())->count();
 
             $attendanceOverview = [$totalPresents, $absentEmployees, $totalOnLeaves,$late,$totalFlexiTime];
-            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData', 'absentData','attendanceOverview'));
+            return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData','attendanceOverview'));
         }
         else
         {
