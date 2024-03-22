@@ -16,17 +16,15 @@
     @endif
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {{ Form::label('branch', __('Branch'), ['class' => 'col-form-label']) }}
-                {{ Form::select('branch', $brances, null, ['class' => 'form-control select2', 'required' => 'required']) }}
+        @if (\Auth::user()->type != 'employee')
+            <div class="form-group col-lg-6">
+                {{ Form::label('employee_id', __('Employee'), ['class' => 'col-form-label']) }}
+                {{ Form::select('employee_id', $employees, null, ['class' => 'form-control select2', 'required' => 'required']) }}
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {{ Form::label('goal_type', __('GoalTypes'), ['class' => 'col-form-label']) }}
-                {{ Form::select('goal_type', $goalTypes, null, ['class' => 'form-control select2', 'required' => 'required']) }}
-            </div>
+        @endif
+        <div class="form-group col-lg-6">
+            {{ Form::label('performancecycle_id', __('Performance Cycle'), ['class' => 'col-form-label']) }}
+            {{ Form::select('performancecycle_id', $performancecycles, null, ['class' => 'form-control select2', 'required' => 'required']) }}
         </div>
         <div class="col-md-6">
             <div class="form-group">
@@ -42,14 +40,8 @@
         </div>
         <div class="col-md-12">
             <div class="form-group">
-                {{ Form::label('subject', __('Subject'), ['class' => 'col-form-label']) }}
-                {{ Form::text('subject', null, ['class' => 'form-control', 'placeholder' => 'enter goal subject', 'required' => 'required']) }}
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="form-group">
-                {{ Form::label('target_achievement', __('Target Achievement'), ['class' => 'col-form-label']) }}
-                {{ Form::text('target_achievement', null, ['class' => 'form-control', 'placeholder' => 'enter target achievement']) }}
+                {{ Form::label('title', __('Title'), ['class' => 'col-form-label']) }}
+                {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'enter goal subject', 'required' => 'required']) }}
             </div>
         </div>
         <div class="col-md-12">

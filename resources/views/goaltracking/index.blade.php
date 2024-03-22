@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('page-title')
-    {{ __('Manage Goal Tracking') }}
+    {{ __("People's Goals") }}
 @endsection
 @section('action-button')
     @can('Create Goal Tracking')
@@ -14,7 +14,7 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-    <li class="breadcrumb-item">{{ __('Goal Tracking') }}</li>
+    <li class="breadcrumb-item">{{ __("People's Goals") }}</li>
 @endsection
 
 @section('content')
@@ -26,86 +26,55 @@
                     <table class="table" id="pc-dt-simple">
                         <thead>
                             <tr>
-                                <th>{{ __('Goal Type') }}</th>
-                                <th>{{ __('Subject') }}</th>
-                                <th>{{ __('Branch') }}</th>
-                                <th>{{ __('Target Achievement') }}</th>
-                                <th>{{ __('Start Date') }}</th>
-                                <th>{{ __('End Date') }}</th>
-                                <th>{{ __('Rating') }}</th>
-                                <th width="20%">{{ __('Progress') }}</th>
-                                @if (Gate::check('Edit Goal Tracking') || Gate::check('Delete Goal Tracking'))
-                                    <th width="200px">{{ __('Action') }}</th>
-                                @endif
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Department') }}</th>
+                                <th>{{ __('Employement Type') }}</th>
+                                <th>{{ __('Overall Progress') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Visibility') }}</th>
+                                <th>{{ __('Last Checkin') }}</th>
+                                <th>{{ __('Tags') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($goalTrackings as $goalTracking)
                                 <tr>
-                                    <td>{{ !empty($goalTracking->goalType) ? $goalTracking->goalType->name : '' }}
-                                    </td>
-                                    <td>{{ $goalTracking->subject }}</td>
-                                    <td>{{ !empty($goalTracking->branches) ? $goalTracking->branches->name : '' }}
-                                    </td>
-                                    <td>{{ $goalTracking->target_achievement }}</td>
-                                    <td>{{ \Auth::user()->dateFormat($goalTracking->start_date) }}</td>
-                                    <td>{{ \Auth::user()->dateFormat($goalTracking->end_date) }}</td>
                                     <td>
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($goalTracking->rating < $i)
-                                                <i class="fas fa-star"></i>
-                                            @else
-                                                <i class="text-warning fas fa-star"></i>
-                                            @endif
-                                        @endfor
+                                        <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
+                                        {{ !empty($goalTracking->employee) ? $goalTracking->employee->name : '' }}
                                     </td>
+                                    <td>{{ !empty($goalTracking->employee) ? $goalTracking->employee->department->name : '' }}
+                                    <td>{{ !empty($goalTracking->employee) ? $goalTracking->employee->employee_type : '' }}
+
                                     <td>
                                         <div class="progress-wrapper">
                                             <span class="progress-percentage"><small
                                                     class="font-weight-bold"></small>{{ $goalTracking->progress }}%</span>
                                             <div class="progress progress-xs mt-2 w-100">
-                                                <div class="progress-bar bg-{{ Utility::getProgressColor($goalTracking->progress) }}"
-                                                    role="progressbar" aria-valuenow="{{ $goalTracking->progress }}"
+                                                <div class="progress-bar bg-{{ Utility::getProgressColor(40) }}"
+                                                    role="progressbar" aria-valuenow="40"
                                                     aria-valuemin="0" aria-valuemax="100"
-                                                    style="width: {{ $goalTracking->progress }}%;"></div>
+                                                    style="width: 40%;"></div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="Action">
-                                        @if (Gate::check('Edit Goal Tracking') || Gate::check('Delete Goal Tracking'))
-                                            <span>
-
-                                                @can('Edit Goal Tracking')
-                                                    <div class="action-btn bg-info ms-2">
-                                                        <a href="#" class="mx-3 btn btn-sm  align-items-center"
-                                                            data-size="lg"
-                                                            data-url="{{ route('goaltracking.edit', $goalTracking->id) }}"
-                                                            data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip"
-                                                            title="" data-title="{{ __('Edit Goal Tracking') }}"
-                                                            data-bs-original-title="{{ __('Edit') }}">
-                                                            <i class="ti ti-pencil text-white"></i>
-                                                        </a>
-                                                    </div>
-                                                @endcan
-
-                                                @can('Delete Goal Tracking')
-                                                    <div class="action-btn bg-danger ms-2">
-                                                        {!! Form::open([
-                                                            'method' => 'DELETE',
-                                                            'route' => ['goaltracking.destroy', $goalTracking->id],
-                                                            'id' => 'delete-form-' . $goalTracking->id,
-                                                        ]) !!}
-                                                        <a href="#"
-                                                            class="mx-3 btn btn-sm  align-items-center bs-pass-para"
-                                                            data-bs-toggle="tooltip" title=""
-                                                            data-bs-original-title="Delete" aria-label="Delete"><i
-                                                                class="ti ti-trash text-white text-white"></i></a>
-                                                        </form>
-                                                    </div>
-                                                @endcan
-                                            </span>
-                                        @endif
+                                    <td>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="goals-status text-white d-flex justify-content-center" style="background-color:green; width:23px;height:23px; border-radius:15px;">
+                                                5
+                                            </div>
+                                            <div class="goals-status text-white d-flex justify-content-center" style="background-color:red; width:23px;height:23px; border-radius:15px;">
+                                                3
+                                            </div>
+                                            <div class="goals-status text-white d-flex justify-content-center" style="background-color:orange; width:23px;height:23px; border-radius:15px;">
+                                                2
+                                            </div>
+                                        </div>
                                     </td>
+                                    <td>Shared, 1 personal</td>
+                                    <td>13/05/2021</td>
+                                    <td>Professional goal</td>
+                                    
                                 </tr>
                             @endforeach
 

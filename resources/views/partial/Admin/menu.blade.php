@@ -343,14 +343,16 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                         <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
                             <a class="dash-link" href="{{ route('performancecycle.index') }}">{{ __('Manage Cycles') }}</a>
                         </li>
+                        @can('Manage Goal Tracking')
                         <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
-                            <a class="dash-link" href="{{ route('companygoaltracking.index') }}">{{ __('Goals') }}</a>
+                            <a class="dash-link" href="{{ route('goaltracking.index') }}">{{ __("People's Goals") }}</a>
+                        </li>
+                        @endcan
+                        <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
+                            <a class="dash-link" href="#">{{ __('Employee Reviews') }}</a>
                         </li>
                         <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
-                            <a class="dash-link" href="{{ route('companygoaltracking.index') }}">{{ __('Goal Tracking') }}</a>
-                        </li>
-                        <li class="dash-item {{ Request::segment(1) == null || Request::segment(1) == 'report' ? ' active dash-trigger' : '' }}">
-                            <a class="dash-link" href="{{ route('companygoaltracking.index') }}">{{ __('Employee LifeCycle Feedback') }}</a>
+                            <a class="dash-link" href="#">{{ __("Compensation Reviews") }}</a>
                         </li>
                         @endcan
 
@@ -363,12 +365,6 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                         @can('Manage Appraisal')
                         <li class="dash-item">
                             <a class="dash-link" href="{{ route('appraisal.index') }}">{{ __('Appraisal') }}</a>
-                        </li>
-                        @endcan
-
-                        @can('Manage Goal Tracking')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('goaltracking.index') }}">{{ __('Goal Tracking') }}</a>
                         </li>
                         @endcan
                     </ul>
@@ -707,14 +703,24 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                                 </li>
                                 @endcan
 
-
-                                <!-- document-->
-                                @if (Gate::check('Manage Document'))
-                                <li class="dash-item">
-                                    <a href="{{ route('document-upload.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-file"></i></span><span class="dash-mtext">{{ __('Document') }}</span></a>
+                                <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'job' || Request::segment(1) == 'job-application' ? 'dash-trigger active' : '' }} ">
+                                    <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-file"></i></span><span
+                                    class="dash-mtext">{{ __('Manage Documents') }}</span><span class="dash-arrow"><i
+                                    data-feather="chevron-right"></i></span></a>
+                                    <ul class="dash-submenu">
+                                        @can('Manage Document')
+                                        <li class="dash-item {{ request()->is('document-upload.index') ? 'active' : '' }}">
+                                            <a class="dash-link" href="{{ route('document-upload.index') }}">{{ __('Documents') }}</a>
+                                        </li>
+                                        @endcan
+                                        @can('Manage Document')
+                                        <li class="dash-item {{ request()->is('document.directory') ? 'active' : '' }}">
+                                            <a class="dash-link" href="{{ route('document.directory') }}">{{ __('My Documents') }}</a>
+                                        </li>
+                                        @endcan
+                                    </ul>
                                 </li>
-                                @endcan
-
+                                
                                 <!-- Eclaim-->
                                 @can('Manage Eclaim')
                                 <li class="dash-item">

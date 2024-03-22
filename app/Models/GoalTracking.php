@@ -17,14 +17,14 @@ class GoalTracking extends Model
         'created_by',
     ];
 
-    public function goalType()
+    public function employee()
     {
-        return $this->hasOne('App\Models\GoalType', 'id', 'goal_type');
+        return $this->hasOne('App\Models\Employee', 'id', 'employee_id');
     }
 
-    public function branches()
+    public function performanceCycle()
     {
-        return $this->hasOne('App\Models\Branch', 'id', 'branch');
+        return $this->hasOne('App\Models\PerformanceCycle', 'id', 'performancecycle_id');
     }
 
     public static $status = [
