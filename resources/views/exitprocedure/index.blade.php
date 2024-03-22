@@ -11,13 +11,11 @@
 @endsection
 
 @section('action-button')
-    @can('Create Exit Procedure')
         <a href="#" data-url="{{ route('exitprocedure.create') }}" data-ajax-popup="true"
             data-title="{{ __('Create New Exit Procedure') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
             data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
-    @endcan
 @endsection
 
 @section('content')
@@ -42,7 +40,6 @@
                                 <td>{{ $exitprocedure->name }}</td>
                                 <td class="Action">
                                     <span>
-                                        @can('Edit Exit Procedure')
                                             <div class="action-btn bg-info ms-2">
                                                 <a href="#" class="mx-3 btn btn-sm  align-items-center"
                                                     data-url="{{ URL::to('exitprocedure/' . $exitprocedure->id . '/edit') }}"
@@ -52,9 +49,7 @@
                                                     <i class="ti ti-pencil text-white"></i>
                                                 </a>
                                             </div>
-                                        @endcan
 
-                                        @can('Delete Exit Procedure')
                                             <div class="action-btn bg-danger ms-2">
                                                 {!! Form::open(['method' => 'DELETE', 'route' => ['exitprocedure.destroy', $exitprocedure->id], 'id' => 'delete-form-' . $exitprocedure->id]) !!}
                                                 <a href="#" class="mx-3 btn btn-sm  align-items-center bs-pass-para"
@@ -63,7 +58,6 @@
                                                         class="ti ti-trash text-white text-white"></i></a>
                                                 </form>
                                             </div>
-                                        @endcan
                                     </span>
                                 </td>
                             </tr>
