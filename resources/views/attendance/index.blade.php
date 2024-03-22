@@ -35,8 +35,7 @@
             // getDepartment(b_id);
 
             // RENDERING OVERVIEW CHART
-            // const data = @json($attendanceOverview);  
-            const data = [20, 5, 8, 11, 9];
+            const data = @json($attendanceOverview);
             renderOverviewChart(data)
         });
         $(document).on('change', 'select[name=branch]', function() {
@@ -94,7 +93,6 @@
         });
 
         function renderOverviewChart(data, reRender=false){
-            console.log('data is', data)
             var options = {
               chart: {
               width: 380,
