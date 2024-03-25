@@ -1222,38 +1222,73 @@ class AttendanceEmployeeController extends Controller
             
             $datesOfMonth = [];
             $labels = [];
-            
+            $workedHours = [];
+            $lateTime = [];
+            $overTime = [];
+            $flexiTimes = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i)->toDateString();
+                $record = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->first();
+                if($record != null){
+                    $clock_in =  $record->clock_in;
+                    $clock_out =  $record->clock_out;
+                    // Parse the times
+                    
+                    $time1 = Carbon::createFromTimeString($clock_in);
+                    $time2 = Carbon::createFromTimeString($clock_out);
+    
+                    // Calculate the difference
+                    $difference = $time1->diff($time2);
+    
+                    // Get the difference in a specific format - hours:minutes:seconds
+                    $diffFormatted = $difference->format('%H:%I:%S');
+                    $workedHours[] = $diffFormatted;
+                    $lateTime[] = $record->late;
+                    $overTime[] = $record->overtime;
+                }else{
+                    $workedHours[] = '00:00';
+                }
+                $flexiTime = FlexiTime::where('employee_id', $employee_id)->where('start_date', $date)->first();
+                if($flexiTime != null){
+                    $clock_in =  $flexiTime->start_time;
+                    $clock_out =  $flexiTime->end_time;
+                    
+                    $time1 = Carbon::createFromTimeString($clock_in);
+                    $time2 = Carbon::createFromTimeString($clock_out);
+    
+                    // Calculate the difference
+                    $difference = $time1->diff($time2);
+    
+                    // Get the difference in a specific format - hours:minutes:seconds
+                    $diffFormatted = $difference->format('%H:%I:%S');
+                    $flexiTimes[] = $diffFormatted;
+                }else{
+                    $flexiTimes[] = '00:00';
+                }
                 $attendances = AttendanceEmployee::where('date', '2024-03-16')->where('employee_id', $employee_id)->get();
                 $on_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '00:00:00')->get();
                 $late_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '!=', '00:00:00')->get();
                 $leaves = Leave::where('start_date', $date)->where('employee_id', $employee_id)->get();
-                $leave_count[] = $leaves->count();
-                $attendancesCount[] = $attendances->count();
-                $absentCount[] = $employee_count - $attendances->count();
-                $onTimeattendancesCount[] = $on_time_attendances->count();
-                $lateTimeattendancesCount[] = $late_time_attendances->count();
                 $labels[] = $date;
                 $datesOfMonth[] = $date;
             }
             
             $attendanceData = [
                 [
-                    'name' => 'On Time',
-                    'data' => $onTimeattendancesCount
+                    'name' => 'Worked Hours',
+                    'data' => $workedHours
                 ],
                 [
                     'name' => 'Late',
-                    'data' => $lateTimeattendancesCount
+                    'data' => $lateTime
                 ],
                 [
-                    'name' => 'Absent',
-                    'data' => $absentCount
+                    'name' => 'OverTime',
+                    'data' => $overTime
                 ],
                 [
-                    'name' => 'Leaves',
-                    'data' => $leave_count
+                    'name' => 'Flexi Times',
+                    'data' => $flexiTimes
                 ],
     
             ];
