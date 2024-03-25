@@ -225,15 +225,26 @@ class AttendanceEmployeeController extends Controller
             if(Carbon::parse($todayDate)->isWeekend()){
                 $attendanceOverview = [0, 0, 0, 0, 0];
             }else{
-                $todayAttendance = AttendanceEmployee::where('date', $todayDate)->where('created_by', \Auth::user()->creatorId())->get();
-                $totalPresents = $todayAttendance->where('status', 'Present')->where('late','00:00:00')->whereNull('requested_time')->count();
-                $late = $todayAttendance->where('status','Present')->where('late','!=','00:00:00')->whereNull('requested_time')->count();
-                $totalFlexiTime = $todayAttendance->where('status','Present')->whereNotNull('requested_time')->count();
+                $todayAttendance = AttendanceEmployee::where('date', $todayDate)->where('created_by', \Auth::user()->creatorId())->get()->toArray();
+                $totalPresents = $late = $totalFlexiTime = 0;
+                foreach ($todayAttendance as $key => $value) {
+                    if($value['status']=="Present" && $value['late']=="00:00:00" && empty($value['requested_time'])){
+                        $totalPresents += 1;
+                    }
+
+                    if($value['status']=="Present" && $value['late'] != "00:00:00" && empty($value['requested_time'])){
+                        $late += 1;
+                    }
+
+                    if($value['status']=="Present" && !empty($value['requested_time'])){
+                        $totalFlexiTime += 1;
+                    }
+                }
 
                 $onLeaves = Leave::where('start_date', '>=', $todayDate)->Where('end_date','<=', $todayDate)->where('status','Approved')->count();
                 $totalEmployees = Employee::where('created_by', \Auth::user()->creatorId())->count();
 
-                $absentEmployees = $totalEmployees - ($todayAttendance->count() + $onLeaves);
+                $absentEmployees = $totalEmployees - (count($todayAttendance) + $onLeaves);
                 $attendanceOverview = [$totalPresents, $absentEmployees, $onLeaves,$late,$totalFlexiTime];
             }
 
@@ -858,7 +869,7 @@ class AttendanceEmployeeController extends Controller
             $employeeAttendance->early_leaving = '00:00:00';
             $employeeAttendance->overtime      = '00:00:00';
             $employeeAttendance->total_rest    = '00:00:00';
-            $employeeAttendance->created_by    = \Auth::user()->id;
+            $employeeAttendance->created_by    = \Auth::user()->creatorId();
             $employeeAttendance->requested_time = $requestedTime;
 
             $employeeAttendance->save();
@@ -877,7 +888,7 @@ class AttendanceEmployeeController extends Controller
             $employeeAttendance->early_leaving = '00:00:00';
             $employeeAttendance->overtime      = '00:00:00';
             $employeeAttendance->total_rest    = '00:00:00';
-            $employeeAttendance->created_by    = \Auth::user()->id;
+            $employeeAttendance->created_by    = \Auth::user()->creatorId();
 
             $employeeAttendance->save();
 
@@ -1171,16 +1182,28 @@ class AttendanceEmployeeController extends Controller
             if(Carbon::parse($date)->isWeekend()){
                 $data  = [0, 0, 0, 0, 0];
             }else{
-                $todayAttendance = AttendanceEmployee::where('date', $date)->where('created_by', \Auth::user()->creatorId())->get();
-                $totalPresents = $todayAttendance->where('status', 'Present')->where('late','00:00:00')->whereNull('requested_time')->count();
-                $late = $todayAttendance->where('status','Present')->where('late','!=','00:00:00')->whereNull('requested_time')->count();
-                $totalFlexiTime = $todayAttendance->where('status','Present')->whereNotNull('requested_time')->count();
+                $todayAttendance = AttendanceEmployee::where('date', $date)->where('created_by', \Auth::user()->creatorId())->get()->toArray();
+
+                $totalPresents = $late = $totalFlexiTime = 0;
+                foreach ($todayAttendance as $key => $value) {
+                    if($value['status']=="Present" && $value['late']=="00:00:00" && empty($value['requested_time'])){
+                        $totalPresents += 1;
+                    }
+
+                    if($value['status']=="Present" && $value['late'] != "00:00:00" && empty($value['requested_time'])){
+                        $late += 1;
+                    }
+
+                    if($value['status']=="Present" && !empty($value['requested_time'])){
+                        $totalFlexiTime += 1;
+                    }
+                }
 
                 $totalEmployees = Employee::where('created_by', \Auth::user()->creatorId())->count();
 
                 $onLeaves = Leave::where('start_date', '>=', $date)->Where('end_date','<=', $date)->where('status','Approved')->count();
 
-                $absentEmployees = $totalEmployees - ($todayAttendance->count() + $onLeaves);
+                $absentEmployees = $totalEmployees - (count($todayAttendance) + $onLeaves);
                 
                 $data = [$totalPresents, $absentEmployees, $onLeaves,$late,$totalFlexiTime];
             }
