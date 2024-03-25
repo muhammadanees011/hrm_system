@@ -508,6 +508,7 @@ Route::group(['middleware' => ['verified']], function () {
 
     //performance
     Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth','XSS',]);
+    Route::get('performancecycle/reviews/{id?}', [PerformanceCycleController::class,'reviews'])->name('performancecycle.reviews')->middleware(['auth','XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
