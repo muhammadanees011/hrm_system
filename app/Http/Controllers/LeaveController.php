@@ -44,8 +44,11 @@ class LeaveController extends Controller
             }
             $leavetypes      = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
             $leavetypes_days = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
-
-            return view('leave.create', compact('employees', 'leavetypes', 'leavetypes_days'));
+            $hours = [
+                '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
+            ];
+            
+            return view('leave.create', compact('employees', 'leavetypes', 'leavetypes_days', 'hours'));
         } else {
             return response()->json(['error' => __('Permission denied.')], 401);
         }
@@ -67,7 +70,7 @@ class LeaveController extends Controller
             );
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
+                
                 return redirect()->back()->with('error', $messages->first());
             }
 
@@ -128,6 +131,10 @@ class LeaveController extends Controller
                 $leave->start_date       = $request->start_date;
                 $leave->end_date         = $request->end_date;
                 $leave->total_leave_days = $total_leave_days;
+                $leave->duration_type = $request->leave_duration;
+                $leave->start_time = $request->start_time;
+                $leave->end_time = $request->end_time;
+                $leave->duration_hours = $request->hours;
                 $leave->leave_reason     = $request->leave_reason;
                 $leave->remark           = $request->remark;
                 $leave->status           = 'Pending';

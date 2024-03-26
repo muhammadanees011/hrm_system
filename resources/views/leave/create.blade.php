@@ -60,6 +60,32 @@
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
+                {{ Form::label('leave_type_id', __('Leave Duration'), ['class' => 'col-form-label']) }}
+                <select name="leave_duration" id="leave_duration" class="form-control select">
+                    <option value="">{{ __('Select Leave Duration') }}</option>
+                        <option value="half_day">Half Day </option>
+                        <option value="full_day">Full Day </option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="timeDurationSection" style="display:none">
+        <div class="form-group col-md-12">
+            {{ Form::label('hours', __('No. Of Hours'), ['class' => 'form-label']) }}
+            {{ Form::text('hours', null, ['class' => 'form-control ', 'required' => 'required', 'placeholder' => 'Enter No. Of Hours']) }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}
+            {{ Form::select('start_time', array_combine($hours, $hours), null, ['class' => 'form-control select2', 'id' => 'start_time', 'placeholder' => __('Select Start Time')]) }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
+            {{ Form::select('end_time', array_combine($hours, $hours), null, ['class' => 'form-control select2', 'id' => 'end_time', 'placeholder' => __('Select End Time')]) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
                 {{ Form::label('leave_reason', __('Leave Reason'), ['class' => 'col-form-label']) }}
                 {{ Form::textarea('leave_reason', null, ['class' => 'form-control', 'placeholder' => __('Leave Reason'), 'rows' => '3']) }}
             </div>
@@ -117,5 +143,20 @@
                 $('#employee_id').trigger('change');
             }
         }, 100);
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $(document).on('change','#leave_duration',function() {
+            const selectedOption = $(this).val();
+            console.log(selectedOption);
+            if (selectedOption === 'half_day') {
+                $('#timeDurationSection').show();
+            } else if(selectedOption === 'full_day') {
+                $('#timeDurationSection').hide();
+            } else {
+                $('#timeDurationSection').hide();
+            }
+        });
     });
 </script>
