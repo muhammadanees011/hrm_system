@@ -181,4 +181,9 @@ class GoalTrackingController extends Controller
     {
         return view('goaltracking.goals');
     }
+
+    public function goaldetails()
+    {
+        return view('goaltracking.goal_details'); 
+    }
 }

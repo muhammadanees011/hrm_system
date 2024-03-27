@@ -38,7 +38,10 @@
                         <tbody>
                             @foreach ($performancecycles as $performancecycle)
                                 <tr>
-                                    <td>{{ $performancecycle->title }}
+                                    <td style="background-color:#f5f5f5;">
+                                        <a href="{{ route('performancecycle.show', $performancecycle->id)}}" data-url="{{ route('performancecycle.show', $performancecycle->id) }}">
+                                            {{ $performancecycle->title }}
+                                        </a>
                                     </td>
                                     <td>
                                         @foreach($performancecycle->participant_roles as $participant)

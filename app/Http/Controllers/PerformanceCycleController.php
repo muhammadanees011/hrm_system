@@ -83,7 +83,14 @@ class PerformanceCycleController extends Controller
      */
     public function show(PerformanceCycle $performanceCycle)
     {
-        //
+        if(\Auth::user()->can('Create Goal Tracking'))
+        {
+            return view('performancecycle.show');
+        }
+        else
+        {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
     }
 
     /**
@@ -156,6 +163,18 @@ class PerformanceCycleController extends Controller
             {
                 return redirect()->back()->with('error', __('Permission denied.'));
             }
+        }
+        else
+        {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+    }
+
+    public function reviews($id)
+    {
+        if(\Auth::user()->can('Create Goal Tracking'))
+        {
+            return view('performancecycle.reviews');
         }
         else
         {

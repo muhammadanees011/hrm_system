@@ -8,50 +8,35 @@
         <li class="breadcrumb-item">{{ __('Goals') }}</li>
 @endsection
 
-@section('action-button')
-    @if (Gate::check('Manage Employee Last Login'))
-        @can('Manage Employee Last Login')
-            <a href="{{ route('lastlogin') }}" class="btn btn-primary btn-sm {{ Request::segment(1) == 'user' }} "
-                data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('User Logs History') }}"><i
-                    class="ti ti-user-check"></i>
-            </a>
-        @endcan
-    @endif
-
-    @can('Create User')
-        @if (\Auth::user()->type == 'super admin')
-            <a href="#" data-url="{{ route('user.create') }}" data-bs-toggle="tooltip" data-bs-placement="top"
-                title="{{ __('Create') }}" data-bs-original-title="tooltip on top" data-size="md" data-ajax-popup="true"
-                data-title="{{ __('Create New Company') }}" class="btn btn-sm btn-primary">
-                <i class=" ti ti-plus text-white"></i>
-            </a>
-        @else
-            <a href="#" data-url="{{ route('user.create') }}" data-size="md" data-bs-toggle="tooltip"
-                data-bs-placement="bottom" title="{{ __('Create') }}" data-bs-original-title="tooltip on top"
-                data-ajax-popup="true" data-title="{{ __('Create New User') }}" class="btn btn-sm btn-primary">
-                <i class=" ti ti-plus text-white"></i>
-            </a>
-        @endif
-    @endcan
-
-
-@endsection
-
 @php
     $profile = asset(Storage::url('uploads/avatar/'));
 @endphp
 @section('content')
-    @foreach ($users as $user)
+
+<style>
+    .goal-status{
+        background-color:#8db600;
+        color:white;
+        border-radius:10px;
+        padding:0px 20px;
+    }
+    .goal-status-offtrack{
+        background-color:#EE204D;
+        color:white;
+        border-radius:10px;
+        padding:0px 20px;
+    }
+</style>
+
+    @for($i = 0; $i < 5; $i++)
         <div class="col-xl-3">
             <div class="card  text-center">
                 <div class="card-header border-0 pb-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">
-                            @foreach($user->roles as $role)
-                                <div class="badge p-2 px-3 rounded bg-primary">{{ ucfirst($role->name) }}</div>
-                            @endforeach
-                            {{-- <div class="badge p-2 px-3 rounded bg-primary">{{ ucfirst($user->type) }}</div> --}}
-                        </h6>
+                        <p class="mb-0 text-dark text-sm">
+                            <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 13%;width: 13%; margin-left:-50px;" />
+                             Muhammad Anees
+                        </p>
                     </div>
                     <div class="card-header-right">
                         <div class="btn-group card-option">
@@ -60,111 +45,77 @@
                                 <i class="feather icon-more-vertical"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <a href="#" class="dropdown-item" data-url="{{ route('user.edit', $user->id) }}"
+                                <a href="#" class="dropdown-item" data-url="#"
                                     data-ajax-popup="true" data-title="{{ __('Update User') }}"><i
                                         class="ti ti-edit "></i><span class="ms-2">{{ __('Edit') }}</span></a>
                                 <a href="#" class="dropdown-item" data-ajax-popup="true"
                                     data-title="{{ __('Change Password') }}"
-                                    data-url="{{ route('user.reset', \Crypt::encrypt($user->id)) }}"><i
+                                    data-url="#"><i
                                         class="ti ti-key"></i>
-                                    <span class="ms-1">{{ __('Reset Password') }}</span>
+                                    <span class="ms-1">{{ __('Mark Done') }}</span>
                                 </a>
 
-                                @if ($user->is_login_enable == 1)
-                                    <a href="{{ route('user.login', \Crypt::encrypt($user->id)) }}" class="dropdown-item">
+                                    <a href="#" class="dropdown-item">
                                         <i class="ti ti-road-sign"></i>
-                                        <span class="text-danger"> {{ __('Login Disable') }}</span>
+                                        <span class="text-danger"> {{ __('Off Track') }}</span>
                                     </a>
-                                @elseif ($user->is_login_enable == 0 && $user->password == null)
-                                    <a href="#" data-url="{{ route('user.reset', \Crypt::encrypt($user->id)) }}"
+                                    <a href="#" data-url="#"
                                         data-ajax-popup="true" data-size="md" class="dropdown-item login_enable"
                                         data-title="{{ __('New Password') }}" class="dropdown-item">
                                         <i class="ti ti-road-sign"></i>
-                                        <span class="text-success"> {{ __('Login Enable') }}</span>
+                                        <span class="text-success"> {{ __('On Track') }}</span>
                                     </a>
-                                @else
-                                    <a href="{{ route('user.login', \Crypt::encrypt($user->id)) }}" class="dropdown-item">
-                                        <i class="ti ti-road-sign"></i>
-                                        <span class="text-success"> {{ __('Login Enable') }}</span>
-                                    </a>
-                                @endif
-
-                                {!! Form::open([
-                                    'method' => 'DELETE',
-                                    'route' => ['user.destroy', $user->id],
-                                    'id' => 'delete-form-' . $user->id,
-                                ]) !!}
-                                <a href="#" class="bs-pass-para dropdown-item"
+                                    <a href="#" class="bs-pass-para dropdown-item"
                                     data-confirm="{{ __('Are You Sure?') }}"
                                     data-text="{{ __('This action can not be undone. Do you want to continue?') }}"
-                                    data-confirm-yes="delete-form-{{ $user->id }}" title="{{ __('Delete') }}"
+                                    data-confirm-yes="delete-form" title="{{ __('Delete') }}"
                                     data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash"></i><span
                                         class="ms-2">{{ __('Delete') }}</span></a>
-                                {!! Form::close() !!}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="avatar">
-                        <a href="{{ !empty($user->avatar) ? asset(Storage::url('uploads/avatar/' . $user->avatar)) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
-                            target="_blank">
-                            <!-- <img src="{{ !empty($user->avatar) ? asset(Storage::url('uploads/avatar/' . $user->avatar)) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
-                                class="rounded-circle" style="width: 30%"> -->
-
-                                <img src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}" class="rounded-circle" style="width: 30%" />
-
+                    <div class="">
+                        <a href="{{route('goaltracking.goal.details',$i)}}" target="_blank">
+                            <h5>Define and promote company culture and values, also check the performance of support team</h5>
                         </a>
                     </div>
-                    <h4 class="mt-2 text-primary">{{ $user->name }}</h4>
-                    <small>{{ $user->email }}</small>
-                    @if (\Auth::user()->type == 'super admin')
-                        <div class=" mb-0 mt-3">
-                            <div class=" p-3">
-                                <div class="row">
-                                    <div class="col-5 text-start">
-                                        <h6 class="mb-0 px-3 mt-1">
-                                            {{ !empty($user->currentPlan) ? $user->currentPlan->name : '' }}</h6>
-                                    </div>
-                                    <div class="col-7 text-end">
-                                        <a href="#" data-url="{{ route('plan.upgrade', $user->id) }}"
-                                            class="btn btn-sm btn-primary btn-icon" data-size="lg" data-ajax-popup="true"
-                                            data-title="{{ __('Upgrade Plan') }}">{{ __('Upgrade Plan') }}</a>
-                                    </div>
-                                    <!--  <div class="col-6 {{ Auth::user()->type == 'admin' ? 'text-end' : 'text-start' }}  ">
-                                                                <h6 class="mb-0 px-3">{{ __('Plan Expired : ') }} {{ !empty($user->plan_expire_date) ? \Auth::user()->dateFormat($user->plan_expire_date) : __('Unlimited') }}</h6>
-                                                            </div> -->
-                                    <div class="col-6 text-start mt-4">
-                                        <h6 class="mb-0 px-3">{{ \Auth::user()->countUsers() }}</h6>
-                                        <p class="text-muted text-sm mb-0">{{ __('Users') }}</p>
-                                    </div>
-                                    <div class="col-6 text-end mt-4">
-                                        <h6 class="mb-0 px-3">{{ \Auth::user()->countEmployees() }}</h6>
-                                        <p class="text-muted text-sm mb-0">{{ __('Employees') }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div style="height:7rem;">
+                        
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-md-12 d-flex">
+                        <div class="me-2 goal-status">On Track</div>
+                        <div>7 days ago</div>
                         </div>
-                        <p class="mt-2 mb-0">
-                            <button class="btn btn-sm btn-neutral mt-3 font-weight-500">
-                                <a>{{ __('Plan Expire : ') }}
-                                    {{ !empty($user->plan_expire_date) ? \Auth::user()->dateFormat($user->plan_expire_date) : 'Unlimited' }}</a>
-                            </button>
-                        </p>
-                    @endif
+                    </div>
+                    <div class="progress-wrapper">
+                        <span class="progress-percentage">
+                            <small class="me-5">40%</small>
+                            <small class="font-weight-bold ms-5">Apr 2020 - Nov 2020</small>
+                        </span>
+                        <div class="progress progress-xs mt-2 w-100">
+                            <div class="progress-bar bg-{{ Utility::getProgressColor(40) }}"
+                                role="progressbar" aria-valuenow="40"
+                                aria-valuemin="0" aria-valuemax="100"
+                                style="width: 40%;"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    @endforeach
+    @endfor
+
     <div class="col-xl-3 col-lg-4 col-sm-6">
-        <a href="#" class="btn-addnew-project " data-ajax-popup="true" data-url="{{ route('user.create') }}"
+        <a href="#" class="btn-addnew-project " data-ajax-popup="false" data-url="#"
             data-title="{{ __('Create New User') }}" data-bs-toggle="tooltip" title=""
-            class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
-            <div class="bg-primary proj-add-icon">
+            class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
+            <div class="bg-warning proj-add-icon">
                 <i class="ti ti-plus"></i>
             </div>
-            <h6 class="mt-4 mb-2">{{ __('New User') }}</h6>
-            <p class="text-muted text-center">{{ __('Click here to add new user') }}</p>
+            <h6 class="mt-4 mb-2">{{ __('New Goal') }}</h6>
+            <p class="text-muted text-center">{{ __('Click here to add new goal') }}</p>
         </a>
     </div>
 @endsection

@@ -514,6 +514,7 @@ Route::group(['middleware' => ['verified']], function () {
 
     //performance
     Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth','XSS',]);
+    Route::get('performancecycle/reviews/{id?}', [PerformanceCycleController::class,'reviews'])->name('performancecycle.reviews')->middleware(['auth','XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
@@ -844,6 +845,8 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+    Route::get('user-graph/{id}', [AttendanceEmployeeController::class, 'userGraph']);
+
     Route::post('attendanceemployee/bulkattendance', [AttendanceEmployeeController::class, 'bulkAttendanceData'])->name('attendanceemployee.bulkattendance')->middleware(
         [
             'auth',
@@ -852,6 +855,13 @@ Route::group(['middleware' => ['verified']], function () {
     );
 
     Route::post('attendanceemployee/attendance', [AttendanceEmployeeController::class, 'attendance'])->name('attendanceemployee.attendance')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::post('attendanceemployee/getoverview', [AttendanceEmployeeController::class, 'getOverView'])->name('attendanceemployee.getoverview')->middleware(
         [
             'auth',
             'XSS',
@@ -1001,6 +1011,7 @@ Route::group(['middleware' => ['verified']], function () {
     );
     Route::resource('goaltracking', GoalTrackingController::class)->middleware( ['auth', 'XSS',]);
     Route::get('goaltracking/goals/{id?}',[GoalTrackingController::class,'goals'])->name('goaltracking.goals')->middleware( ['auth', 'XSS',]);
+    Route::get('goaltracking/details/{id?}',[GoalTrackingController::class,'goaldetails'])->name('goaltracking.goal.details')->middleware( ['auth', 'XSS',]);
 
     Route::resource('company-policy', CompanyPolicyController::class)->middleware(
         [
