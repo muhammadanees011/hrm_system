@@ -147,7 +147,7 @@ class PersonalizedOnboardingController extends Controller
     public function show($id)
     {
         $template = EmployeeOnboardingTemplate::where('id', '=', $id)->with(['questions', 'files', 'branches', 'departments'])->first();
-        return view('personalizedOnboarding.show', compact('template'));
+        return view('PersonalizedOnboarding.show', compact('template'));
     }
 
     public function destroy($id)
