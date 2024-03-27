@@ -117,10 +117,10 @@ $chatgpt = Utility::getValByName('enable_chatgpt');
                                         </div>
                                         <div class="form-group my-3">
                                             <label>{{ __('Select Media Option') }}</label><br>
-                                            <div class="form-check form-check-inline">
+                                            <!-- <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="header_option" id="video_url_option" value="video_url">
                                                 <label class="form-check-label" for="video_url_option">{{ __('Video URL') }}</label>
-                                            </div>
+                                            </div> -->
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="header_option" id="video_upload_option" value="video_upload">
                                                 <label class="form-check-label" for="video_upload_option">{{ __('Video Upload') }}</label>
