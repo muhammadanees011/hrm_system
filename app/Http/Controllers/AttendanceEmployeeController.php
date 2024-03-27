@@ -1215,48 +1215,102 @@ class AttendanceEmployeeController extends Controller
 
     public function userGraph(Request $request)
     {
-        $employee_id =  $request->id;
-        $employees =  Employee::all();
-            $employee_count = $employees->count();
-            // Create an array to store the dates of the month
-            
-            $datesOfMonth = [];
-            $labels = [];
-            
-            for ($i = 6; $i >= 0; $i--) {
-                $date = Carbon::now()->subDays($i)->toDateString();
-                $attendances = AttendanceEmployee::where('date', '2024-03-16')->where('employee_id', $employee_id)->get();
-                $on_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '00:00:00')->get();
-                $late_time_attendances = AttendanceEmployee::where('date', $date)->where('employee_id', $employee_id)->where('late', '!=', '00:00:00')->get();
-                $leaves = Leave::where('start_date', $date)->where('employee_id', $employee_id)->get();
-                $leave_count[] = $leaves->count();
-                $attendancesCount[] = $attendances->count();
-                $absentCount[] = $employee_count - $attendances->count();
-                $onTimeattendancesCount[] = $on_time_attendances->count();
-                $lateTimeattendancesCount[] = $late_time_attendances->count();
-                $labels[] = $date;
-                $datesOfMonth[] = $date;
-            }
-            
-            $attendanceData = [
-                [
-                    'name' => 'On Time',
-                    'data' => $onTimeattendancesCount
-                ],
-                [
-                    'name' => 'Late',
-                    'data' => $lateTimeattendancesCount
-                ],
-                [
-                    'name' => 'Absent',
-                    'data' => $absentCount
-                ],
-                [
-                    'name' => 'Leaves',
-                    'data' => $leave_count
-                ],
-    
-            ];
-        return view('attendance.user-graph', compact('attendanceData', 'labels'));  
+        $employeeId =  $request->id;
+        return view('attendance.user-graph', compact('employeeId'));
+    }
+
+
+    public function getSingleUserAttendance(Request $request){
+        $employeeId = $request->employeeId;
+        $selectedRange = $request->selectedRange ?? 7;
+
+        $activeTimes = $lates = $overTimes = $flexiTimes = $earlyleaves = $labels = [];
+        $dates = [];
+        $currentDate = Carbon::today();
+
+        // Loop to create an array of the previous 7 dates
+        for ($i = 1; $i <= $selectedRange; $i++) {
+            $date = $currentDate->subDay()->toDateString();
+            $dates[] = $date;
+            $labels[] = date('m/d/Y', strtotime($date))." GMT";
         }
+
+        $dates = array_reverse($dates);
+
+        $attandance = AttendanceEmployee::where('employee_id', $employeeId)->where('date','>=',$dates[0])->where('date','<=', end($dates))->get()->toArray();
+
+        foreach ($dates as $key => $value) {
+            $specificDateData = array_values(array_filter($attandance, function($row) use ($value){
+                return ($row['date']==$value);
+            }));
+            if(empty($specificDateData)){
+                $activeTimes[] = 0;
+                $lates[] = 0;
+                $overTimes[] = 0;
+                $earlyleaves[] = 0;
+                $flexiTimes[] = 0;
+            }else{
+                foreach ($specificDateData as $val) {
+
+                    if($val['clock_out'] !=="00:00:00"){
+                        $clockIn = Carbon::parse($val['clock_in']);
+                        $clockOut = Carbon::parse($val['clock_out']);
+                        $diffInMinutes = $clockOut->diffInMinutes($clockIn);
+                        $hours = floor($diffInMinutes / 60);
+                        $minutes = $diffInMinutes % 60;
+
+                        $activeTimes[] = $hours.'.'.$minutes;
+                    }else{
+                        $activeTimes[] = 0;
+                    }
+                    
+                    // OVER TIME CALCULATION
+                    if($val['overtime'] != "00:00:00"){
+                        $overtime = Carbon::parse($val['overtime']);
+                        $overTimes[] = $overtime->hour.'.'.$overtime->minute;
+                    } else {
+                        $overTimes[] = 0;
+                    }
+
+                    // LATE CALCULATION
+                    if($val['late'] != "00:00:00"){
+                        $late = Carbon::parse($val['late']);
+                        $lates[] = $late->hour.'.'.$late->minute;
+                    } else {
+                        $lates[] = 0;
+                    }
+
+                    // EARLY LEAVE CALCULATION
+                    if($val['early_leaving'] != "00:00:00"){
+                        $earlyLeave = Carbon::parse($val['early_leaving']);
+                        $earlyleaves[] = $earlyLeave->hour.'.'.$earlyLeave->minute;
+                    } else {
+                        $earlyleaves[] = 0;
+                    }
+
+                    if(!empty($val['requested_time'])){
+                        $requestedTime = explode('-', $val['requested_time']);
+                        $startTime = Carbon::parse($requestedTime[0]);
+                        $endTime = Carbon::parse($requestedTime[1]);
+                        $totalDiffInMinutes = $endTime->diffInMinutes($startTime);
+                        $totalHours = floor($totalDiffInMinutes / 60);
+                        $totalMinutes = $totalDiffInMinutes % 60;
+                        $flexiTimes[] = $totalHours.'.'.$totalMinutes;
+                    } else {
+                        $flexiTimes[] = 0;
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'activeTimes' => $activeTimes,
+            'lates' => $lates,
+            'overTimes' => $overTimes,
+            'earlyleaves' => $earlyleaves,
+            'flexiTimes' => $flexiTimes,
+            'labels' => $labels
+        ]);
+    }
 }
