@@ -71,6 +71,7 @@ use App\Http\Controllers\PensionOptoutController;
 use App\Http\Controllers\PensionSchemeController;
 use App\Http\Controllers\PerformanceTypeController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PersonalizedOnboardingController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ProvidentFundsPolicyController;
 use App\Http\Controllers\QuestionTemplateController;
@@ -146,6 +147,9 @@ Route::get('career/{id}/{lang}', [JobController::class, 'career'])->name('career
 Route::get('job/requirement/{code}/{lang}', [JobController::class, 'jobRequirement'])->name('job.requirement');
 Route::get('job/apply/{code}/{lang}', [JobController::class, 'jobApply'])->name('job.apply');
 Route::post('job/apply/data/{code}', [JobController::class, 'jobApplyData'])->name('job.apply.data');
+
+// Onboarding personalized template
+Route::get('personalized-onboarding/{id}', [PersonalizedOnboardingController::class, 'show'])->name('onboarding.personalized.show');
 
 // cookie consent
 Route::any('/cookie-consent', [SettingsController::class, 'CookieConsent'])->name('cookie-consent');
@@ -1128,7 +1132,10 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
 
-    // Route::get('job/templates', [JobTemp::class, 'template'])->name('job.template');
+    Route::get('personlized-onboarding', [PersonalizedOnboardingController::class, 'index'])->name('personlized-onboarding.index');
+    Route::get('personlized-onboarding/create', [PersonalizedOnboardingController::class, 'create'])->name('personlized-onboarding.create');
+    Route::post('personlized-onboarding', [PersonalizedOnboardingController::class, 'store'])->name('personlized-onboarding.store');
+    Route::delete('personlized-onboarding/{id}', [PersonalizedOnboardingController::class, 'destroy'])->name('personlized-onboarding.destroy');
     Route::resource('job-template', JobTemplateController::class)->middleware(
         [
             'auth',

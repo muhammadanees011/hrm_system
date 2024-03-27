@@ -2230,6 +2230,30 @@ class UsersTableSeeder extends Seeder
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
             ],
+            [
+                "name" => "Manage Job OnBoard Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Job OnBoard Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Job OnBoard Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Delete Job OnBoard Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
         ];
         Permission::insert($arrPermissions);
 
@@ -2602,6 +2626,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Retirement"],
             ["name" => "Edit Retirement"],
             ["name" => "Delete Retirement"],
+            ["name" => "Manage Job OnBoard Template"],
+            ["name" => "Create Job OnBoard Template"],
+            ["name" => "Edit Job OnBoard Template"],
+            ["name" => "Delete Job OnBoard Template"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -2924,6 +2952,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Retirement"],
             ["name" => "Edit Retirement"],
             ["name" => "Delete Retirement"],
+            ["name" => "Manage Job OnBoard Template"],
+            ["name" => "Create Job OnBoard Template"],
+            ["name" => "Edit Job OnBoard Template"],
+            ["name" => "Delete Job OnBoard Template"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);

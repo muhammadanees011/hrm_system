@@ -549,6 +549,12 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                             </li>
                             @endcan
 
+                            @can('Manage Job OnBoard Template')
+                            <li class="dash-item">
+                                <a class="dash-link" href="{{ route('personlized-onboarding.index') }}">{{ __('Job On-Boarding Templates') }}</a>
+                            </li>
+                            @endcan
+
                             @can('Manage Question Template')
                             <li class="dash-item">
                                 <a class="dash-link" href="{{ route('question-template.index') }}">{{ __('Question Templates') }}</a>
