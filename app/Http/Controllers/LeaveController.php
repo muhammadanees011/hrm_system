@@ -184,8 +184,10 @@ class LeaveController extends Controller
                 // $employees  = Employee::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
                 // $leavetypes = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('title', 'id');
                 $leavetypes      = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
-
-                return view('leave.edit', compact('leave', 'employees', 'leavetypes'));
+                $hours = [
+                    '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
+                ];
+                return view('leave.edit', compact('leave', 'employees', 'leavetypes', 'hours'));
             } else {
                 return response()->json(['error' => __('Permission denied.')], 401);
             }
@@ -260,6 +262,10 @@ class LeaveController extends Controller
                     $leave->end_date         = $request->end_date;
                     $leave->total_leave_days = $total_leave_days;
                     $leave->leave_reason     = $request->leave_reason;
+                    $leave->duration_type = $request->leave_duration;
+                    $leave->start_time = $request->start_time;
+                    $leave->end_time = $request->end_time;
+                    $leave->duration_hours = $request->duration_hours;
                     $leave->remark           = $request->remark;
 
                     $leave->save();

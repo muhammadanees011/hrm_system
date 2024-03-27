@@ -72,7 +72,7 @@
     <div class="row" id="timeDurationSection" style="display:none">
         <div class="form-group col-md-12">
             {{ Form::label('hours', __('No. Of Hours'), ['class' => 'form-label']) }}
-            {{ Form::text('hours', null, ['class' => 'form-control ', 'required' => 'required', 'placeholder' => 'Enter No. Of Hours']) }}
+            {{ Form::text('hours', null, ['class' => 'form-control ',  'placeholder' => 'Enter No. Of Hours']) }}
         </div>
         <div class="form-group col-md-6">
             {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}

@@ -9,8 +9,7 @@ use App\Models\Employee;
 use App\Models\Loan;
 use App\Mail\InvoiceSend;
 use App\Mail\PayslipSend;
-use App\Models\AccountList;
-use App\Models\Expense;
+use App\Models\Leave;
 use App\Models\OtherPayment;
 use App\Models\Overtime;
 use App\Models\PaySlip;
@@ -110,7 +109,16 @@ class PaySlipController extends Controller
                 return redirect()->route('payslip.index')->with('error', __('Please set employee salary.'));
             }
             foreach ($employees as $employee) {
-                
+                $gross_salary =  $employee->get_net_salary();
+                $leaves = Leave::where('duration_type', 'half_day')->where('employee_id', $employee->id)->get();
+                $totalAbesentHours = 0;
+                foreach($leaves as $leave){
+                    $totalAbesentHours += $leave->duration_hours; 
+                }
+                $per_day_salary = $gross_salary / 30;
+                $per_hour_salary = $per_day_salary / 8;
+                $deductable_amount = $per_hour_salary * $totalAbesentHours;
+                $net_salary = $gross_salary - $deductable_amount;
                 $check = Payslip::where('employee_id', $employee->id)->where('salary_month', $formate_month_year)->first();
                 $terminationDate = Termination::where('employee_id', $employee->id)
                 ->whereDate('termination_date', '<=', Carbon::create($year, $month)->endOfMonth())
@@ -127,10 +135,10 @@ class PaySlipController extends Controller
                 if (!$check && $check == null) {
                     $payslipEmployee                       = new PaySlip();
                     $payslipEmployee->employee_id          = $employee->id;
-                    $payslipEmployee->net_payble           = $employee->get_net_salary();
+                    $payslipEmployee->net_payble           = $net_salary;
                     $payslipEmployee->salary_month         = $formate_month_year;
                     $payslipEmployee->status               = 0;
-                    $payslipEmployee->basic_salary         = !empty($employee->salary) ? $employee->salary : 0;
+                    $payslipEmployee->basic_salary         = $employee->get_net_salary();
                     $payslipEmployee->allowance            = Employee::allowance($employee->id);
                     $payslipEmployee->commission           = Employee::commission($employee->id);
                     $payslipEmployee->loan                 = Employee::loan($employee->id);
