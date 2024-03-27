@@ -3,6 +3,12 @@
 @endphp
 
 {{ Form::model($leave, ['route' => ['leave.update', $leave->id], 'method' => 'PUT']) }}
+<?php
+$startHour = str_pad($leave->start_time, 2, '0', STR_PAD_LEFT) . ':00';
+$endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
+
+?>
+
 <div class="modal-body">
 
     @if ($chatgpt == 'on')
@@ -54,6 +60,21 @@
                 {{ Form::text('end_date', null, ['class' => 'form-control d_week', 'autocomplete' => 'off']) }}
             </div>
         </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            {{ Form::label('duration_hours', __('No. Of Hours'), ['class' => 'form-label']) }}
+        {{ Form::text('duration_hours', $leave->duration_hours,  ['class' => 'form-control ', 'required' => 'required', 'placeholder' => 'Enter No. Of Hours']) }}
+        </div>
+        <div class="form-group col-md-6">
+        {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}
+        {{ Form::select('start_time', array_combine($hours, $hours), $leave->start_time, ['class' => 'form-control select2', 'id' => 'start_time', 'placeholder' => __('Select Start Time')]) }}
+</div>
+<div class="form-group col-md-6">
+{{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
+            {{ Form::select('end_time', array_combine($hours, $hours), $leave->end_time, ['class' => 'form-control select2', 'id' => 'end_time', 'placeholder' => __('Select End Time')]) }}
+</div>
+
     </div>
     <div class="row">
         <div class="col-md-12">
