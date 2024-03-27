@@ -46,8 +46,9 @@
                                 <th>{{ __('Applied On') }}</th>
                                 <th>{{ __('Date') }}</th>
                                 <th>{{ __('Total Days') }}</th>
+                                <th>{{ __('Duration') }}</th>
                                 <th>{{ __('Leave Reason') }}</th>
-                                <th>{{ __('Time') }}</th>
+                                <th>{{ __('Leave Hours') }}</th>
                                 <th>{{ __('status') }}</th>
                                 <th width="200px">{{ __('Action') }}</th>
                             </tr>
@@ -66,10 +67,15 @@
                                     </td>
                                    
                                     <td>{{ $leave->total_leave_days }}</td>
+                                    <td>{{ ucfirst(str_replace('_',' ', $leave->duration_type)) }}</td>
                                     <td>{{ $leave->leave_reason }}</td>
                                     <td>
-                                        <strong>Start Time: </strong>{{\Auth::user()->timeFormat($leave->start_time)}} <br />
-                                        <strong>End Time: </strong>{{\Auth::user()->timeFormat($leave->end_time)}}
+                                        @if($leave->duration_type=="half_day")
+                                            <strong>Start Time: </strong>{{\Auth::user()->timeFormat($leave->start_time)}} <br />
+                                            <strong>End Time: </strong>{{\Auth::user()->timeFormat($leave->end_time)}}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td>
                                         @if ($leave->status == 'Pending')

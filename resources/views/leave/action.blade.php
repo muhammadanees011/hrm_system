@@ -28,6 +28,16 @@
                     <td>{{ !empty($leave->leave_reason) ? $leave->leave_reason : '' }}</td>
                 </tr>
                 <tr>
+                    <th>{{ __('Duration') }}</th>
+                    <td>{{ !empty($leave->duration_type) ? ucfirst(str_replace('_',' ',$leave->duration_type)) : 'Full Day' }}</td>
+                </tr>
+                @if($leave->duration_type=="half_day")
+                    <tr>
+                        <th>{{ __('Leave Hours') }}</th>
+                        <td>{{\Auth::user()->timeFormat($leave->start_time)}} - {{\Auth::user()->timeFormat($leave->end_time)}}</td>
+                    </tr>
+                @endif
+                <tr>
                     <th>{{ __('Status') }}</th>
                     <td>{{ !empty($leave->status) ? $leave->status : '' }}</td>
                 </tr>
