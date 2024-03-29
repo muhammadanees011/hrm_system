@@ -74,7 +74,6 @@ class LeaveController extends Controller
                 
                 return redirect()->back()->with('error', $messages->first());
             }
-
             // CHECK IF USER TRYING TO ADD LEAVE WITH DIFFERENT ROLE
             if(\Auth::user()->type != "employee"){
                 $isAlreadyBooked = LocalLeave::where([
@@ -100,7 +99,7 @@ class LeaveController extends Controller
             if (\Auth::user()->type == 'employee') {
                 // Leave day
                 $leaves_used   = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
-
+                
                 $leaves_pending  = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Pending')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
             } else {
                 // Leave day
@@ -119,14 +118,27 @@ class LeaveController extends Controller
             if (!empty($leaves_pending) && $leaves_pending + $total_leave_days > $return) {
                 return redirect()->back()->with('error', __('Multiple leave entry is pending.'));
             }
-
             if ($leave_type->days >= $total_leave_days) {
+                $full_days =  LocalLeave::where('employee_id', $request->employee_id)->where('leave_type_id', $request->leave_type_id)->where('duration_type', 'full_day')->get();
+                $half_days =  LocalLeave::where('employee_id', $request->employee_id)->where('leave_type_id', $request->leave_type_id)->where('duration_type', 'half_day')->get();
+                
+                $full_days_count = $full_days->count();
+                $half_days_count = $half_days->count() * 0.5;
+                $leaves_count = $full_days_count + $half_days_count;
+                $leave_type = LeaveType::find($request->leave_type_id);
+                $leave_type_days = $leave_type->days;
+                $remaining_leave_days = $leave_type_days - $leaves_count;
+                
+                if($remaining_leave_days < 1 && $request->leave_duration == "full_day"){
+                    return redirect()->back()->with('error', __('You are not eligible'));
+                }
                 $leave    = new LocalLeave();
                 if (\Auth::user()->type == "employee") {
                     $leave->employee_id = $request->employee_id;
                 } else {
                     $leave->employee_id = $request->employee_id;
                 }
+                
                 $leave->leave_type_id    = $request->leave_type_id;
                 $leave->applied_on       = date('Y-m-d');
                 $leave->start_date       = $request->start_date;
@@ -142,10 +154,8 @@ class LeaveController extends Controller
                 $leave->created_by       = \Auth::user()->creatorId();
                 $leave->manager_id       = \Auth::user()->type != 'employee' ? \Auth::user()->id: null;
                 $leave->type             = \Auth::user()->type;
-;
-
+                
                 $leave->save();
-
                 // Google celander
                 if ($request->get('synchronize_type')  == 'google_calender') {
 
@@ -371,7 +381,7 @@ class LeaveController extends Controller
             'status' => 'approved',
             'employee_id' => $request->employee_id 
         ])->whereBetween('created_at', [$date['start_date'],$date['end_date']])->get()->toArray();
-
+    
         $leave_counts = [];
 
         foreach ($leaveTypes as $key => $value) {
@@ -388,7 +398,6 @@ class LeaveController extends Controller
                     }
                 }
             }
-
             $leave_counts[] = [
                 'id' => $value['id'],
                 'days' => $value['days'],
