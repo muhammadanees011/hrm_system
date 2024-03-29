@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exports\LeaveExport;
+use App\Mail\LeaveActionSend;
 use App\Models\Employee;
 use App\Models\Leave as LocalLeave;
+use App\Models\Leave;
 use App\Models\LeaveType;
-use App\Mail\LeaveActionSend;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -365,16 +366,46 @@ class LeaveController extends Controller
     public function jsoncount(Request $request)
     {
         $date = Utility::AnnualLeaveCycle();
-        $leave_counts = LeaveType::select(\DB::raw('COALESCE(SUM(leaves.total_leave_days),0) AS total_leave, leave_types.title, leave_types.days,leave_types.id'))
-            ->leftjoin(
-                'leaves',
-                function ($join) use ($request, $date) {
-                    $join->on('leaves.leave_type_id', '=', 'leave_types.id');
-                    $join->where('leaves.employee_id', '=', $request->employee_id);
-                    $join->where('leaves.status', '=', 'Approved');
-                    $join->whereBetween('leaves.created_at', [$date['start_date'],$date['end_date']]);
+        $leaveTypes = LeaveType::where('created_by', \Auth::user()->creatorId())->get()->toArray();
+        $totalLeavesTaken = Leave::where([
+            'status' => 'approved',
+            'employee_id' => $request->employee_id 
+        ])->whereBetween('created_at', [$date['start_date'],$date['end_date']])->get()->toArray();
+
+        $leave_counts = [];
+
+        foreach ($leaveTypes as $key => $value) {
+            $typeLeaves  = array_values(array_filter($totalLeavesTaken,function($row) use($value){
+                return ($row['leave_type_id']==$value['id']);
+            }));
+            $totalLeaves = 0;
+            if(!empty($typeLeaves)){
+                foreach ($typeLeaves as $val) {
+                    if($val['leave_duration']=="half_day"){
+                        $totalLeaves = (int)$totalLeaves + 0.5;
+                    }else{
+                        $totalLeaves += 1;
+                    }
                 }
-                )->where('leave_types.created_by', '=', \Auth::user()->creatorId())->groupBy('leave_types.id')->get();
+            }
+
+            $leave_counts[] = [
+                'id' => $value['id'],
+                'days' => $value['days'],
+                'title' => $value['title'],
+                'total_leave' => $totalLeaves
+            ];
+        }
+        // $leave_counts = LeaveType::select(\DB::raw('COALESCE(SUM(leaves.total_leave_days),0) AS total_leave, leave_types.title, leave_types.days,leave_types.id'))
+        //     ->leftjoin(
+        //         'leaves',
+        //         function ($join) use ($request, $date) {
+        //             $join->on('leaves.leave_type_id', '=', 'leave_types.id');
+        //             $join->where('leaves.employee_id', '=', $request->employee_id);
+        //             $join->where('leaves.status', '=', 'Approved');
+        //             $join->whereBetween('leaves.created_at', [$date['start_date'],$date['end_date']]);
+        //         }
+        //         )->where('leave_types.created_by', '=', \Auth::user()->creatorId())->groupBy('leave_types.id')->get();
 
         return $leave_counts;
     }
