@@ -156,13 +156,6 @@ class PersonalizedOnboardingController extends Controller
         return view('PersonalizedOnboarding.show', compact('template', 'jobApplicationId'));
     }
 
-    // public function preview($id)
-    // {
-    //     $template = EmployeeOnboardingTemplate::where('id', '=', $id)->with(['questions', 'files', 'branches', 'departments'])->first();
-    //     $preview = true;
-    //     return view('PersonalizedOnboarding.show', compact('template', 'preview'));
-    // }
-
     public function destroy($id)
     {
         if (\Auth::user()->can('Delete Job OnBoard Template')) {
@@ -246,8 +239,14 @@ class PersonalizedOnboardingController extends Controller
     }
     public function responseShow($jobApplicationId)
     {
-        $askDetails = EmployeeOnboardingAnswer::where('job_application_id', $jobApplicationId)->with('onboardingQuestion')->get()->sortBy('id');;
-        $fileApprovals = EmployeeOnboardingFileApproval::where('job_application_id', $jobApplicationId)->with('onboardingFile')->get()->sortBy('id');;
+        $askDetails = EmployeeOnboardingAnswer::where('job_application_id', $jobApplicationId)->with('onboardingQuestion')->get()->sortBy('id');
+        $fileApprovals = EmployeeOnboardingFileApproval::where('job_application_id', $jobApplicationId)
+                    ->with(['onboardingFile' => function ($query) {
+                        $query->where('file_type', 'read_and_approve');
+                    }])
+                    ->get()
+                    ->sortBy('id');
+
 
         if (count($askDetails) > 0 || count($fileApprovals) > 0) {
             return view('PersonalizedOnboarding.response', compact('askDetails', 'fileApprovals'));
