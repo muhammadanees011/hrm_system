@@ -23,8 +23,7 @@ class EmployeeOnboardingFileApproval extends Model
 
     public function onboardingFile()
     {
-        return $this->belongsTo(EmployeeOnboardingFile::class, 'employee_onboarding_file_id')
-            ->where('file_type', 'read_and_approve');
+        return $this->belongsTo(EmployeeOnboardingFile::class, 'employee_onboarding_file_id');
     }
 
 
