@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OnboardingResponseSubmitted;
 use App\Models\Branch;
+use App\Models\EmployeeOnboardingAnswer;
 use App\Models\EmployeeOnboardingFile;
+use App\Models\EmployeeOnboardingFileApproval;
 use App\Models\EmployeeOnboardingQuestion;
 use App\Models\EmployeeOnboardingTemplate;
+use App\Models\JobApplication;
 use App\Models\User;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
 
 class PersonalizedOnboardingController extends Controller
 {
@@ -40,6 +45,7 @@ class PersonalizedOnboardingController extends Controller
             // Validate the request data
             $validator = \Validator::make($request->all(), [
                 'branch' => 'required',
+                'department' => 'required',
                 'header_option' => 'required|in:video_url,video_upload,image',
                 'header_description' => 'required|string',
                 'header_title' => 'required|string',
@@ -144,11 +150,18 @@ class PersonalizedOnboardingController extends Controller
             return redirect()->route('personlized-onboarding.index')->with('error', __('Permission denied.'));
         }
     }
-    public function show($id)
+    public function show($id, $jobApplicationId = null)
     {
         $template = EmployeeOnboardingTemplate::where('id', '=', $id)->with(['questions', 'files', 'branches', 'departments'])->first();
-        return view('PersonalizedOnboarding.show', compact('template'));
+        return view('PersonalizedOnboarding.show', compact('template', 'jobApplicationId'));
     }
+
+    // public function preview($id)
+    // {
+    //     $template = EmployeeOnboardingTemplate::where('id', '=', $id)->with(['questions', 'files', 'branches', 'departments'])->first();
+    //     $preview = true;
+    //     return view('PersonalizedOnboarding.show', compact('template', 'preview'));
+    // }
 
     public function destroy($id)
     {
@@ -166,13 +179,80 @@ class PersonalizedOnboardingController extends Controller
                 }
             }
 
-            Storage::delete('uploads/employeeOnboardingTemplate/header/' .$template->image_file_path);
-            Storage::delete('uploads/employeeOnboardingTemplate/header/' .$template->video_file_path);
+            Storage::delete('uploads/employeeOnboardingTemplate/header/' . $template->image_file_path);
+            Storage::delete('uploads/employeeOnboardingTemplate/header/' . $template->video_file_path);
             $template->delete();
 
             return redirect()->route('personlized-onboarding.index')->with('success', __('Employee Onboarding Template deleted successfully.'));
         } else {
             return redirect()->route('personlized-onboarding.index')->with('error', __('Permission denied.'));
+        }
+    }
+
+    public function responseStore(Request $request)
+    {
+        $templateId = $request->template_id;
+        $jobApplicationId = $request->job_application_id;
+
+        if ($request->question) {
+            foreach ($request->input('question') as $questionId => $answer) {
+                EmployeeOnboardingAnswer::create([
+                    'employee_onboarding_template_id' => $templateId,
+                    'job_application_id' => $jobApplicationId,
+                    'employee_onboarding_question_id' => $questionId,
+                    'answer' => $answer,
+                ]);
+            }
+        }
+
+        if ($request->file('question')) {
+            foreach ($request->file('question') as $questionId => $responseFile) {
+                $file = $responseFile;
+                $filenameWithExt = $responseFile->getClientOriginalName();
+                $filename        = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                $extension       = $responseFile->getClientOriginalExtension();
+                $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+                $dir = 'uploads/employeeOnboardingTemplate/responseFiles/';
+                $file->storeAs($dir, $fileNameToStore);
+
+                $fileName   = $fileNameToStore ? $fileNameToStore : null;
+                EmployeeOnboardingAnswer::create([
+                    'employee_onboarding_template_id' => $templateId,
+                    'job_application_id' => $jobApplicationId,
+                    'employee_onboarding_question_id' => $questionId,
+                    'answer' => $fileName,
+                ]);
+            }
+        }
+
+        if ($request->file_approvals) {
+            foreach ($request->file_approvals as $fileId => $status) {
+                EmployeeOnboardingFileApproval::create([
+                    'employee_onboarding_template_id' => $templateId,
+                    'job_application_id' => $jobApplicationId,
+                    'employee_onboarding_file_id' => $fileId,
+                    'approve_status' => $status,
+                ]);
+            }
+        }
+
+        $jobCreatedBy = JobApplication::where('id', $jobApplicationId)->first()->created_by;
+        $jobCreatedByEmail = User::where('id', $jobCreatedBy)->first()->email;
+
+        $email = new OnboardingResponseSubmitted(route('onboarding.personalized.response.show', $jobApplicationId));
+        Mail::to($jobCreatedByEmail)->send($email);
+
+        return redirect()->back()->with('success', __('Thank you for submitting your Onboarding details.'));
+    }
+    public function responseShow($jobApplicationId)
+    {
+        $askDetails = EmployeeOnboardingAnswer::where('job_application_id', $jobApplicationId)->with('onboardingQuestion')->get()->sortBy('id');;
+        $fileApprovals = EmployeeOnboardingFileApproval::where('job_application_id', $jobApplicationId)->with('onboardingFile')->get()->sortBy('id');;
+
+        if (count($askDetails) > 0 || count($fileApprovals) > 0) {
+            return view('PersonalizedOnboarding.response', compact('askDetails', 'fileApprovals'));
+        } else {
+            return redirect()->back()->with('error', __('Response not submitted at the moment.'));
         }
     }
 }
