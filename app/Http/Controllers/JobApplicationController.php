@@ -12,6 +12,7 @@ use App\Models\Designation;
 use App\Models\Document;
 use App\Models\Employee;
 use App\Models\EmployeeDocument;
+use App\Models\EmployeeOnboardingTemplate;
 use App\Models\GenerateOfferLetter;
 use App\Models\InterviewSchedule;
 use App\Models\Job;
@@ -27,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\NewEmployeeOnboarding;
 
 class JobApplicationController extends Controller
 {
@@ -360,6 +362,7 @@ class JobApplicationController extends Controller
 
         $id = ($id == 0) ? $request->application : $id;
 
+
         $jobBoard                    = new JobOnBoard();
         $jobBoard->application       = $id;
         $jobBoard->joining_date      = $request->joining_date;
@@ -374,6 +377,14 @@ class JobApplicationController extends Controller
         $interview = InterviewSchedule::where('candidate', $id)->first();
         if (!empty($interview)) {
             $interview->delete();
+        }
+
+        $jobApplication = JobApplication::where('id', $id)->with('jobs')->first();
+
+        if ($jobApplication->jobs->branch && $jobApplication->jobs->department) {
+            $OnboardingTemplate = EmployeeOnboardingTemplate::where('branch', $jobApplication->jobs->branch)->where('department', $jobApplication->jobs->department)->first();
+            $email = new NewEmployeeOnboarding($jobApplication->name, route('onboarding.personalized.show', [$OnboardingTemplate->id, $jobApplication]));
+            Mail::to($jobApplication->email)->send($email);
         }
 
         return redirect()->route('job.on.board')->with('success', __('Candidate succefully added in job board.'));

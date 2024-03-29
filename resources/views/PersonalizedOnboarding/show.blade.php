@@ -76,6 +76,9 @@ $themeColor = $color;
 </head>
 
 <body class="bg-white">
+    {{ Form::open(['route' => ['onboarding.personalized.response.store'], 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
+    <input type="hidden" name="template_id" value="{{$template->id}}">
+    <input type="hidden" name="job_application_id" value="{{$jobApplicationId}}">
     <div class="onboarding-wrapper">
         <div class="onboarding-content">
             <section class="mt-4">
@@ -121,7 +124,7 @@ $themeColor = $color;
                             @if($question->type == 'text')
                             <div class="form-group col-md-4">
                                 {!! Form::label($question->name, null, ['class' => 'col-form-label']) !!}
-                                {!! Form::text('title',null, [
+                                {!! Form::text('question[' . $question->id . ']',null, [
                                 'class' => 'form-control',
                                 'placeholder' => 'Enter answer',
                                 ]) !!}
@@ -129,7 +132,7 @@ $themeColor = $color;
                             @elseif($question->type == 'textarea')
                             <div class="form-group col-md-4">
                                 {!! Form::label($question->name, null, ['class' => 'col-form-label']) !!}
-                                {!! Form::textarea('title',null, [
+                                {!! Form::textarea('question[' . $question->id . ']',null, [
                                 'class' => 'form-control',
                                 'placeholder' => 'Enter answer',
                                 ]) !!}
@@ -140,7 +143,7 @@ $themeColor = $color;
                                 <div class="col-md-6 d-flex align-items-center justify-content-between">
                                     @foreach(json_decode($question->options) as $option)
                                     <div class="form-check mx-1">
-                                        <input type="radio" id="{{$option}}" name="question_1" value="{{$option}}" class="form-check-input">
+                                        <input type="radio" id="{{$option}}" name="question[{{ $question->id }}]" value="{{$option}}" class="form-check-input">
                                         <label for="{{$option}}" class="form-check-label">{{$option}}</label>
                                     </div>
                                     @endforeach
@@ -154,7 +157,7 @@ $themeColor = $color;
                             <div class="form-group col-md-4">
                                 {!! Form::label($question->name, null, ['class' => 'col-form-label']) !!}
                                 <br>
-                                {!! Form::file('title',null, [
+                                {!! Form::file('question[' . $question->id . ']',null, [
                                 'class' => 'form-control',
                                 'placeholder' => 'Enter answer',
                                 ]) !!}
@@ -204,11 +207,12 @@ $themeColor = $color;
                         </div>
 
                         <div class="d-flex flex-column">
-                            @forEach($template->files as $file)
+                            @foreach($template->files as $file)
                             <div class="d-flex p-4 bg-white border rounded w-50 justify-content-between align-items-center mx-auto my-2">
                                 <span class="h6">{{$file->file_path}}</span>
+                                <input type="hidden" name="file_approvals[{{$file->id}}]" id="file_approval_{{$file->id}}" value="{{$file->approved ? '1' : '0'}}">
                                 @if($file->file_type == 'read_and_approve')
-                                <button class="btn btn-primary text-white">Approve & Read</button>
+                                <button class="btn btn-primary text-white approve-btn" data-file-id="{{$file->id}}" {{$file->approved ? ' disabled' : ''}}>Approve & Read</button>
                                 @else
                                 <button class="btn btn-primary text-white">Read</button>
                                 @endif
@@ -228,11 +232,18 @@ $themeColor = $color;
                 </div>
             </section>
             @endif
+            @if($jobApplicationId !== null)
             <div class="text-center mb-6">
                 <input type="submit" class="btn btn-success">
             </div>
+            @else
+            <div class="text-center mb-6">
+                <a href="{{route('personlized-onboarding.index')}}" class="btn btn-info">Go Back</a>
+            </div>
+            @endif
         </div>
     </div>
+    {{ Form::close() }}
 
     <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
@@ -241,12 +252,20 @@ $themeColor = $color;
     <script src="{{ asset('js/site.core.js') }}"></script>
     <script src="{{ asset('js/site.js') }}"></script>
     <script src="{{ asset('js/demo.js') }} "></script>
+    <script>
+        $(document).ready(function() {
+            $('.approve-btn').click(function() {
+                var fileId = $(this).data('file-id');
+                $('#file_approval_' + fileId).val('1'); // Update approval status
+                $(this).prop('disabled', true); // Disable the button after click
+            });
+        });
+    </script>
 
     @stack('custom-scripts')
     @if($enable_cookie['enable_cookie'] == 'on')
     @include('layouts.cookie_consent')
     @endif
-
 </body>
 
 </html>

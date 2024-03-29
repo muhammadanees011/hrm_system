@@ -149,7 +149,9 @@ Route::get('job/apply/{code}/{lang}', [JobController::class, 'jobApply'])->name(
 Route::post('job/apply/data/{code}', [JobController::class, 'jobApplyData'])->name('job.apply.data');
 
 // Onboarding personalized template
-Route::get('personalized-onboarding/{id}', [PersonalizedOnboardingController::class, 'show'])->name('onboarding.personalized.show');
+Route::get('personalized-onboarding/{id}/{jobApplicationId?}', [PersonalizedOnboardingController::class, 'show'])->name('onboarding.personalized.show');
+Route::post('personalized-onboarding/response/store', [PersonalizedOnboardingController::class, 'responseStore'])->name('onboarding.personalized.response.store');
+Route::get('employee-onboarding/response/{jobApplicationId}', [PersonalizedOnboardingController::class, 'responseShow'])->name('onboarding.personalized.response.show');
 
 // cookie consent
 Route::any('/cookie-consent', [SettingsController::class, 'CookieConsent'])->name('cookie-consent');
@@ -356,7 +358,7 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::get('/documentDirectory', [DocumentController::class,'documentDirectory'])->name('document.directory')->middleware(['auth','XSS',]);
+    Route::get('/documentDirectory', [DocumentController::class, 'documentDirectory'])->name('document.directory')->middleware(['auth', 'XSS',]);
     Route::resource('branch', BranchController::class)->middleware(
         [
             'auth',
@@ -513,8 +515,8 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('employementcheck/download/file/{filename}', [EmployementCheckController::class, 'downloadFile'])->name('employementcheck.download.file')->middleware(['auth', 'XSS',]);
 
     //performance
-    Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth','XSS',]);
-    Route::get('performancecycle/reviews/{id?}', [PerformanceCycleController::class,'reviews'])->name('performancecycle.reviews')->middleware(['auth','XSS',]);
+    Route::resource('performancecycle', PerformanceCycleController::class)->middleware(['auth', 'XSS',]);
+    Route::get('performancecycle/reviews/{id?}', [PerformanceCycleController::class, 'reviews'])->name('performancecycle.reviews')->middleware(['auth', 'XSS',]);
 
     //manage leaves
     // Route::resource('leavesummary', LeaveSummaryController::class)->middleware(['auth','XSS',]);
@@ -1009,9 +1011,9 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::resource('goaltracking', GoalTrackingController::class)->middleware( ['auth', 'XSS',]);
-    Route::get('goaltracking/goals/{id?}',[GoalTrackingController::class,'goals'])->name('goaltracking.goals')->middleware( ['auth', 'XSS',]);
-    Route::get('goaltracking/details/{id?}',[GoalTrackingController::class,'goaldetails'])->name('goaltracking.goal.details')->middleware( ['auth', 'XSS',]);
+    Route::resource('goaltracking', GoalTrackingController::class)->middleware(['auth', 'XSS',]);
+    Route::get('goaltracking/goals/{id?}', [GoalTrackingController::class, 'goals'])->name('goaltracking.goals')->middleware(['auth', 'XSS',]);
+    Route::get('goaltracking/details/{id?}', [GoalTrackingController::class, 'goaldetails'])->name('goaltracking.goal.details')->middleware(['auth', 'XSS',]);
 
     Route::resource('company-policy', CompanyPolicyController::class)->middleware(
         [
@@ -1555,7 +1557,7 @@ Route::group(['middleware' => ['verified']], function () {
     // videos
     Route::resource('video', VideoController::class)->middleware(['auth',  'XSS']);
 
-     //Flexi Time
+    //Flexi Time
     Route::post('flexi-time/save-reject-form/{id}', [FlexiTimeController::class, 'saveRejectionForm']);
     Route::get('flexi-time/{id}/reject', [FlexiTimeController::class, 'rejectForm'])->name('flexi-time.reject');
     Route::get('flexi-time/{id}/approve', [FlexiTimeController::class, 'approve'])->name('flexi-time.approve');
