@@ -67,10 +67,10 @@
                                     </td>
                                    
                                     <td>{{ $leave->total_leave_days }}</td>
-                                    <td>{{ ucfirst(str_replace('_',' ', $leave->duration_type)) }}</td>
+                                    <td>{{ ucfirst(str_replace('_',' ', $leave->leave_duration)) }}</td>
                                     <td>{{ $leave->leave_reason }}</td>
                                     <td>
-                                        @if($leave->duration_type=="half_day")
+                                        @if($leave->leave_duration=="half_day")
                                             <strong>Start Time: </strong>{{\Auth::user()->timeFormat($leave->start_time)}} <br />
                                             <strong>End Time: </strong>{{\Auth::user()->timeFormat($leave->end_time)}}
                                         @else

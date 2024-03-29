@@ -63,13 +63,13 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
     </div>
     <div class="col-md-12">
     <div class="form-group">
-        {{ Form::label('duration_type', __('Leave Duration'), ['class' => 'col-form-label']) }}
-        {{ Form::select('duration_type', ['' => 'Select Duration', 'half_day' => 'Half Day', 'full_day' => 'Full Day'], $leave->duration_type, ['class' => 'form-control select', 'id' => 'duration_type']) }}
+        {{ Form::label('leave_duration', __('Leave Duration'), ['class' => 'col-form-label']) }}
+        {{ Form::select('leave_duration', ['' => 'Select Duration', 'half_day' => 'Half Day', 'full_day' => 'Full Day'], $leave->leave_duration, ['class' => 'form-control select', 'id' => 'leave_duration']) }}
     </div>
 </div>
 
 
-<div class="row" id="timeDurationSection" style="{{ $leave->duration_type == 'full_day' ? 'display:none;' : '' }}">
+<div class="row" id="timeDurationSection" style="{{ $leave->leave_duration == 'full_day' ? 'display:none;' : '' }}">
         <div class="form-group col-md-12">
             {{ Form::label('duration_hours', __('No. Of Hours'), ['class' => 'form-label']) }}
         {{ Form::text('duration_hours', $leave->duration_hours,  ['class' => 'form-control ', 'required' => 'required', 'placeholder' => 'Enter No. Of Hours']) }}
@@ -145,7 +145,7 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
 </script>
 <script>
     $(document).ready(function() {
-        $(document).on('change','#duration_type',function() {
+        $(document).on('change','#leave_duration',function() {
             const selectedOption = $(this).val();
             console.log(selectedOption);
             if (selectedOption === 'half_day') {
@@ -155,7 +155,7 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
             } else {
                 $('#timeDurationSection').hide();
             }
-            const initialOption = $('#duration_type').val();
+            const initialOption = $('#leave_duration').val();
             console.log("intitial ooption", initialOption);
         if (initialOption === 'half_day') {
             $('#timeDurationSection').show();

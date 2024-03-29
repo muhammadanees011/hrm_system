@@ -131,10 +131,10 @@ class LeaveController extends Controller
                 $leave->start_date       = $request->start_date;
                 $leave->end_date         = $request->end_date;
                 $leave->total_leave_days = $total_leave_days;
-                $leave->duration_type = $request->leave_duration;
-                $leave->start_time = $request->start_time;
-                $leave->end_time = $request->end_time;
-                $leave->duration_hours = $request->hours;
+                $leave->leave_duration   = $request->leave_duration;
+                $leave->start_time       = $request->start_time;
+                $leave->end_time         = $request->end_time;
+                $leave->duration_hours   = $request->hours;
                 $leave->leave_reason     = $request->leave_reason;
                 $leave->remark           = $request->remark;
                 $leave->status           = 'Pending';
@@ -262,11 +262,11 @@ class LeaveController extends Controller
                     $leave->end_date         = $request->end_date;
                     $leave->total_leave_days = $total_leave_days;
                     $leave->leave_reason     = $request->leave_reason;
-                    $leave->duration_type = $request->duration_type;
-                    if($leave->duration_type == "full_day"){
+                    $leave->leave_duration = $request->leave_duration;
+                    if($leave->leave_duration == "full_day"){
                         $leave->start_time = null;
-                    $leave->end_time = null;
-                    $leave->duration_hours = null;    
+                        $leave->end_time = null;
+                        $leave->duration_hours = null;    
                     }else{
                         $leave->start_time = $request->start_time;
                         $leave->end_time = $request->end_time;

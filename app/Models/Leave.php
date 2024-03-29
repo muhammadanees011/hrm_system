@@ -17,7 +17,7 @@ class Leave extends Model
         'leave_reason',
         'remark',
         'status',
-        'duration_type',
+        'leave_duration',
         'duration_hours',
         'start_time',
         'end_time',

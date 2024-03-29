@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leaves', function (Blueprint $table) {
-            $table->string('duration_type')->nullable();
-            $table->integer('duration_hours')->nullable();
-            $table->string('start_time')->nullable();
-            $table->string('end_time')->nullable();
+            $table->string('leave_duration')->nullable()->after('leave_type_id');
+            $table->integer('duration_hours')->nullable()->after('leave_duration');
+            $table->string('start_time')->nullable()->after('end_date');
+            $table->string('end_time')->nullable()->after('start_time');
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('leaves', function (Blueprint $table) {
-            $table->dropColumn('duration_type');
+            $table->dropColumn('leave_duration');
             $table->dropColumn('duration_hours');
             $table->dropColumn('start_time');
             $table->dropColumn('end_time');
