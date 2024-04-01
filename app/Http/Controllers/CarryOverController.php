@@ -213,4 +213,10 @@ class CarryOverController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         } 
     }
+    public function userLeaveData(Request $request)
+    {
+        $employee_id =  $request->employee_id;
+        $leavetypes = LeaveType::where('created_by', '=', $employee_id)->get();        
+        return $leavetypes;
+    }
 }

@@ -11,13 +11,11 @@
 
 
 @section('action-button')
-    @can('Create Retirement')
         <a href="#" data-url="{{ route('carryover.create') }}" data-ajax-popup="true"
             data-title="{{ __('Create New Retirement') }}" data-size="lg" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
-    @endcan
 @endsection
 
 @section('content')

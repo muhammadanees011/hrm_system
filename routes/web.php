@@ -808,6 +808,12 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+    Route::post('user-leave-data', [CarryOverController::class, 'userLeaveData'])->name('carryover.userdata')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
     Route::resource('leave', LeaveController::class)->middleware(
         [
             'auth',
