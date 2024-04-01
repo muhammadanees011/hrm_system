@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 use Spatie\GoogleCalendar\Event as GoogleEvent;
 
 class LeaveController extends Controller
@@ -45,9 +46,18 @@ class LeaveController extends Controller
             }
             $leavetypes      = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
             $leavetypes_days = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
-            $hours = [
-                '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
-            ];
+            
+            $hours = [];
+
+            $startTime = Utility::getValByName('company_start_time');
+            $endTime   = Utility::getValByName('company_end_time');
+            $start = Carbon::createFromTimeString($startTime);
+            $end = Carbon::createFromTimeString($endTime);
+
+            $hours = [];
+            for ($hour = $start->copy(); $hour <= $end; $hour->addHour()) {
+                $hours[$hour->format('H:i')] = $hour->format('H:i');
+            }
             
             return view('leave.create', compact('employees', 'leavetypes', 'leavetypes_days', 'hours'));
         } else {
@@ -98,12 +108,22 @@ class LeaveController extends Controller
 
             if (\Auth::user()->type == 'employee') {
                 // Leave day
-                $leaves_used   = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
+                $totalFullDayLeaves =  LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->where('leave_duration', 'full_day')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
+
+                $totalHalfDayLeaves = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->where('leave_duration', 'half_day')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
+                $totalHalfDayLeaves = !empty($totalHalfDayLeaves) ? $totalHalfDayLeaves/2 : 0;
+
+                $leaves_used   = $totalFullDayLeaves + $totalHalfDayLeaves;
                 
                 $leaves_pending  = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Pending')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
             } else {
                 // Leave day
-                $leaves_used   = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
+                $totalFullDayLeaves = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->where('leave_duration', 'full_day')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
+
+                $totalHalfDayLeaves = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Approved')->where('leave_duration', 'half_day')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
+                $totalHalfDayLeaves = !empty($totalHalfDayLeaves) ? $totalHalfDayLeaves/2 : 0;
+
+                $leaves_used   = $totalFullDayLeaves + $totalHalfDayLeaves;
 
                 $leaves_pending  = LocalLeave::where('employee_id', '=', $request->employee_id)->where('leave_type_id', $leave_type->id)->where('status', 'Pending')->whereBetween('created_at', [$date['start_date'], $date['end_date']])->sum('total_leave_days');
             }
@@ -111,7 +131,12 @@ class LeaveController extends Controller
             $total_leave_days = !empty($startDate->diff($endDate)) ? $startDate->diff($endDate)->days : 0;
 
             $return = $leave_type->days - $leaves_used;
-            if ($total_leave_days > $return) {
+
+            if (($total_leave_days > $return && $request->leave_duration !="half_day")) {
+                return redirect()->back()->with('error', __('You are not eligible for leave.'));
+            }
+
+            if($return =="0.5" && $request->leave_duration=="full_day"){
                 return redirect()->back()->with('error', __('You are not eligible for leave.'));
             }
 
@@ -119,19 +144,6 @@ class LeaveController extends Controller
                 return redirect()->back()->with('error', __('Multiple leave entry is pending.'));
             }
             if ($leave_type->days >= $total_leave_days) {
-                $full_days =  LocalLeave::where('employee_id', $request->employee_id)->where('leave_type_id', $request->leave_type_id)->where('duration_type', 'full_day')->get();
-                $half_days =  LocalLeave::where('employee_id', $request->employee_id)->where('leave_type_id', $request->leave_type_id)->where('duration_type', 'half_day')->get();
-                
-                $full_days_count = $full_days->count();
-                $half_days_count = $half_days->count() * 0.5;
-                $leaves_count = $full_days_count + $half_days_count;
-                $leave_type = LeaveType::find($request->leave_type_id);
-                $leave_type_days = $leave_type->days;
-                $remaining_leave_days = $leave_type_days - $leaves_count;
-                
-                if($remaining_leave_days < 1 && $request->leave_duration == "full_day"){
-                    return redirect()->back()->with('error', __('You are not eligible'));
-                }
                 $leave    = new LocalLeave();
                 if (\Auth::user()->type == "employee") {
                     $leave->employee_id = $request->employee_id;
@@ -195,9 +207,19 @@ class LeaveController extends Controller
                 // $employees  = Employee::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
                 // $leavetypes = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('title', 'id');
                 $leavetypes      = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
-                $hours = [
-                    '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
-                ];
+                
+                $hours = [];
+
+                $startTime = Utility::getValByName('company_start_time');
+                $endTime   = Utility::getValByName('company_end_time');
+                $start = Carbon::createFromTimeString($startTime);
+                $end = Carbon::createFromTimeString($endTime);
+
+                $hours = [];
+                for ($hour = $start->copy(); $hour <= $end; $hour->addHour()) {
+                    $hours[$hour->format('H:i')] = $hour->format('H:i');
+                }
+                
                 return view('leave.edit', compact('leave', 'employees', 'leavetypes', 'hours'));
             } else {
                 return response()->json(['error' => __('Permission denied.')], 401);
@@ -388,16 +410,13 @@ class LeaveController extends Controller
             $typeLeaves  = array_values(array_filter($totalLeavesTaken,function($row) use($value){
                 return ($row['leave_type_id']==$value['id']);
             }));
-            $totalLeaves = 0;
-            if(!empty($typeLeaves)){
-                foreach ($typeLeaves as $val) {
-                    if($val['leave_duration']=="half_day"){
-                        $totalLeaves = (int)$totalLeaves + 0.5;
-                    }else{
-                        $totalLeaves += 1;
-                    }
-                }
-            }
+            
+            $totalFullDayLeaves = collect($typeLeaves)->where('leave_duration', 'full_day')->sum('total_leave_days');
+            $totalHalfDayLeaves = collect($typeLeaves)->where('leave_duration', 'half_day')->sum('total_leave_days');
+            $totalHalfDayLeaves = !empty($totalHalfDayLeaves) ? $totalHalfDayLeaves/2 : 0;
+
+            $totalLeaves = $totalFullDayLeaves + $totalHalfDayLeaves;
+           
             $leave_counts[] = [
                 'id' => $value['id'],
                 'days' => $value['days'],
@@ -405,17 +424,6 @@ class LeaveController extends Controller
                 'total_leave' => $totalLeaves
             ];
         }
-        // $leave_counts = LeaveType::select(\DB::raw('COALESCE(SUM(leaves.total_leave_days),0) AS total_leave, leave_types.title, leave_types.days,leave_types.id'))
-        //     ->leftjoin(
-        //         'leaves',
-        //         function ($join) use ($request, $date) {
-        //             $join->on('leaves.leave_type_id', '=', 'leave_types.id');
-        //             $join->where('leaves.employee_id', '=', $request->employee_id);
-        //             $join->where('leaves.status', '=', 'Approved');
-        //             $join->whereBetween('leaves.created_at', [$date['start_date'],$date['end_date']]);
-        //         }
-        //         )->where('leave_types.created_by', '=', \Auth::user()->creatorId())->groupBy('leave_types.id')->get();
-
         return $leave_counts;
     }
 
