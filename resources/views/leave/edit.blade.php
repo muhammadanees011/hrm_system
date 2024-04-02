@@ -31,7 +31,7 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
             </div>
         </div>
     @else
-        {!! Form::hidden('employee_id', !empty($employees) ? $employees->id : 0, ['id' => 'employee_id']) !!}
+        {!! Form::hidden('employee_id', $leave->employee_id, ['id' => 'employee_id']) !!}
     @endif
     <div class="row">
         <div class="col-md-12">
@@ -69,21 +69,20 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
 </div>
 
 
-<div class="row" id="timeDurationSection" style="{{ $leave->leave_duration == 'full_day' ? 'display:none;' : '' }}">
-        <div class="form-group col-md-12">
-            {{ Form::label('duration_hours', __('No. Of Hours'), ['class' => 'form-label']) }}
-        {{ Form::text('duration_hours', $leave->duration_hours,  ['class' => 'form-control ', 'required' => 'required', 'placeholder' => 'Enter No. Of Hours']) }}
-        </div>
-        <div class="form-group col-md-6">
+<div class="row" id="timeDurationSection">
+    <div class="form-group col-md-12">
+        {{ Form::label('duration_hours', __('No. Of Hours'), ['class' => 'form-label']) }}
+        {{ Form::text('duration_hours', $leave->duration_hours,  ['class' => 'form-control ', 'placeholder' => 'Enter No. Of Hours']) }}
+    </div>
+    <div class="form-group col-md-6">
         {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}
         {{ Form::select('start_time', array_combine($hours, $hours), $leave->start_time, ['class' => 'form-control select2', 'id' => 'start_time', 'placeholder' => __('Select Start Time')]) }}
-</div>
-<div class="form-group col-md-6">
-{{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
-            {{ Form::select('end_time', array_combine($hours, $hours), $leave->end_time, ['class' => 'form-control select2', 'id' => 'end_time', 'placeholder' => __('Select End Time')]) }}
-</div>
-
     </div>
+    <div class="form-group col-md-6">
+        {{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
+        {{ Form::select('end_time', array_combine($hours, $hours), $leave->end_time, ['class' => 'form-control select2', 'id' => 'end_time', 'placeholder' => __('Select End Time')]) }}
+    </div>
+</div>
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -135,36 +134,23 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
 
 <script>
     $(document).ready(function() {
-        setTimeout(() => {
-            var employee_id = $('#employee_id').val();
-            if (employee_id) {
-                $('#employee_id').trigger('change');
-            }
-        }, 100);
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        $(document).on('change','#leave_duration',function() {
-            const selectedOption = $(this).val();
-            console.log(selectedOption);
-            if (selectedOption === 'half_day') {
-                $('#timeDurationSection').show();
-            } else if(selectedOption === 'full_day') {
-                $('#timeDurationSection').hide();
-            } else {
-                $('#timeDurationSection').hide();
-            }
-            const initialOption = $('#leave_duration').val();
-            console.log("intitial ooption", initialOption);
-        if (initialOption === 'half_day') {
+        $('#timeDurationSection').hide();
+
+        // hide leave duration field on initial load
+        const selectedDuration = $('#leave_duration').val();
+        if(selectedDuration==="full_day"){
+            $('#timeDurationSection').hide();
+        }else{
             $('#timeDurationSection').show();
-        } else if (initialOption === 'full_day') {
-            $('#timeDurationSection').hide();
-        } else {
-            $('#timeDurationSection').hide();
         }
 
+        $(document).on('change','#leave_duration',function() {
+            $('#timeDurationSection').hide();
+            const selectedOption = $(this).val();
+            
+            if (selectedOption === 'half_day') {
+                $('#timeDurationSection').show();
+            }
         });
     });
 </script>
