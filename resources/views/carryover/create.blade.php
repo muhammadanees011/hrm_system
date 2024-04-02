@@ -32,6 +32,7 @@
             <th>Title</th>
             <th>Total</th>
             <th>Taken</th>
+            <th>Remaining</th>
         </tr>
     </thead>
     <tbody>
@@ -99,6 +100,7 @@ $('#employee_id').change(function() {
                         '<td>' + leaveData.title + '</td>' +
                         '<td>' + leaveData.days + '</td>' +
                         '<td>' + leaveData.total_leave + '</td>' +
+                        '<td>' + (leaveData.days - leaveData.total_leave) + '</td>' + // Corrected calculation
                     '</tr>'
                 );
             });
@@ -108,5 +110,4 @@ $('#employee_id').change(function() {
         }
     });
 });
-
 </script>

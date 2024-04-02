@@ -49,7 +49,7 @@ class CarryOverController extends Controller
                     'leave_type_id' => 'required',
                     'leaves_count' => 'required',
                     ]
-            );
+                );
 
             if($validator->fails())
             {
@@ -57,20 +57,20 @@ class CarryOverController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
-            $summary=LeaveSummary::where('employee_id',$request->employee_id)->where('leave_type_id',$request->leave_type_id)->first();
-            if(!$summary){
-                return redirect()->back()->with('error', __('You have no leaves left in this category.'));
-            }
-            if($request->leave_count <= $summary->balance){
-                $leaves = $request->leaves_count;
-            }else{
-                $leaves = $summary->balance;
-            }
+            // $summary=LeaveSummary::where('employee_id',$request->employee_id)->where('leave_type_id',$request->leave_type_id)->first();
+            // if(!$summary){
+            //     return redirect()->back()->with('error', __('You have no leaves left in this category.'));
+            // }
+            // if($request->leave_count <= $summary->balance){
+            //     $leaves = $request->leaves_count;
+            // }else{
+            //     $leaves = $summary->balance;
+            // }
 
             $carryover               = new CarryOver();
             $carryover->employee_id  = $request->employee_id;
             $carryover->leave_type_id= $request->leave_type_id;
-            $carryover->leaves_count = $leaves;
+            $carryover->leaves_count = $request->leaves_count;
             $carryover->created_by   = \Auth::user()->creatorId();
             $carryover->save();
             return redirect()->route('carryover.index')->with('success', __('CarryOver Requested successfully created.'));
