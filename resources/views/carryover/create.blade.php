@@ -21,28 +21,23 @@
         {{ Form::label('employee_id', __('Employee'), ['class' => 'col-form-label']) }}
         {{ Form::select('employee_id', $employees, null, ['class' => 'form-control select2', 'id' => 'employee_id', 'placeholder' => __('Select Employee')]) }}
         </div>
-        <table>
+        <table id="leave-data-table">
             <style>td, th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
 }</style>
-            <tr>
-                <th>Title</th>
-                <th>Total</th>
-                <th>Pending</th>
-            </tr>
-            <tr>
-                <td>Casual</td>
-                <td>10</td>
-                <td>3</td>
-            </tr>
-            <tr>
-                <td>Sick</td>
-                <td>5</td>
-                <td>2</td>
-            </tr>
-        </table>
+                <thead>
+        <tr>
+            <th>Title</th>
+            <th>Total</th>
+            <th>Taken</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Table rows will be populated dynamically -->
+    </tbody>
+</table>
         <div class="form-group col-lg-6 col-md-6">
             {{ Form::label('leave_type_id', __('Leave Type'), ['class' => 'col-form-label']) }}
             <select name="leave_type_id" id="leave_type_id" class="form-control select">
@@ -79,26 +74,39 @@
     });
 </script>
 <script>
-    $('#employee_id').change(function() {
-        var employeeId = $(this).val();
-        // Make an API call using AJAX
-        $.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
-        $.ajax({
-            url: '/user-leave-data',
-            method: 'POST',
-            data: { employee_id: employeeId },
-            success: function(response) {
-                // Handle the API response here
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                // Handle errors here
-                console.error(xhr.responseText);
-            }
-        });
+$('#employee_id').change(function() {
+    var employeeId = $(this).val();
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
+    $.ajax({
+        url: '/leave/jsoncount',
+        method: 'POST',
+        data: { employee_id: employeeId },
+        success: function(response) {
+            // Target the table body for updating
+            var tableBody = $('#leave-data-table tbody');
+
+            // Clear existing table rows in the body
+            tableBody.empty();
+
+            // Iterate over the response data and append rows to the table body
+            $.each(response, function(index, leaveData) {
+                tableBody.append(
+                    '<tr>' +
+                        '<td>' + leaveData.title + '</td>' +
+                        '<td>' + leaveData.days + '</td>' +
+                        '<td>' + leaveData.total_leave + '</td>' +
+                    '</tr>'
+                );
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
+    });
+});
+
 </script>
