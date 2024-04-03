@@ -528,6 +528,8 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('/delete/leavesummary/{id}/{employee_id}', [LeaveSummaryController::class, 'destroy'])->name('leavesummary.destroy')->middleware(['auth', 'XSS',]);
 
     Route::resource('carryover', CarryOverController::class)->middleware(['auth', 'XSS',]);
+    Route::get('carryover/{id}/reject', [CarryOverController::class, 'reject'])->name('carryover.reject');
+    Route::get('carryover/{id}/approve', [CarryOverController::class, 'approve'])->name('carryover.approve');
     Route::get('carryover/{id}/action', [CarryOverController::class, 'action'])->name('carryover.action')->middleware(['auth', 'XSS',]);
     Route::post('carryover/changeaction', [CarryOverController::class, 'changeaction'])->name('carryover.changeaction')->middleware(['auth', 'XSS',]);
     Route::get('leave/team', [LeaveController::class, 'teamTimeOff'])->name('leave.team')->middleware(['auth', 'XSS',]);

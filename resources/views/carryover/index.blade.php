@@ -12,7 +12,7 @@
 
 @section('action-button')
         <a href="#" data-url="{{ route('carryover.create') }}" data-ajax-popup="true"
-            data-title="{{ __('Create New Retirement') }}" data-size="lg" data-bs-toggle="tooltip" title=""
+            data-title="{{ __('Create New CarryOver') }}" data-size="lg" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
@@ -54,6 +54,26 @@
                                 @endif
                             </td>
                                 <td class="Action">
+                                @if((\Auth::user()->type=="hr" || \Auth::user()->type=="company"))
+                                                <div class="action-btn bg-success ms-2">
+                                                    <a href="carryover/{{$carryover->id}}/approve" 
+                                                        data-ajax-popup="true" data-size="lg"
+                                                        data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
+                                                        data-bs-original-title="{{ __('Approve') }}"
+                                                    >
+                                                        <i class="ti ti-check text-white"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="action-btn bg-danger ms-2">
+                                                    <a href="carryover/{{$carryover->id}}/reject" 
+                                                        data-ajax-popup="true" data-size="lg"
+                                                        data-bs-toggle="tooltip" title="" class="btn btn-sm btn-danger"
+                                                        data-bs-original-title="{{ __('Reject') }}"
+                                                    >
+                                                    <i class="ti ti-trash-off text-white"></i>
+                                                    </a>
+                                                </div>
+                                            @endif
                                     @if (Gate::check('Edit Termination') || Gate::check('Delete Termination'))
                                         <span>
                                             @can('Edit Retirement') 

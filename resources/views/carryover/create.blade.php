@@ -16,44 +16,51 @@
     @endif
 
     <div class="row">
-        
         <div class="col-md-12 form-group">
         {{ Form::label('employee_id', __('Employee'), ['class' => 'col-form-label']) }}
         {{ Form::select('employee_id', $employees, null, ['class' => 'form-control select2', 'id' => 'employee_id', 'placeholder' => __('Select Employee')]) }}
         </div>
-        <table id="leave-data-table">
-            <style>td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}</style>
-                <thead>
-        <tr>
-            <th>Title</th>
-            <th>Total</th>
-            <th>Taken</th>
-            <th>Remaining</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Table rows will be populated dynamically -->
-    </tbody>
-</table>
-        <div class="form-group col-lg-6 col-md-6">
-            {{ Form::label('leave_type_id', __('Leave Type'), ['class' => 'col-form-label']) }}
-            <select name="leave_type_id" id="leave_type_id" class="form-control select">
-                <option value="">{{ __('Select Leave Type') }}</option>
-                @foreach ($leavetypes as $leave)
-                    <option value="{{ $leave->id }}">{{ $leave->title }}</option>
-                @endforeach
-            </select>
+
+</div>
+
+        <div class="row">
+            <table id="leave-data-table">
+                <style>td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }</style>
+                    <thead>
+            <tr>
+                <th>Title</th>
+                <th>Total</th>
+                <th>Taken</th>
+                <th>Remaining</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be populated dynamically -->
+        </tbody>
+    </table>
+
         </div>
-        <div class="form-group col-md-6">
-            {{ Form::label('leaves_count', __('No. of leaves'), ['class' => 'col-form-label']) }}
-            {{ Form::text('leaves_count', null, ['class' => 'form-control text', 'autocomplete' => 'off' ,'required' => 'required']) }}
+        <div class="row">
+            <div class="form-group col-lg-6 col-md-6">
+                {{ Form::label('leave_type_id', __('Leave Type'), ['class' => 'col-form-label']) }}
+                <select name="leave_type_id" id="leave_type_id" class="form-control select">
+                    <option value="">{{ __('Select Leave Type') }}</option>
+                    @foreach ($leavetypes as $leave)
+                        <option value="{{ $leave->id }}">{{ $leave->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                {{ Form::label('leaves_count', __('No. of leaves'), ['class' => 'col-form-label']) }}
+                {{ Form::number('leaves_count', null, ['class' => 'form-control text', 'autocomplete' => 'off' ,'required' => 'required']) }}
+            </div>
+
         </div>
     </div>
-</div>
 
 
 <div class="modal-footer">

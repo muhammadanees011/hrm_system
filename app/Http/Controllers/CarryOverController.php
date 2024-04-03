@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\CarryOver;
 use App\Models\Employee;
 use App\Models\LeaveType;
+use App\Models\Leave;
+use App\Models\User;
 use App\Models\LeaveSummary;
 use Illuminate\Http\Request;
 
@@ -29,7 +31,11 @@ class CarryOverController extends Controller
     public function create()
     {
         if (\Auth::user()->can('Create Leave')) {
-        $employees  = Employee::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            if(\Auth::user()->type=="hr" || \Auth::user()->type=="company"){
+                $employees  = Employee::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            }else{
+                $employees  = Employee::where('user_id', \Auth::user()->id)->get()->pluck('name', 'id');
+            }
         $leavetypes = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
         return view('carryover.create', compact('employees','leavetypes'));
         } else {
@@ -57,6 +63,23 @@ class CarryOverController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
+            $leave_type = LeaveType::find($request->leave_type_id);
+            $leaves = Leave::where('leave_type_id', $request->leave_type_id)->where('created_by', $request->employee_id)->get();
+            $totalLeaveDays = 0;
+            foreach($leaves as $leave){
+                $totalLeaveDays += $leave->total_leave_days;
+            }
+            $remainingLeaves = $leave_type->days - $totalLeaveDays;
+
+            $pendingRequests = CarryOver::where('leave_type_id', $request->leave_type_id)->where('created_by', $request->employee_id)->where('status', 'pending')->get();
+            if($pendingRequests->count() > 0){
+                return redirect()->back()->with('error', __('You already have pending request in this category.'));
+            }
+            if($request->leaves_count > $remainingLeaves){
+                return redirect()->back()->with('error', __('You do not have enough leaves left in this category.'));
+            }
+            
+            
             // $summary=LeaveSummary::where('employee_id',$request->employee_id)->where('leave_type_id',$request->leave_type_id)->first();
             // if(!$summary){
             //     return redirect()->back()->with('error', __('You have no leaves left in this category.'));
@@ -218,5 +241,17 @@ class CarryOverController extends Controller
         $employee_id =  $request->employee_id;
         $leavetypes = LeaveType::where('created_by', '=', $employee_id)->get();        
         return $leavetypes;
+    }
+    public function approve($id){
+        $carryOver = CarryOver::find($id);
+        $carryOver->status = "accepted";
+        $carryOver->update();
+        return redirect()->route('carryover.index')->with('success', __('CarryOver successfully approved.'));
+    }
+    public function reject($id){
+        $carryOver = CarryOver::find($id);
+        $carryOver->status = "rejected";
+        $carryOver->update();
+        return redirect()->route('carryover.index')->with('success', __('CarryOver successfully rejected.'));
     }
 }
