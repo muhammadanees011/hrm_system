@@ -3,6 +3,12 @@
 @endphp
 
 {{ Form::model($leave, ['route' => ['leave.update', $leave->id], 'method' => 'PUT']) }}
+<?php
+$startHour = str_pad($leave->start_time, 2, '0', STR_PAD_LEFT) . ':00';
+$endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
+
+?>
+
 <div class="modal-body">
 
     @if ($chatgpt == 'on')
@@ -25,7 +31,7 @@
             </div>
         </div>
     @else
-        {!! Form::hidden('employee_id', !empty($employees) ? $employees->id : 0, ['id' => 'employee_id']) !!}
+        {!! Form::hidden('employee_id', $leave->employee_id, ['id' => 'employee_id']) !!}
     @endif
     <div class="row">
         <div class="col-md-12">
@@ -55,6 +61,28 @@
             </div>
         </div>
     </div>
+    <div class="col-md-12">
+    <div class="form-group">
+        {{ Form::label('leave_duration', __('Leave Duration'), ['class' => 'col-form-label']) }}
+        {{ Form::select('leave_duration', ['' => 'Select Duration', 'half_day' => 'Half Day', 'full_day' => 'Full Day'], $leave->leave_duration, ['class' => 'form-control select', 'id' => 'leave_duration']) }}
+    </div>
+</div>
+
+
+<div class="row" id="timeDurationSection">
+    <div class="form-group col-md-12">
+        {{ Form::label('duration_hours', __('No. Of Hours'), ['class' => 'form-label']) }}
+        {{ Form::text('duration_hours', $leave->duration_hours,  ['class' => 'form-control ', 'placeholder' => 'Enter No. Of Hours']) }}
+    </div>
+    <div class="form-group col-md-6">
+        {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}
+        {{ Form::select('start_time', array_combine($hours, $hours), $leave->start_time, ['class' => 'form-control select2', 'id' => 'start_time', 'placeholder' => __('Select Start Time')]) }}
+    </div>
+    <div class="form-group col-md-6">
+        {{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
+        {{ Form::select('end_time', array_combine($hours, $hours), $leave->end_time, ['class' => 'form-control select2', 'id' => 'end_time', 'placeholder' => __('Select End Time')]) }}
+    </div>
+</div>
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
@@ -106,11 +134,23 @@
 
 <script>
     $(document).ready(function() {
-        setTimeout(() => {
-            var employee_id = $('#employee_id').val();
-            if (employee_id) {
-                $('#employee_id').trigger('change');
+        $('#timeDurationSection').hide();
+
+        // hide leave duration field on initial load
+        const selectedDuration = $('#leave_duration').val();
+        if(selectedDuration==="full_day"){
+            $('#timeDurationSection').hide();
+        }else{
+            $('#timeDurationSection').show();
+        }
+
+        $(document).on('change','#leave_duration',function() {
+            $('#timeDurationSection').hide();
+            const selectedOption = $(this).val();
+            
+            if (selectedOption === 'half_day') {
+                $('#timeDurationSection').show();
             }
-        }, 100);
+        });
     });
 </script>

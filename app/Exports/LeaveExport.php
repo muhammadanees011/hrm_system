@@ -30,7 +30,10 @@ class LeaveExport implements FromCollection, WithHeadings
                         $data[$k]["employee_id"]=Employee::employee_name($leave->employee_id);
                         $data[$k]["leave_type_id"]= !empty(\Auth::user()->getLeaveType($leave->leave_type_id))?\Auth::user()->getLeaveType($leave->leave_type_id)->title:'';
                         $data[$k]["created_by"]=Employee::login_user($leave->created_by);
-                        unset($leave->created_at,$leave->updated_at);
+                        $data[$k]['leave_duration'] = !empty($leave->leave_duration) ? ucfirst(str_replace('_', ' ', $leave->leave_duration)): '';
+                        $data[$k]['start_time'] = !empty($leave->start_time) ? \Auth::user()->timeFormat($leave->start_time): '';
+                        $data[$k]['end_time'] = !empty($leave->end_time) ? \Auth::user()->timeFormat($leave->end_time): '';
+                        unset($leave->created_at,$leave->updated_at, $leave->manager_id, $leave->type);
                     }
                 
             }
@@ -43,7 +46,10 @@ class LeaveExport implements FromCollection, WithHeadings
                     $data[$k]["employee_id"]=Employee::employee_name($leave->employee_id);
                     $data[$k]["leave_type_id"]= !empty(\Auth::user()->getLeaveType($leave->leave_type_id))?\Auth::user()->getLeaveType($leave->leave_type_id)->title:'';
                     $data[$k]["created_by"]=Employee::login_user($leave->created_by);
-                    unset($leave->created_at,$leave->updated_at);
+                    $data[$k]['leave_duration'] = !empty($leave->leave_duration) ? ucfirst(str_replace('_', ' ', $leave->leave_duration)): '';
+                    $data[$k]['start_time'] = !empty($leave->start_time) ? \Auth::user()->timeFormat($leave->start_time): '';
+                    $data[$k]['end_time'] = !empty($leave->end_time) ? \Auth::user()->timeFormat($leave->end_time): '';
+                    unset($leave->created_at,$leave->updated_at, $leave->manager_id, $leave->type);
                 }
                 return $data;
                 
@@ -58,9 +64,13 @@ class LeaveExport implements FromCollection, WithHeadings
             "ID",
             "Employee Name",
             "Leave Type ",
+            "Leave Duration",
+            "Duration Hours",
             "Applied On",
             "Start Date",
             "End Date",
+            "Start Time",
+            "End Time",
             "Total Leaves Days",
             "Leave Reason",
             "Remark",
