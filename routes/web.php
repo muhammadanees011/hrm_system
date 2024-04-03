@@ -105,6 +105,7 @@ use App\Http\Controllers\EmployementCheckTypeController;
 use App\Http\Controllers\JobTemplateController;
 use App\Http\Controllers\FlexiTimeController;
 use App\Http\Controllers\PerformanceCycleController;
+use App\Http\Controllers\PositionController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
@@ -1176,6 +1177,13 @@ Route::group(['middleware' => ['verified']], function () {
     // Route::get('job/requirement/{code}/{lang}', [JobController::class, 'jobRequirement'])->name('job.requirement');
     // Route::get('job/apply/{code}/{lang}', [JobController::class, 'jobApply'])->name('job.apply');
     // Route::post('job/apply/data/{code}', [JobController::class, 'jobApplyData'])->name('job.apply.data');
+
+    Route::resource('position', PositionController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
 
 
     Route::get('candidates-job-applications', [JobApplicationController::class, 'candidate'])->name('job.application.candidate')->middleware(
