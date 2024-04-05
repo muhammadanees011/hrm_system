@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Charts\MonthlyUsersChart;
 use App\Models\Branch;
 use App\Models\PensionScheme;
 use App\Models\Position;
@@ -13,13 +12,12 @@ class PositionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(MonthlyUsersChart $chart)
+    public function index()
     {
         if (\Auth::user()->can('Manage Position')) {
             $positions = Position::where('created_by', '=', \Auth::user()->creatorId())->get();
-            $chart = $chart->build();
-
-            return view('position.index', compact('positions', 'chart'));
+            
+            return view('position.index', compact('positions'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }

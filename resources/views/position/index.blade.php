@@ -67,13 +67,7 @@
                     </tbody>
                 </table>
             </div>
-        {!! $chart->container() !!}
-
         </div>
     </div>
 </div>
 @endsection
-
-<script src="{{ $chart->cdn() }}"></script>
-
-{{ $chart->script() }}

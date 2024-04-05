@@ -212,9 +212,9 @@ $themeColor = $color;
                                 <span class="h6">{{$file->file_path}}</span>
                                 <input type="hidden" name="file_approvals[{{$file->id}}]" id="file_approval_{{$file->id}}" value="{{$file->approved ? '1' : '0'}}">
                                 @if($file->file_type == 'read_and_approve')
-                                <button class="btn btn-primary text-white approve-btn" data-file-id="{{$file->id}}" {{$file->approved ? ' disabled' : ''}}>Approve & Read</button>
+                                <button class="btn btn-primary text-white approve-btn" data-file-id="{{$file->id}}" data-file-path="/storage/uploads/employeeOnboardingTemplate/{{$file->file_path}}" {{$file->approved ? ' disabled' : ''}}>Approve & Read</button>
                                 @else
-                                <button class="btn btn-primary text-white">Read</button>
+                                <a href="/storage/uploads/employeeOnboardingTemplate/{{$file->file_path}}" target="_blank" class="btn btn-primary text-white">Read</a>
                                 @endif
                             </div>
                             @endforeach
@@ -256,8 +256,10 @@ $themeColor = $color;
         $(document).ready(function() {
             $('.approve-btn').click(function() {
                 var fileId = $(this).data('file-id');
+                var filePath = $(this).data('file-path');
                 $('#file_approval_' + fileId).val('1'); // Update approval status
                 $(this).prop('disabled', true); // Disable the button after click
+                window.open(filePath, '_blank'); // Open the file in a new tab
             });
         });
     </script>

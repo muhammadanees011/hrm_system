@@ -587,6 +587,9 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 <li class="dash-item dash-hasmenu {{ Request::segment(1) == 'workforce' ? 'dash-trigger active' : '' }}">
                     <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-book"></i></span><span class="dash-mtext">{{ __('Workforce Planning') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
                     <ul class="dash-submenu">
+                        <li class="dash-item {{ Request::segment(1) == 'workforce-planning.analytics' ? 'active' : '' }}">
+                            <a class="dash-link" href="{{ route('workforce-planning.analytics') }}">{{ __('Analytics plan view') }}</a>
+                        </li>
                         <li class="dash-item {{ Request::segment(1) == 'position' ? 'active' : '' }}">
                             <a class="dash-link" href="{{ route('position.index') }}">{{ __('Position Management') }}</a>
                         </li>

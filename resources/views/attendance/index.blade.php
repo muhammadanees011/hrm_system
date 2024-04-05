@@ -403,6 +403,7 @@
         // Chart data and options for attendance chart
         var attendanceData = {!! json_encode($attendanceData) !!};
         var labels = {!! json_encode($labels) !!};
+        console.log(attendanceData, labels);
         var attendanceOptions = {
             chart: {
                 // height: 400,
