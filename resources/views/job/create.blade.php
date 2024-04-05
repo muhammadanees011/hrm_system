@@ -27,6 +27,7 @@ $chatgpt = Utility::getValByName('enable_chatgpt');
 <script src="{{ asset('css/summernote/summernote-bs4.js') }}"></script>
 
 <script>
+
     $(document).on('change', 'select[name=branch]', function() {
         var branch_id = $(this).val();
         console.log(branch_id);

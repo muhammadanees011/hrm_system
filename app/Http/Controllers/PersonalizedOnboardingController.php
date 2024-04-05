@@ -241,9 +241,9 @@ class PersonalizedOnboardingController extends Controller
     {
         $askDetails = EmployeeOnboardingAnswer::where('job_application_id', $jobApplicationId)->with('onboardingQuestion')->get()->sortBy('id');
         $fileApprovals = EmployeeOnboardingFileApproval::where('job_application_id', $jobApplicationId)
-                    ->with(['onboardingFile' => function ($query) {
+                    ->whereHas('onboardingFile', function ($query) {
                         $query->where('file_type', 'read_and_approve');
-                    }])
+                    })
                     ->get()
                     ->sortBy('id');
 
