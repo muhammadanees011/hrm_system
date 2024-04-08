@@ -1206,6 +1206,20 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
 
+    Route::get('workforce-planning/kpis', [WorkforcePlanningController::class, 'kpis'])->name('workforce-planning.kpis')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::post('workforce-planning/kpis/growth', [WorkforcePlanningController::class, 'kpisTotalGrowth'])->name('workforce-planning.kpis.totalgrowth')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
 
     Route::get('candidates-job-applications', [JobApplicationController::class, 'candidate'])->name('job.application.candidate')->middleware(
         [

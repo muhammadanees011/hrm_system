@@ -590,6 +590,9 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                         <li class="dash-item {{ Request::segment(1) == 'workforce-planning.analytics' ? 'active' : '' }}">
                             <a class="dash-link" href="{{ route('workforce-planning.analytics') }}">{{ __('Analytics plan view') }}</a>
                         </li>
+                        <li class="dash-item {{ Request::segment(1) == 'workforce-planning.kpis' ? 'active' : '' }}">
+                            <a class="dash-link" href="{{ route('workforce-planning.kpis') }}">{{ __('KPIs view') }}</a>
+                        </li>
                         <li class="dash-item {{ Request::segment(1) == 'position' ? 'active' : '' }}">
                             <a class="dash-link" href="{{ route('position.index') }}">{{ __('Position Management') }}</a>
                         </li>
