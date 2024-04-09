@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 @section('page-title')
-{{ __('Manage Attendance Lists') }}
+{{ __('View Workforce Analytics') }}
 @endsection
 
 @section('breadcrumb')
 <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-<li class="breadcrumb-item">{{ __('Attendance List') }}</li>
+<li class="breadcrumb-item">{{ __('View Workforce Analytics') }}</li>
 @endsection
 
 @push('script-page')
@@ -199,6 +199,7 @@
     }
 
     function renderOverviewBranchChart(labels, values, reRender = false) {
+        console.log(labels, values);
         var options = {
             chart: {
                 type: 'bar',
@@ -212,7 +213,8 @@
                 bar: {
                     horizontal: false,
                     columnWidth: '8px',
-                    endingShape: 'rounded'
+                    endingShape: 'rounded',
+                    distributed: true
                 },
             },
             dataLabels: {
