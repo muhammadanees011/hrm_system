@@ -10,6 +10,7 @@ class EmployeeOnboardingQuestion extends Model
     use HasFactory;
     protected $fillable = [
         'employee_onboarding_template_id',
+        'uuid',
         'name',
         'type',
         'word_count',

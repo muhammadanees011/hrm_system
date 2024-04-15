@@ -1163,7 +1163,12 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('personlized-onboarding', [PersonalizedOnboardingController::class, 'index'])->name('personlized-onboarding.index');
     Route::get('personlized-onboarding/create', [PersonalizedOnboardingController::class, 'create'])->name('personlized-onboarding.create');
     Route::post('personlized-onboarding', [PersonalizedOnboardingController::class, 'store'])->name('personlized-onboarding.store');
+    Route::get('personlized-onboarding/{id}/edit', [PersonalizedOnboardingController::class, 'edit'])->name('personlized-onboarding.edit');
+    Route::put('personlized-onboarding/{id}/update', [PersonalizedOnboardingController::class, 'update'])->name('personlized-onboarding.update');
     Route::delete('personlized-onboarding/{id}', [PersonalizedOnboardingController::class, 'destroy'])->name('personlized-onboarding.destroy');
+    Route::delete('personlized-onboarding/question/{id}', [PersonalizedOnboardingController::class, 'destroyQuestion'])->name('personlized-onboarding.question.destroy');
+    Route::delete('personlized-onboarding/file/{id}', [PersonalizedOnboardingController::class, 'destroyFile'])->name('personlized-onboarding.file.destroy');
+
     Route::resource('job-template', JobTemplateController::class)->middleware(
         [
             'auth',
