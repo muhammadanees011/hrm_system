@@ -44,17 +44,15 @@
                 {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'enter goal subject', 'required' => 'required']) }}
             </div>
         </div>
-        <div class="col-md-12">
-            <div class="form-group">
-                {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
-                {{ Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3', 'placeholder' => 'enter description']) }}
-            </div>
+        <div class="form-group col-lg-6">
+            {{ Form::label('visibility', __('Visibility'), ['class' => 'col-form-label']) }}
+            {{ Form::select('visibility', $visibility, null, ['class' => 'form-control select2', 'required' => 'required']) }}
         </div>
     </div>
 </div>
 <div class="modal-footer">
     <input type="button" value="Cancel" class="btn btn-light" data-bs-dismiss="modal">
-    <input type="submit" value="{{ __('Create') }}" class="btn btn-primary">
+    <input type="submit" value="{{ __('Create') }}" class="btn btn-warning">
 </div>
 {{ Form::close() }}
 

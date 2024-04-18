@@ -18,12 +18,13 @@ class CreateGoalTrackingsTable extends Migration
             $table->integer('employee_id');
             $table->integer('performancecycle_id');
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('rating')->nullable();
+            $table->dateTime('checkin_time')->nullable();
             $table->integer('progress')->default(0);
-            $table->integer('status')->default(0);
+            $table->enum('visibility',['Private','Shared']);
+            $table->enum('status',['Pending','Done','On Track','Off Track'])->default('Pending');
             $table->integer('created_by');
             $table->timestamps();
         }

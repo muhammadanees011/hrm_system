@@ -58,8 +58,7 @@
         <div class="dropdown-content">
             <a href="{{ route('performancecycle.index') }}" target="_blank">Manage Cycles </a>
             <a href="{{ route('goaltracking.index') }}" target="_blank">People's Goals </a>
-            <a href="#">Employee Reviews</a>
-            <a href="#">Componsation Reviews</a>
+            <a href="{{ route('employeereviews.index') }}" target="_blank">Employee Reviews</a>
         </div>
         </div>
     </div>
@@ -160,6 +159,7 @@
                             <th>{{ __('Name') }}</th>
                             <th>{{ __('Email') }}</th>
                             <th>{{ __('Branch') }}</th>
+                            <th>{{ __('Manager') }}</th>
                             <th>{{ __('Department') }}</th>
                             <th>{{ __('Designation') }}</th>
                             <th>{{ __('Date Of Joining') }}</th>
@@ -176,11 +176,15 @@
                                 <a href="{{ route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}">
                                     <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
                                     {{ $employee->name }}
+                                    <i class="ti ti-arrow-right"></i>
                                 </a>
                             </td>
                             <td>{{ !empty($employee->email) ? $employee->email : '-' }}</td>
                             <td>
                                 {{ !empty($employee->branch_id) ? $employee->branch->name : '-' }}
+                            </td>
+                            <td>
+                                {{ !empty($employee->manager_id) ? $employee->manager->name : '-' }}
                             </td>
                             <td>
                                 {{ !empty($employee->department_id) ? $employee->department->name : '-' }}

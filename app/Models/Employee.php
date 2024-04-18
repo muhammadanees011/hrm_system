@@ -11,6 +11,7 @@ class Employee extends Model
     protected $table = 'employees';
     protected $fillable = [
         'user_id',
+        'manager_id',
         'name',
         'dob',
         'gender',
@@ -36,6 +37,11 @@ class Employee extends Model
         'salary',
         'created_by',
     ];
+
+    public function manager()
+    {
+        return $this->belongsTo('App\Models\User', 'manager_id', 'id');
+    }
 
     public function documents()
     {

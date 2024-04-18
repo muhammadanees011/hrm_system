@@ -41,4 +41,9 @@ class PerformanceCycle extends Model
             return Role::where('id', $participantIds[2])->get()->pluck('name', 'id'); 
         }
     }
+
+    public function reviews()
+    {
+        return $this->hasMany('App\Models\EmployeeReview', 'performancecycle_id', 'id');
+    }
 }

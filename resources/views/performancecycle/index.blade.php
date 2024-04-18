@@ -39,9 +39,9 @@
                             @foreach ($performancecycles as $performancecycle)
                                 <tr>
                                     <td style="background-color:#f5f5f5;">
-                                        <a href="{{ route('performancecycle.show', $performancecycle->id)}}" data-url="{{ route('performancecycle.show', $performancecycle->id) }}">
+                                        <!-- <a href="{{ route('performancecycle.show', $performancecycle->id)}}" data-url="{{ route('performancecycle.show', $performancecycle->id) }}"> -->
                                             {{ $performancecycle->title }}
-                                        </a>
+                                        <!-- </a> -->
                                     </td>
                                     <td>
                                         @foreach($performancecycle->participant_roles as $participant)
@@ -54,12 +54,12 @@
                                     <td>
                                         <div class="progress-wrapper">
                                             <span class="progress-percentage"><small
-                                                    class="font-weight-bold"></small>{{ $performancecycle->progress }}/100</span>
+                                                    class="font-weight-bold"></small>{{ $performancecycle->completed_reviews }}/{{ $performancecycle->reviews_count }}</span>
                                             <div class="progress progress-xs mt-2 w-100">
-                                                <div class="progress-bar bg-{{ Utility::getProgressColor($performancecycle->progress) }}"
-                                                    role="progressbar" aria-valuenow="{{ $performancecycle->progress }}"
-                                                    aria-valuemin="0" aria-valuemax="100"
-                                                    style="width: {{ $performancecycle->progress }}%;"></div>
+                                                <div class="progress-bar bg-{{ Utility::getProgressColor($performancecycle->reviews_count != 0 ? ($performancecycle->completed_reviews/$performancecycle->reviews_count)*100 :0) }}"
+                                                    role="progressbar" aria-valuenow="{{ $performancecycle->completed_reviews }}"
+                                                    aria-valuemin="0" aria-valuemax="{{$performancecycle->reviews_count}}"
+                                                    style="width: {{ $performancecycle->reviews_count != 0 ? ($performancecycle->completed_reviews/$performancecycle->reviews_count)*100 :0}}%;"></div>
                                             </div>
                                         </div>
                                     </td>

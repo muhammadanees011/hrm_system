@@ -685,12 +685,30 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 @endcan
 
 
-                <!--meeting-->
-                @can('Manage Meeting')
-                <li class="dash-item {{ Request::segment(1) == 'meeting' || Request::segment(2) == 'meeting' ? 'active' : '' }}">
-                    <a href="{{ route('meeting.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-calendar-time"></i></span><span class="dash-mtext">{{ __('Meeting') }}</span></a>
-                </li>
-                @endcan
+                                <!--meeting-->
+                                <!-- @can('Manage Meeting')
+                                <li class="dash-item {{ Request::segment(1) == 'meeting' || Request::segment(2) == 'meeting' ? 'active' : '' }}">
+                                    <a href="{{ route('meeting.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-calendar-time"></i></span><span class="dash-mtext">{{ __('Meeting') }}</span></a>
+                                </li>
+                                @endcan -->
+
+                                <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'job' || Request::segment(1) == 'job-application' ? 'dash-trigger active' : '' }} ">
+                                    <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-calendar-time"></i></span><span
+                                    class="dash-mtext">{{ __("1 on 1's") }}</span><span class="dash-arrow"><i
+                                    data-feather="chevron-right"></i></span></a>
+                                    <ul class="dash-submenu">
+                                        @can('Manage Meeting')
+                                        <li class="dash-item {{ Request::segment(1) == 'meetingtemplate' || Request::segment(2) == 'meetingtemplate' ? 'active' : '' }}">
+                                            <a href="{{ route('meetingtemplate.index') }}" class="dash-link">{{ __('Template') }}</a>
+                                        </li>
+                                        @endcan
+                                        @can('Manage Meeting')
+                                        <li class="dash-item {{ Request::segment(1) == 'meeting' || Request::segment(2) == 'meeting' ? 'active' : '' }}">
+                                            <a href="{{ route('meeting.index') }}" class="dash-link">{{ __('Meeting') }}</a>
+                                        </li>
+                                        @endcan
+                                    </ul>
+                                </li>
 
 
                 <!-- Zoom meeting-->
@@ -836,26 +854,26 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
 
 
 <!--constant-->
-                @if (Gate::check('Manage Department') ||
-                Gate::check('Manage Designation') ||
-                Gate::check('Manage Document Type') ||
-                Gate::check('Manage Branch') ||
-                Gate::check('Manage Award Type') ||
-                Gate::check('Manage Termination Types') ||
-                Gate::check('Manage Payslip Type') ||
-                Gate::check('Manage Allowance Option') ||
-                Gate::check('Manage Loan Options') ||
-                Gate::check('Manage Deduction Options') ||
-                Gate::check('Manage Expense Type') ||
-                Gate::check('Manage Income Type') ||
-                Gate::check('Manage Payment Type') ||
-                Gate::check('Manage Leave Type') ||
-                Gate::check('Manage Training Type') ||
-                Gate::check('Manage Job Category') ||
-                Gate::check('Manage Job Stage'))
-                <li class="dash-item dash-hasmenu {{ Request::route()->getName() == 'branch.index' ||Request::route()->getName() == 'department.index' ||Request::route()->getName() == 'designation.index' ||Request::route()->getName() == 'leavetype.index' ||Request::route()->getName() == 'document.index' ||Request::route()->getName() == 'paysliptype.index' ||Request::route()->getName() == 'allowanceoption.index' ||Request::route()->getName() == 'loanoption.index' ||Request::route()->getName() == 'deductionoption.index' ||Request::route()->getName() == 'goaltype.index' ||Request::route()->getName() == 'trainingtype.index' ||Request::route()->getName() == 'awardtype.index' ||Request::route()->getName() == 'terminationtype.index' ||Request::route()->getName() == 'job-category.index' ||Request::route()->getName() == 'job-stage.index' ||Request::route()->getName() == 'performanceType.index' ||Request::route()->getName() == 'competencies.index' ||Request::route()->getName() == 'expensetype.index' ||Request::route()->getName() == 'incometype.index' ||Request::route()->getName() == 'paymenttype.index' ||Request::route()->getName() == 'contract_type.index'? ' active': '' }}">
-                    <a href="{{ route('branch.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-table"></i></span><span class="dash-mtext">{{ __('HRM System Setup') }}</span></a>
-                </li>
+@if (Gate::check('Manage Department') ||
+    Gate::check('Manage Designation') ||
+    Gate::check('Manage Document Type') ||
+    Gate::check('Manage Branch') ||
+    Gate::check('Manage Award Type') ||
+    Gate::check('Manage Termination Types') ||
+    Gate::check('Manage Payslip Type') ||
+    Gate::check('Manage Allowance Option') ||
+    Gate::check('Manage Loan Options') ||
+    Gate::check('Manage Deduction Options') ||
+    Gate::check('Manage Expense Type') ||
+    Gate::check('Manage Income Type') ||
+    Gate::check('Manage Payment Type') ||
+    Gate::check('Manage Leave Type') ||
+    Gate::check('Manage Training Type') ||
+    Gate::check('Manage Job Category') ||
+    Gate::check('Manage Job Stage'))
+    <li class="dash-item dash-hasmenu {{ Request::route()->getName() == 'branch.index' ||Request::route()->getName() == 'department.index' ||Request::route()->getName() == 'designation.index' ||Request::route()->getName() == 'leavetype.index' ||Request::route()->getName() == 'document.index' ||Request::route()->getName() == 'paysliptype.index' ||Request::route()->getName() == 'allowanceoption.index' ||Request::route()->getName() == 'loanoption.index' ||Request::route()->getName() == 'deductionoption.index' ||Request::route()->getName() == 'trainingtype.index' ||Request::route()->getName() == 'awardtype.index' ||Request::route()->getName() == 'terminationtype.index' ||Request::route()->getName() == 'job-category.index' ||Request::route()->getName() == 'job-stage.index' ||Request::route()->getName() == 'performanceType.index' ||Request::route()->getName() == 'competencies.index' ||Request::route()->getName() == 'expensetype.index' ||Request::route()->getName() == 'incometype.index' ||Request::route()->getName() == 'paymenttype.index' ||Request::route()->getName() == 'contract_type.index'? ' active': '' }}">
+        <a href="{{ route('branch.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-table"></i></span><span class="dash-mtext">{{ __('HRM System Setup') }}</span></a>
+    </li>
                 <!-- <ul class="dash-submenu">
 @can('Manage Branch')
 <li class="dash-item {{ request()->is('branch*') ? 'active' : '' }}">
@@ -955,7 +973,7 @@ href="{{ route('terminationtype.index') }}">{{ __('Termination Type') }}</a>
 @can('Manage Goal Type')
 <li class="dash-item {{ request()->is('goaltype*') ? 'active' : '' }}">
 <a class="dash-link"
-href="{{ route('goaltype.index') }}">{{ __('Goal Type') }}</a>
+href="#">{{ __('Goal Type') }}</a>
 </li>
 @endcan
 @can('Manage Training Type')

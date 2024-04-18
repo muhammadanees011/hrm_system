@@ -16,57 +16,29 @@
     @endif
 
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                {{ Form::label('branch_id', __('Branch'), ['class' => 'form-label']) }}
-                <div class="form-icon-user">
-                    <select class="form-control " name="branch_id" placeholder="Select Branch" id="branch_id">
-                        <option value="">{{ __('Select Branch') }}</option>
-                        {{-- <option value="0">{{ __('All Branch') }}</option> --}}
-                        @foreach ($branch as $branch)
-                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 col-md-6 col-sm-6">
-            <div class="form-group">
-                {{ Form::label('department_id', __('Department'), ['class' => 'form-label']) }}
-                <div class="form-icon-user">
-                    <div class="department_div">
-                        <select class="form-control select2 department_id" name="department_id[]" id="choices-multiple"
-                            placeholder="Select Department" multiple>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 col-md-6 col-sm-6">
-            <div class="form-group">
-                {{ Form::label('employee_id', __('Employee'), ['class' => 'form-label']) }}
-                <div class="form-icon-user">
-                    <div class="employee_div">
-                        <select class="form-control  employee_id" name="employee_id[]" id="choices-multiple"
-                            placeholder="Select Employee" required>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="col-lg-6 col-md-6 col-sm-6">
-            <div class="form-group">
-                {{ Form::label('title', __('Meeting Title'), ['class' => 'form-label']) }}
+                {{ Form::label('title', __('Meeting Name'), ['class' => 'form-label']) }}
                 <div class="form-icon-user">
                     {{ Form::text('title', null, ['class' => 'form-control ', 'required' => 'required', 'placeholder' => __('Enter Meeting Title')]) }}
                 </div>
             </div>
         </div>
 
+        <div class="form-group col-lg-6">
+            {{ Form::label('organizer_id', __('Organizer'), ['class' => 'col-form-label']) }}
+            {{ Form::select('organizer_id', $organizers, null, ['class' => 'form-control select2', 'required' => 'required']) }}
+        </div>
+
+        <div class="form-group col-lg-6">
+            {{ Form::label('invitee_id', __('Invitee'), ['class' => 'col-form-label']) }}
+            {{ Form::select('invitee_id', $invitees, null, ['class' => 'form-control select2', 'required' => 'required']) }}
+        </div>
+
+        <div class="form-group col-lg-12">
+            {{ Form::label('meeting_template_id', __('Meeting Templates'), ['class' => 'col-form-label']) }}
+            {{ Form::select('meeting_template_id', $templates, null, ['class' => 'form-control select2', 'required' => 'required']) }}
+        </div>
 
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
@@ -79,13 +51,21 @@
 
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
-                {{ Form::label('time', __('Meeting Time'), ['class' => 'form-label']) }}
+                {{ Form::label('start_time', __('Start Time'), ['class' => 'form-label']) }}
                 <div class="form-icon-user">
-                    {{ Form::time('time', null, ['class' => 'form-control', 'required' => 'required', 'id' => 'currentTime']) }}
+                    {{ Form::time('start_time', null, ['class' => 'form-control', 'required' => 'required', 'id' => 'currentTime']) }}
                 </div>
             </div>
         </div>
 
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="form-group">
+                {{ Form::label('end_time', __('End Time'), ['class' => 'form-label']) }}
+                <div class="form-icon-user">
+                    {{ Form::time('end_time', null, ['class' => 'form-control', 'required' => 'required', 'id' => 'currentTime']) }}
+                </div>
+            </div>
+        </div>
 
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
@@ -109,7 +89,7 @@
 </div>
 <div class="modal-footer">
     <input type="button" value="Cancel" class="btn btn-light" data-bs-dismiss="modal">
-    <input type="submit" value="{{ __('Create') }}" class="btn btn-primary">
+    <input type="submit" value="{{ __('Create') }}" class="btn btn-warning">
 </div>
 {{ Form::close() }}
 
