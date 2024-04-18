@@ -10,12 +10,12 @@
 @endsection
 
 @section('action-button')
-    <a href="{{ route('meeting.calender') }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+    <!-- <a href="{{ route('meeting.calender') }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
         data-bs-original-title="{{ __('Calendar View') }}">
         <i class="ti ti-calendar"></i>
-    </a>
+    </a> -->
 
-    @can('Create Branch')
+    @can('Create Meeting')
         <a href="#" data-url="{{ route('meeting.create') }}" data-ajax-popup="true"
             data-title="{{ __('New Task-1-on-1 Meeting') }}" data-size="md" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
