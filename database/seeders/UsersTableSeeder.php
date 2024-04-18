@@ -3111,6 +3111,8 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Health And Fitness"],
             ["name" => "Manage Retirement"],
             ["name" => "Create Retirement"],
+            ["name" => "Manage Goal Tracking"],
+
         ];
 
         $managerRole->givePermissionTo($managerPermission);
@@ -3191,6 +3193,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Edit Health And Fitness"],
             ["name" => "Manage Retirement"],
             ["name" => "Create Retirement"],
+            ["name" => "Manage Goal Tracking"],
         ];
 
         $employeeRole->givePermissionTo($employeePermission);

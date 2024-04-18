@@ -955,7 +955,7 @@ href="{{ route('terminationtype.index') }}">{{ __('Termination Type') }}</a>
 @can('Manage Goal Type')
 <li class="dash-item {{ request()->is('goaltype*') ? 'active' : '' }}">
 <a class="dash-link"
-href="{{ route('goaltype.index') }}">{{ __('Goal Type') }}</a>
+href="#">{{ __('Goal Type') }}</a>
 </li>
 @endcan
 @can('Manage Training Type')

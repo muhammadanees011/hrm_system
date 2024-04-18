@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\User;
+use App\Models\MeetingTemplate;
 use App\Models\Meeting as LocalMeeting;
 use App\Models\MeetingEmployee;
 use Illuminate\Http\Request;
@@ -19,14 +21,9 @@ class MeetingController extends Controller
         if (\Auth::user()->can('Manage Meeting')) {
             $employees = Employee::get();
             if (Auth::user()->type == 'employee') {
-                $current_employee = Employee::where('user_id', '=', \Auth::user()->id)->first();
-                $meetings         = LocalMeeting::orderBy('meetings.id', 'desc')
-                    ->leftjoin('meeting_employees', 'meetings.id', '=', 'meeting_employees.meeting_id')
-                    ->where('meeting_employees.employee_id', '=', $current_employee->id)
-                    ->orWhere(function ($q) {
-                        $q->where('meetings.department_id', '["0"]')
-                            ->where('meetings.employee_id', '["0"]');
-                    })
+                $user = \Auth::user();
+                $meetings = LocalMeeting::where('organizer_id', '=', $user->id) 
+                    ->orWhere('invitee_id', '=', $user->id) 
                     ->get();
             } else {
                 $meetings = LocalMeeting::where('created_by', '=', \Auth::user()->creatorId())->get();
@@ -40,16 +37,16 @@ class MeetingController extends Controller
 
     public function create()
     {
+        $user=\Auth::user();
         if (\Auth::user()->can('Create Meeting')) {
             if (Auth::user()->type == 'employee') {
-                $employees = Employee::where('created_by', '=', \Auth::user()->creatorId())->where('user_id', '!=', \Auth::user()->id)->get()->pluck('name', 'id');
+                $organizers = User::where('id', $user->id)->get()->pluck('name', 'id');
             } else {
-                $branch      = Branch::where('created_by', '=', \Auth::user()->creatorId())->get();
-                $departments = Department::where('created_by', '=', Auth::user()->creatorId())->get();
-                $employees   = Employee::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+                $organizers = User::where('type', '!=', 'company')->get()->pluck('name', 'id');
             }
-
-            return view('meeting.create', compact('employees', 'departments', 'branch'));
+            $invitees = User::where('type', '!=', 'company')->get()->pluck('name', 'id');
+            $templates = MeetingTemplate::get()->pluck('title', 'id');
+            return view('meeting.create', compact('organizers','invitees','templates'));
         } else {
             return response()->json(['error' => __('Permission denied.')], 401);
         }
@@ -61,13 +58,13 @@ class MeetingController extends Controller
         $validator = \Validator::make(
             $request->all(),
             [
-                'branch_id' => 'required',
-                'department_id' => 'required',
-                'employee_id' => 'required',
-                'department_id' => 'required',
+                'organizer_id' => 'required',
+                'invitee_id' => 'required',
+                'meeting_template_id' => 'required',
                 'title' => 'required',
                 'date' => 'required',
-                'time' => 'required',
+                'start_time' => 'required',
+                'end_time' => 'required',
             ]
         );
         if ($validator->fails()) {
@@ -78,64 +75,16 @@ class MeetingController extends Controller
 
         if (\Auth::user()->can('Create Meeting')) {
             $meeting                = new LocalMeeting();
-            $meeting->branch_id     = $request->branch_id;
-            $meeting->department_id = json_encode($request->department_id);
-            $meeting->employee_id   = json_encode($request->employee_id);
+            $meeting->organizer_id  = $request->organizer_id;
+            $meeting->invitee_id    = $request->invitee_id;
+            $meeting->meeting_template_id   =$request->meeting_template_id;
             $meeting->title         = $request->title;
             $meeting->date          = $request->date;
-            $meeting->time          = $request->time;
+            $meeting->start_time    = $request->start_time;
+            $meeting->end_time      = $request->end_time;
             $meeting->note          = $request->note;
             $meeting->created_by    = \Auth::user()->creatorId();
             $meeting->save();
-
-
-            // slack 
-            $setting = Utility::settings(\Auth::user()->creatorId());
-            $branch = Branch::find($request->branch_id);
-            if (isset($setting['meeting_notification']) && $setting['meeting_notification'] == 1) {
-                // $msg = $request->title . ' ' . __("meeting created for") . ' ' . $branch->name . ' ' . ("from") . ' ' . $request->date . ' ' . ("at") . ' ' . $request->time . '.';
-                
-                $uArr = [
-                    'meeting_title' => $request->title,
-                    'branch_name' => $branch->name,
-                    'date' => $request->date,
-                    // 'time' => $request->time,
-                    'time' => date('g:i A', strtotime($request->time)),
-                ];
-                Utility::send_slack_msg('new_meeting', $uArr);
-            }
-
-            // telegram
-            $setting = Utility::settings(\Auth::user()->creatorId());
-            $branch = Branch::find($request->branch_id);
-            if (isset($setting['telegram_meeting_notification']) && $setting['telegram_meeting_notification'] == 1) {
-                // $msg = $request->title . ' ' . __("meeting created for") . ' ' . $branch->name . ' ' . ("from") . ' ' . $request->date . ' ' . ("at") . ' ' . $request->time . '.';
-                
-                $uArr = [
-                    'meeting_title' => $request->title,
-                    'branch_name' => $branch->name,
-                    'date' => $request->date,
-                    // 'time' => $request->time,
-                    'time' => date('g:i A', strtotime($request->time)),
-                ];
-
-                Utility::send_telegram_msg('new_meeting', $uArr);
-            }
-
-            if (in_array('0', $request->employee_id)) {
-                $departmentEmployee = Employee::whereIn('department_id', $request->department_id)->get()->pluck('id');
-                $departmentEmployee = $departmentEmployee;
-            } else {
-
-                $departmentEmployee = $request->employee_id;
-            }
-            foreach ($departmentEmployee as $employee) {
-                $meetingEmployee              = new MeetingEmployee();
-                $meetingEmployee->meeting_id  = $meeting->id;
-                $meetingEmployee->employee_id = $employee;
-                $meetingEmployee->created_by  = \Auth::user()->creatorId();
-                $meetingEmployee->save();
-            }
 
             // google calendar
             if ($request->get('synchronize_type')  == 'google_calender') {
@@ -144,24 +93,10 @@ class MeetingController extends Controller
                 $request1 = new GoogleEvent();
                 $request1->title = $request->title;
                 $request1->start_date = $request->date;
-                $request1->time = $request->time;
+                $request1->time = $request->start_time;
                 $request1->end_date = $request->date;
 
                 Utility::addCalendarDataTime($request1, $type);
-            }
-
-            //webhook
-            $module = 'New Meeting';
-            $webhook =  Utility::webhookSetting($module);
-            if ($webhook) {
-                $parameter = json_encode($meeting);
-                // 1 parameter is  URL , 2 parameter is data , 3 parameter is method
-                $status = Utility::WebhookCall($webhook['url'], $parameter, $webhook['method']);
-                if ($status == true) {
-                    return redirect()->back()->with('success', __('Meeting successfully created.'));
-                } else {
-                    return redirect()->back()->with('error', __('Webhook call failed.'));
-                }
             }
 
             return redirect()->route('meeting.index')->with('success', __('Meeting successfully created.'));
@@ -179,16 +114,18 @@ class MeetingController extends Controller
 
     public function edit($meeting)
     {
+        $user=\Auth::user();
         if (\Auth::user()->can('Edit Meeting')) {
             $meeting = LocalMeeting::find($meeting);
             if ($meeting->created_by == Auth::user()->creatorId()) {
                 if (Auth::user()->type == 'employee') {
-                    $employees = Employee::where('created_by', '=', \Auth::user()->creatorId())->where('user_id', '!=', Auth::user()->id)->get()->pluck('name', 'id');
+                    $organizers = User::where('id', $user->id)->get()->pluck('name', 'id');
                 } else {
-                    $employees = Employee::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+                    $organizers = User::where('type', '!=', 'company')->get()->pluck('name', 'id');
                 }
-
-                return view('meeting.edit', compact('meeting', 'employees'));
+                $invitees = User::where('type', '!=', 'company')->get()->pluck('name', 'id');
+                $templates = MeetingTemplate::get()->pluck('title', 'id');
+                return view('meeting.edit', compact('meeting', 'invitees','templates','organizers'));
             } else {
                 return response()->json(['error' => __('Permission denied.')], 401);
             }
@@ -203,10 +140,13 @@ class MeetingController extends Controller
             $validator = \Validator::make(
                 $request->all(),
                 [
-
+                    'organizer_id' => 'required',
+                    'invitee_id' => 'required',
+                    'meeting_template_id' => 'required',
                     'title' => 'required',
                     'date' => 'required',
-                    'time' => 'required',
+                    'start_time' => 'required',
+                    'end_time' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -216,10 +156,15 @@ class MeetingController extends Controller
             }
 
             if ($meeting->created_by == \Auth::user()->creatorId()) {
-                $meeting->title = $request->title;
-                $meeting->date  = $request->date;
-                $meeting->time  = $request->time;
-                $meeting->note  = $request->note;
+                $meeting->organizer_id  = $request->organizer_id;
+                $meeting->invitee_id    = $request->invitee_id;
+                $meeting->meeting_template_id   =$request->meeting_template_id;
+                $meeting->title         = $request->title;
+                $meeting->date          = $request->date;
+                $meeting->start_time    = $request->start_time;
+                $meeting->end_time      = $request->end_time;
+                $meeting->note          = $request->note;
+                $meeting->created_by    = \Auth::user()->creatorId();
                 $meeting->save();
 
                 return redirect()->route('meeting.index')->with('success', __('Meeting successfully updated.'));
@@ -330,4 +275,18 @@ class MeetingController extends Controller
         return $arrayJson;
     }
 
+    public function details($id)
+    {
+        $meeting = LocalMeeting::where('id',$id)->first();
+        return view('meeting.detail',compact('meeting'));
+    }
+
+    public function notes(Request $request,$meeting_id)
+    {
+        $meeting = LocalMeeting::where('id',$meeting_id)->first();
+        $meeting->organizer_note=$request->organizer_note;
+        $meeting->invitee_note=$request->invitee_note;
+        $meeting->save();
+        return redirect()->route('meeting.details',$meeting_id)->with(['meeting' => $meeting, 'success' => __('Meeting successfully updated.')]);
+    }
 }

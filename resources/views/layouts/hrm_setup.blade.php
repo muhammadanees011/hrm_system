@@ -71,13 +71,6 @@
             </a>
         @endcan
 
-        @can('Manage Goal Type')
-            <a href="{{ route('goaltype.index') }}"
-                class="list-group-item list-group-item-action border-0 {{ request()->is('goaltype*') ? 'active' : '' }}">{{ __('Goal Type') }}
-                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
-            </a>
-        @endcan
-
         @can('Manage Training Type')
             <a href="{{ route('trainingtype.index') }}"
                 class="list-group-item list-group-item-action border-0 {{ request()->is('trainingtype*') ? 'active' : '' }}">{{ __('Training Type') }}

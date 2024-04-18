@@ -22,12 +22,12 @@
                 {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'enter title', 'required' => 'required']) }}
             </div>
         </div>
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
             <div class="form-group">
                 {{ Form::label('progress', __('Progress'), ['class' => 'col-form-label']) }}
                 {{ Form::number('progress', null, ['class' => 'form-control', 'placeholder' => 'enter progress']) }}
             </div>
-        </div>
+        </div> -->
 
         <div class="form-group col-6 switch-width">
             {{ Form::label('roles', __('Participants'), ['class' => ' form-label']) }}

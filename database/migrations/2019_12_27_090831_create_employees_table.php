@@ -17,6 +17,7 @@ class CreateEmployeesTable extends Migration
             'employees', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('user_id');
+            $table->integer('manager_id');
             $table->string('name');
             $table->date('dob')->nullable();
             $table->string('gender');

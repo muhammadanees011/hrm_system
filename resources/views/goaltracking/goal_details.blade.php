@@ -46,17 +46,23 @@
 </style>
 
 
-        <div class="col-xl-12">
+
+<div class="col-xl-12">
             <div class="card  text-center">
                 <div class="card-header border-0 pb-0">
                     <div class="row d-flex justify-content-between align-items-center">
                             <div class="col-md-10 d-flex">
                                 <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 25px;width:25px;" />
-                                <h5>Define and promote company culture and values, also check the performance of support team</h5>
+                                <h5>{{$goal->title}}</h5>
                             </div>
+                            @if($goal->status!='Done')
                             <div class="col-md-2 d-flex justify-content-end">
-                                <button class="btn btn-warning"><i class="fas fa-check me-2"></i> Close</button>
+                                <a href="{{route('goaltracking.goals.status', ['id' => $goal->id, 'status' => 'Done'])}}" class="btn btn-warning" data-ajax-popup="false">
+                                    <i class="fas fa-check me-2"></i> Done
+                                </a>
                             </div>
+                            @endif
+
                     </div>
                 </div>
                 <div class="card-body">
@@ -66,50 +72,46 @@
                                 <h5 class="goal-headings">Owner</h5>  
                                 <p class="goal-data">
                                     <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 25px;width:25px;" />
-                                     Muhammad Anees
+                                     {{$goal->employee->name}}
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-3 d-flex justify-content-start">
                             <div class="d-flex flex-column justify-content-start">
                                 <h5 class="goal-headings">TimeFrame</h5>
-                                <p class="goal-data">Apr 2020 - Nov 2020</p>
+                                <p class="goal-data">{{$goal->start_date}} - {{$goal->end_date}}</p>
                             </div>
                         </div>
                         <div class="col-md-3 d-flex justify-content-start">
                             <div class="d-flex flex-column justify-content-start">
                                 <h5 class="goal-headings">Visibility</h5>
-                                <p class="goal-data">Shared</p>
+                                <p class="goal-data text-warning">{{$goal->visibility}}</p>
                             </div>
                         </div>
                         <div class="col-md-3 d-flex justify-content-start">
                             <div class="d-flex flex-column justify-content-start">
                                 <h5 class="goal-headings">Aligned to</h5>
-                                <p class="goal-data">Innovation and R&D - Accent Prime's next gen, V&V process implementation</p>
+                                <p class="goal-data">{{$goal->performanceCycle ? $goal->performanceCycle->title:'-'}}</p>
                             </div>
                         </div>
                     </div>
                     <div style="height:4rem;">
                        <div class="row">
                           <div class="col-md-3 d-flex mt-1">
-                            <div class="me-2 goal-status">On Track</div>
-                            <div>7 days ago</div>
-                          </div>
-                          <div class="col-md-3 d-flex mt-1">
-                            <div class="me-2 goal-status-offtrack">Off Track</div>
-                            <div>7 days ago</div>
+                            <div class="me-2 goal-status {{ $goal->status === 'Pending' ? ' bg-warning' : ($goal->status === 'Off Track' ? ' bg-danger':'')  }}">{{$goal->status}}</div>
+                            <div>{{\Carbon\Carbon::parse($goal->created_at)->diffForHumans()}}</div>
                           </div>
                        </div>
                     <div class="progress-wrapper">
                         <span class="progress-percentage">
-                            <small class="me-5">40%</small>
-                            <small class="font-weight-bold ms-5">Apr 2020 - Nov 2020</small>
+                            <small class="me-5">{{$goal->progress}}%</small>
+                            <small class="font-weight-bold ms-5">{{$goal->start_date}} - {{$goal->end_date}}</small>
                         </span>
                         <div class="progress progress-xs mt-2 w-100">
-                            <div class="progress-bar bg-{{ Utility::getProgressColor(40) }}"
-                                role="progressbar" aria-valuenow="40"
+                            <div class="progress-bar bg-{{ Utility::getProgressColor($goal->progress) }}"
+                                role="progressbar" aria-valuenow="{{$goal->progress}}"
                                 aria-valuemin="0" aria-valuemax="100"
-                                style="width: 40%;"></div>
+                                style="width: {{$goal->progress}}%;"></div>
                         </div>
                     </div>
                 </div>
@@ -121,29 +123,33 @@
             <div class="card  text-center">
                 <div class="card-header border-0 pb-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5>Key Details</h5>
+                        <h5>Key Results</h5>
                         <div>
-                            <button class="btn btn-warning">Create<i class="fas fa-plus-square ms-2"></i></button>
+                            <a href="#" class="btn btn-warning" data-ajax-popup="true"
+                                data-title="{{ __('Create Result') }}"
+                                data-url="{{route('goal.result.create', $goal->id)}}">
+                                <span class="ms-1 text-white">{{ __('Create') }}</span>
+                                <i class="fas fa-plus-square ms-2"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                @for($i= 0; $i < 5; $i++)
+                @foreach($goal->goalResults as $goalresult)
                     <div class="row tasks-bg">
                     <div class="col-md-8 col-sm-12 d-flex justify-content-between mx-auto">
-                            <p class="mt-4">Document clear role division between sales, marketing, design and development</p>  
+                            <p class="mt-4">{{$goalresult->title}}</p>  
                     </div>
                     <div class="col-md-2 col-8">
                             <div class="progress-wrapper mb-2">
                                 <span class="progress-percentage">
-                                    <small class="">40%</small>
-                                    <!-- <small class="font-weight-bold ms-5">Apr 2020 - Nov 2020</small> -->
+                                    <small class="">{{$goalresult->progress}}%</small>
                                 </span>
                                 <div class="progress progress-xs mt-2 w-100">
-                                    <div class="progress-bar bg-{{ Utility::getProgressColor(40) }}"
-                                        role="progressbar" aria-valuenow="40"
+                                    <div class="progress-bar bg-{{ Utility::getProgressColor($goalresult->progress) }}"
+                                        role="progressbar" aria-valuenow="{{$goalresult->progress}}"
                                         aria-valuemin="0" aria-valuemax="100"
-                                        style="width: 40%;">
+                                        style="width: {{$goalresult->progress}}%;">
                                     </div>
                                 </div>
                             </div>
@@ -152,9 +158,15 @@
                             <div class="dropdown">
                                 <i class="fas fa-bars " id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"></i>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li><a class="dropdown-item" href="#">Edit</a></li>
-                                <li><a class="dropdown-item" href="#">Delete</a></li>
-                                <li><a class="dropdown-item" href="#">Done (100%)</a></li>
+                                <li>
+                                    <a href="#" class="dropdown-item" data-ajax-popup="true"
+                                        data-title="{{ __('Create Result') }}"
+                                        data-url="{{route('goal.result.edit', $goalresult->id)}}">
+                                        <span class="ms-1 text-black">{{ __('Edit') }}</span>
+                                    </a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{route('goal.result.delete', $goalresult->id)}}">Delete</a></li>
+                                <li><a class="dropdown-item" href="{{route('goal.result.achieved', $goalresult->id)}}">Done (100%)</a></li>
                             </ul>
                             </div>
 
@@ -163,11 +175,18 @@
                         </div>
                     </div>
                     <hr class="tasks-line">
-                @endfor
+                @endforeach
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+
+
+<!-- Design -->
+   
 @endsection
 
 @push('scripts')

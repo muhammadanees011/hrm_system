@@ -3,13 +3,11 @@
     {{ __("People's Goals") }}
 @endsection
 @section('action-button')
-    @can('Create Goal Tracking')
-        <a href="#" data-url="{{ route('goaltracking.create') }}" data-ajax-popup="true" data-size="lg"
-            data-title="{{ __('Create New Goal Tracking') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
-            data-bs-original-title="{{ __('Create') }}">
-            <i class="ti ti-plus"></i>
-        </a>
-    @endcan
+    <a href="#" data-url="{{ route('goaltracking.create') }}" data-ajax-popup="true" data-size="lg"
+        data-title="{{ __('Create New Goal Tracking') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
+        data-bs-original-title="{{ __('Create') }}">
+        <i class="ti ti-plus"></i>
+    </a>
 @endsection
 
 @section('breadcrumb')
@@ -32,8 +30,6 @@
                                 <th>{{ __('Overall Progress') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Visibility') }}</th>
-                                <th>{{ __('Last Checkin') }}</th>
-                                <th>{{ __('Tags') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,6 +39,7 @@
                                         <a href="{{ route('goaltracking.goals', $goalTracking->employee->id)}}" data-url="{{ route('goaltracking.goals', $goalTracking->employee->id) }}">
                                         <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
                                         {{ !empty($goalTracking->employee) ? $goalTracking->employee->name : '' }}
+                                        <i class="ti ti-arrow-right"></i>
                                         </a>
                                     </td>
                                     <td>{{ !empty($goalTracking->employee) ? $goalTracking->employee->department->name : '' }}
@@ -51,31 +48,29 @@
                                     <td>
                                         <div class="progress-wrapper">
                                             <span class="progress-percentage"><small
-                                                    class="font-weight-bold"></small>{{ $goalTracking->progress }}%</span>
+                                                    class="font-weight-bold"></small>{{ $goalTracking->total_goals !=0 ? ($goalTracking->total_progress/($goalTracking->total_goals)):0 }}%</span>
                                             <div class="progress progress-xs mt-2 w-100">
-                                                <div class="progress-bar bg-{{ Utility::getProgressColor(40) }}"
-                                                    role="progressbar" aria-valuenow="40"
-                                                    aria-valuemin="0" aria-valuemax="100"
-                                                    style="width: 40%;"></div>
+                                                <div class="progress-bar bg-{{ Utility::getProgressColor($goalTracking->total_goals !=0 ? ($goalTracking->total_progress/($goalTracking->total_goals)):0) }}"
+                                                    role="progressbar" aria-valuenow="{{$goalTracking->total_goals !=0 ? ($goalTracking->total_progress/($goalTracking->total_goals)):0}}"
+                                                    aria-valuemin="0" aria-valuemax="{{$goalTracking->total_goals*100}}"
+                                                    style="width: {{$goalTracking->total_goals !=0 ? ($goalTracking->total_progress/($goalTracking->total_goals)):0}}%;"></div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-between">
                                             <div class="goals-status text-white d-flex justify-content-center" style="background-color:green; width:23px;height:23px; border-radius:15px;">
-                                                5
+                                                {{$goalTracking->total_done}}
                                             </div>
                                             <div class="goals-status text-white d-flex justify-content-center" style="background-color:red; width:23px;height:23px; border-radius:15px;">
-                                                3
+                                                {{$goalTracking->total_off_track}}
                                             </div>
                                             <div class="goals-status text-white d-flex justify-content-center" style="background-color:orange; width:23px;height:23px; border-radius:15px;">
-                                                2
+                                                {{$goalTracking->total_on_track}}
                                             </div>
                                         </div>
                                     </td>
-                                    <td>Shared, 1 personal</td>
-                                    <td>13/05/2021</td>
-                                    <td>Professional goal</td>
+                                    <td>{{ $goalTracking->total_shared }} Shared, {{ $goalTracking->total_private }} personal</td>
                                     
                                 </tr>
                             @endforeach
