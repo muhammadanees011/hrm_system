@@ -697,7 +697,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                                     class="dash-mtext">{{ __("1 on 1's") }}</span><span class="dash-arrow"><i
                                     data-feather="chevron-right"></i></span></a>
                                     <ul class="dash-submenu">
-                                        @can('Manage Meeting')
+                                        @can('Manage Meeting Template')
                                         <li class="dash-item {{ Request::segment(1) == 'meetingtemplate' || Request::segment(2) == 'meetingtemplate' ? 'active' : '' }}">
                                             <a href="{{ route('meetingtemplate.index') }}" class="dash-link">{{ __('Template') }}</a>
                                         </li>

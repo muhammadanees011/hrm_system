@@ -2254,6 +2254,12 @@ class UsersTableSeeder extends Seeder
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
             ],
+            [
+                "name" => "Manage Meeting Template",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
         ];
         Permission::insert($arrPermissions);
 
@@ -2630,6 +2636,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Job OnBoard Template"],
             ["name" => "Edit Job OnBoard Template"],
             ["name" => "Delete Job OnBoard Template"],
+            ["name" => "Manage Meeting Template"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -2956,6 +2963,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Job OnBoard Template"],
             ["name" => "Edit Job OnBoard Template"],
             ["name" => "Delete Job OnBoard Template"],
+            ["name" => "Manage Meeting Template"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);
@@ -3112,7 +3120,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Manage Retirement"],
             ["name" => "Create Retirement"],
             ["name" => "Manage Goal Tracking"],
-
+            ["name" => "Manage Meeting Template"],
         ];
 
         $managerRole->givePermissionTo($managerPermission);
