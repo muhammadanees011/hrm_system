@@ -137,12 +137,13 @@
                                 @endif
                             </div>
                     </div>
-
+                    @if(\Auth::user()->id== $meeting->organizer->id || \Auth::user()->id== $meeting->invitee->id)
                     <div class="d-flex justify-content-end align-items-center">
                         <div>
                         <input type="submit" value="{{ __('Update') }}" class="btn btn-warning">
                         </div>
                     </div>
+                    @endif
                     {{ Form::close() }}
                 </div>
             </div>
