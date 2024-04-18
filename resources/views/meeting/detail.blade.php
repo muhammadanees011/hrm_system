@@ -108,21 +108,33 @@
                     @endforeach
                     <div class="row mt-4">
                         <div class="col-md-6 d-flex justify-content-start">
-                            <h5>Your notes</h5>
+                            <h5>{{$meeting->organizer ? $meeting->organizer->name:''}}'s notes</h5>
                         </div>
                         <div class="col-md-6 d-flex justify-content-start">
-                            <h5>Bilal's notes</h5>
+                        <h5>{{$meeting->invitee ? $meeting->invitee->name:''}}'s notes</h5>
                         </div>
                     </div>
                     {{ Form::model($meeting, ['route' => ['meeting.notes', $meeting->id], 'method' => 'PUT']) }}
                     <div class="row mt-4">
                             <div class="form-group d-flex justify-content-between">
+                                @if(\Auth::user()->id== $meeting->organizer->id)
                                 <div class="form-icon-user col-md-6 me-2">
                                     {{ Form::textarea('organizer_note', null, ['class' => 'form-control', 'required' => 'required']) }}
                                 </div>
+                                @else
+                                <div class="form-icon-user col-md-6 me-2">
+                                    {{ Form::textarea('organizer_note', null, ['class' => 'form-control', 'required' => 'required', 'disabled' => 'disabled']) }}
+                                </div>
+                                @endif
+                                @if(\Auth::user()->id== $meeting->invitee->id)
                                 <div class="form-icon-user col-md-6">
                                     {{ Form::textarea('invitee_note', null, ['class' => 'form-control', 'required' => 'required']) }}
                                 </div>
+                                @else
+                                <div class="form-icon-user col-md-6">
+                                    {{ Form::textarea('invitee_note', null, ['class' => 'form-control', 'required' => 'required', 'disabled' => 'disabled']) }}
+                                </div>
+                                @endif
                             </div>
                     </div>
 

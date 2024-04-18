@@ -51,11 +51,12 @@ class HomeController extends Controller
                 )->get();
 
                 $employees = Employee::get();
-                $meetings  = Meeting::orderBy('meetings.id', 'desc')->take(5)->leftjoin('meeting_employees', 'meetings.id', '=', 'meeting_employees.meeting_id')->where('meeting_employees.employee_id', '=', $emp->id)->orWhere(
-                    function ($q){
-                        $q->where('meetings.department_id', '["0"]')->where('meetings.employee_id', '["0"]'); 
-                    }
-                )->get();
+                // $meetings  = Meeting::orderBy('meetings.id', 'desc')->take(5)->leftjoin('meeting_employees', 'meetings.id', '=', 'meeting_employees.meeting_id')->where('meeting_employees.employee_id', '=', $emp->id)->orWhere(
+                //     function ($q){
+                //         $q->where('meetings.department_id', '["0"]')->where('meetings.employee_id', '["0"]'); 
+                //     }
+                // )->get();
+                $meetings=[];
 
                 $events    = Event::select('events.*','events.id as event_id_pk','event_employees.*')
                 ->leftjoin('event_employees', 'events.id', '=', 'event_employees.event_id')
