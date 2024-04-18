@@ -30,6 +30,6 @@ class Meeting extends Model
 
     public function meetingTemplate()
     {
-        return $this->hasOne(meetingTemplate::class,'id','meeting_template_id');
+        return $this->hasOne(MeetingTemplate::class,'id','meeting_template_id');
     }
 }
