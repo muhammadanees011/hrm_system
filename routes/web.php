@@ -13,6 +13,9 @@ use App\Http\Controllers\AwardTypeController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CarryOverController;
+use App\Http\Controllers\CaseCategoryController;
+use App\Http\Controllers\CaseController;
+use App\Http\Controllers\CaseDiscussionController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\CompetenciesController;
@@ -1198,6 +1201,34 @@ Route::group(['middleware' => ['verified']], function () {
     // Route::post('job/apply/data/{code}', [JobController::class, 'jobApplyData'])->name('job.apply.data');
 
     Route::resource('position', PositionController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::resource('case', CaseController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::get('case/closed/{id}', [CaseController::class, 'caseClosed'])->name('case.closed')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::resource('case-category', CaseCategoryController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::resource('case-discussion', CaseDiscussionController::class)->middleware(
         [
             'auth',
             'XSS',

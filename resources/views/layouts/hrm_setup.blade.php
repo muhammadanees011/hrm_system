@@ -175,5 +175,12 @@
             </a>
         @endcan
 
+        @can('Manage Case Category')
+            <a href="{{ route('case-category.index') }}"
+                class="list-group-item list-group-item-action border-0 {{ request()->is('case-category*') ? 'active' : '' }}">{{ __('Case Category') }}
+                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+            </a>
+        @endcan
+
     </div>
 </div>

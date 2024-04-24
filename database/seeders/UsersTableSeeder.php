@@ -2290,6 +2290,66 @@ class UsersTableSeeder extends Seeder
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
             ],
+            [
+                "name" => "Manage Case",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Case",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Delete Case",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Case",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Manage Case Category",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Case Category",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Delete Case Category",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Case Category",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "View Discussion",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Discussion",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
         ];
         Permission::insert($arrPermissions);
 
@@ -2666,6 +2726,16 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Job OnBoard Template"],
             ["name" => "Edit Job OnBoard Template"],
             ["name" => "Delete Job OnBoard Template"],
+            ["name" => "Manage Case Category"],
+            ["name" => "Create Case Category"],
+            ["name" => "Edit Case Category"],
+            ["name" => "Delete Case Category"],
+            ["name" => "Manage Case"],
+            ["name" => "Create Case"],
+            ["name" => "Edit Case"],
+            ["name" => "Delete Case"],
+            ["name" => "View Discussion"],
+            ["name" => "Create Discussion"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -2992,6 +3062,16 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Job OnBoard Template"],
             ["name" => "Edit Job OnBoard Template"],
             ["name" => "Delete Job OnBoard Template"],
+            ["name" => "Manage Case Category"],
+            ["name" => "Create Case Category"],
+            ["name" => "Edit Case Category"],
+            ["name" => "Delete Case Category"],
+            ["name" => "Manage Case"],
+            ["name" => "Create Case"],
+            ["name" => "Edit Case"],
+            ["name" => "Delete Case"],
+            ["name" => "View Discussion"],
+            ["name" => "Create Discussion"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);
@@ -3227,6 +3307,12 @@ class UsersTableSeeder extends Seeder
             ["name" => "Edit Health And Fitness"],
             ["name" => "Manage Retirement"],
             ["name" => "Create Retirement"],
+            ["name" => "Manage Case"],
+            ["name" => "Create Case"],
+            ["name" => "Edit Case"],
+            ["name" => "Delete Case"],
+            ["name" => "View Discussion"],
+            ["name" => "Create Discussion"],
         ];
 
         $employeeRole->givePermissionTo($employeePermission);

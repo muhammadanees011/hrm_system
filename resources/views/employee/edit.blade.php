@@ -132,7 +132,7 @@
                             </div>
                             <div class="form-group col-md-6" id="probation_days_input" style="display: none;">
                                 {!! Form::label('probation_days', __('Enter Probation Days'), ['class' => 'form-label']) !!}
-                                {!! Form::number('probation_days', $employee->probationDetails->duration, ['class' => 'form-control']) !!}
+                                {!! Form::number('probation_days', $employee->probationDetails ? $employee->probationDetails->duration : null, ['class' => 'form-control']) !!}
                             </div>
                         </div>
                     </div>

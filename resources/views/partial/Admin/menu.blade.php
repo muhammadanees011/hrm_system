@@ -599,6 +599,15 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                     </ul>
                 </li>
 
+                <li class="dash-item dash-hasmenu {{ Request::segment(1) == 'case' ? 'dash-trigger active' : '' }}">
+                    <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-microphone"></i></span><span class="dash-mtext">{{ __('Your Voice') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
+                    <ul class="dash-submenu">
+                        <li class="dash-item {{ Request::segment(1) == 'case.index' ? 'active' : '' }}">
+                            <a class="dash-link" href="{{ route('case.index') }}">{{ __('Manage Cases') }}</a>
+                        </li>
+                    </ul>
+                </li>
+
                 <!--Exits-->
                 <!-- @if (Gate::check('Manage Job') ||
                     Gate::check('Manage Job Application') ||
