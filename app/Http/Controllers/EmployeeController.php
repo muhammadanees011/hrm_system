@@ -47,7 +47,7 @@ class EmployeeController extends Controller
             if (Auth::user()->type == 'employee') {
                 $employees = Employee::where('user_id', '=', Auth::user()->id)->get();
             } else {
-                $employees = Employee::where('created_by', \Auth::user()->creatorId())->with(['branch', 'department', 'designation'])->get();
+                $employees = Employee::where('created_by', \Auth::user()->creatorId())->with(['manager','branch', 'department', 'designation'])->get();
             }
 
             return view('employee.index', compact('employees'));
@@ -80,10 +80,11 @@ class EmployeeController extends Controller
             $departments      = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $designations     = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $employees        = User::where('created_by', \Auth::user()->creatorId())->get();
+            $managers = User::where('type', 'manager')->get()->pluck('name', 'id');
 
             $employeesId      = \Auth::user()->employeeIdFormat($this->employeeNumber());
-
-            return view('employee.create', compact('employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings'));
+            
+            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -107,7 +108,8 @@ class EmployeeController extends Controller
                     'designation_id' => 'required',
                     'document.*' => 'required',
                     'employee_type' => 'required',
-                    'probation_days' => 'nullable|required_if:employee_type,Probation|numeric|min:1',
+                    'probation_days' => 'required_if:employee_type,Probation|numeric|min:1',
+                    'manager_id' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -164,6 +166,7 @@ class EmployeeController extends Controller
             $employee = Employee::create(
                 [
                     'user_id' => $user->id,
+                    'manager_id' => $request['manager_id'],
                     'name' => $request['name'],
                     'dob' => $request['dob'],
                     'gender' => $request['gender'],
@@ -259,8 +262,9 @@ class EmployeeController extends Controller
             $designations = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $employee     = Employee::find($id);
             $employeesId  = \Auth::user()->employeeIdFormat($employee->employee_id);
+            $managers = User::where('type', 'manager')->get()->pluck('name', 'id');
 
-            return view('employee.edit', compact('employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
+            return view('employee.edit', compact('managers','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }

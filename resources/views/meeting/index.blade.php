@@ -10,15 +10,15 @@
 @endsection
 
 @section('action-button')
-    <a href="{{ route('meeting.calender') }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
+    <!-- <a href="{{ route('meeting.calender') }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
         data-bs-original-title="{{ __('Calendar View') }}">
         <i class="ti ti-calendar"></i>
-    </a>
+    </a> -->
 
-    @can('Create Branch')
+    @can('Create Meeting')
         <a href="#" data-url="{{ route('meeting.create') }}" data-ajax-popup="true"
-            data-title="{{ __('Create New Meeting') }}" data-size="lg" data-bs-toggle="tooltip" title=""
-            class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+            data-title="{{ __('New Task-1-on-1 Meeting') }}" data-size="md" data-bs-toggle="tooltip" title=""
+            class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
     @endcan
@@ -36,8 +36,10 @@
                         <thead>
                             <tr>
                                 <th>{{ __('Meeting title') }}</th>
-                                <th>{{ __('Meeting Date') }}</th>
-                                <th>{{ __('Meeting Time') }}</th>
+                                <th>{{ __('Scheduled For') }}</th>
+                                <th>{{ __('Organizer') }}</th>
+                                <th>{{ __('Invitee') }}</th>
+                                <th>{{ __('Status') }}</th>
                                 @if (Gate::check('Edit Meeting') || Gate::check('Delete Meeting'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -46,9 +48,26 @@
                         <tbody>
                             @foreach ($meetings as $meeting)
                                 <tr>
-                                    <td>{{ $meeting->title }}</td>
-                                    <td>{{ \Auth::user()->dateFormat($meeting->date) }}</td>
-                                    <td>{{ \Auth::user()->timeFormat($meeting->time) }}</td>
+                                    <td>
+                                        <a href="{{route('meeting.details',$meeting->id)}}" target="_blank">
+                                            {{ $meeting->title }}
+                                            <i class="ti ti-arrow-right"></i>
+                                        </a>
+                                    </td>
+                                    <td>{{ \Auth::user()->dateFormat($meeting->date) }}, {{ \Auth::user()->timeFormat($meeting->start_time) }} - {{ \Auth::user()->timeFormat($meeting->end_time) }}</td>
+                                    <td>
+                                        <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 25px;width: 25px" />
+                                        {{$meeting->organizer->name}}
+                                    </td>
+                                    <td>
+                                        <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 25px;width: 25px;" />
+                                        {{$meeting->invitee->name}}
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded p-2 m-1 px-3 bg-warning ">
+                                        {{$meeting->status}}
+                                        </span>
+                                    </td>
                                     <td class="Action">
                                         <span>
                                             @can('Edit Meeting')

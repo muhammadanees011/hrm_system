@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PerformanceCycle;
+use App\Models\EmployeeReview;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 
@@ -13,13 +14,25 @@ class PerformanceCycleController extends Controller
      */
     public function index()
     {
-        if(\Auth::user()->can('Create Goal Tracking')){
-            $performancecycles = PerformanceCycle::where('created_by', '=', \Auth::user()->id)->get();
-            // return $performancecycles[0]->getSelectedParticipants();
+        // if(\Auth::user()->can('Create Goal Tracking')){
+            $user=\Auth::user();
+            if($user->type=="employee"){
+                $performancecycles = PerformanceCycle::withCount('reviews')
+                ->withCount(['reviews as completed_reviews' => function ($query) {
+                    $query->where('status', 'completed');
+                }])
+                ->get();
+            }else{
+                $performancecycles = PerformanceCycle::withCount('reviews')
+                ->withCount(['reviews as completed_reviews' => function ($query) {
+                    $query->where('status', 'completed');
+                }])
+                ->get();
+            }
             return view('performancecycle.index',compact('performancecycles'));
-        } else {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     /**
@@ -27,16 +40,16 @@ class PerformanceCycleController extends Controller
      */
     public function create()
     {
-        if(\Auth::user()->can('Create Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Create Goal Tracking'))
+        // {
             $user  = \Auth::user();
             $roles = Role::where('created_by', '=', $user->creatorId())->get()->pluck('name', 'id');
             return view('performancecycle.create',compact('roles'));
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     /**
@@ -44,13 +57,13 @@ class PerformanceCycleController extends Controller
      */
     public function store(Request $request)
     {
-        if(\Auth::user()->can('Create Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Create Goal Tracking'))
+        // {
 
             $validator = \Validator::make(
                 $request->all(), [
                     'title'     => 'required',
-                    'progress'  => 'required',
+                    // 'progress'  => 'required',
                     'roles' => 'required',
                     'status' => 'required',
                 ]
@@ -64,18 +77,18 @@ class PerformanceCycleController extends Controller
 
             $performancecycle                   = new PerformanceCycle();
             $performancecycle->title            = $request->title;
-            $performancecycle->progress         = $request->progress;
+            // $performancecycle->progress         = $request->progress;
             $performancecycle->participants     = $request["roles"];
             $performancecycle->status           = $request->status;
             $performancecycle->created_by       = \Auth::user()->creatorId();
             $performancecycle->save();
 
             return redirect()->route('performancecycle.index')->with('success', __('Performance Cycle successfully created.'));
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     /**
@@ -83,14 +96,14 @@ class PerformanceCycleController extends Controller
      */
     public function show(PerformanceCycle $performanceCycle)
     {
-        if(\Auth::user()->can('Create Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Create Goal Tracking'))
+        // {
             return view('performancecycle.show');
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     /**
@@ -98,16 +111,16 @@ class PerformanceCycleController extends Controller
      */
     public function edit(PerformanceCycle $performancecycle)
     {
-        if(\Auth::user()->can('Create Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Create Goal Tracking'))
+        // {
             $user  = \Auth::user();
             $roles = Role::where('created_by', '=', $user->creatorId())->get()->pluck('name', 'id');
             return view('performancecycle.edit',compact('performancecycle','roles'));
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     /**
@@ -115,13 +128,13 @@ class PerformanceCycleController extends Controller
      */
     public function update(Request $request, PerformanceCycle $performancecycle)
     {
-        if(\Auth::user()->can('Create Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Create Goal Tracking'))
+        // {
 
             $validator = \Validator::make(
                 $request->all(), [
                     'title'     => 'required',
-                    'progress'  => 'required',
+                    // 'progress'  => 'required',
                     'roles' => 'required',
                     'status' => 'required',
                 ]
@@ -134,18 +147,18 @@ class PerformanceCycleController extends Controller
             }
 
             $performancecycle->title            = $request->title;
-            $performancecycle->progress         = $request->progress;
+            // $performancecycle->progress         = $request->progress;
             $performancecycle->participants     = $request["roles"];
             $performancecycle->status           = $request->status;
             $performancecycle->created_by       = \Auth::user()->creatorId();
             $performancecycle->save();
 
             return redirect()->route('performancecycle.index')->with('success', __('Performance Cycle successfully updated.'));
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     /**
@@ -153,8 +166,8 @@ class PerformanceCycleController extends Controller
      */
     public function destroy(PerformanceCycle $performancecycle)
     {
-        if(\Auth::user()->can('Delete Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Delete Goal Tracking'))
+        // {
             if($performancecycle->created_by == \Auth::user()->creatorId())
             {
                 $performancecycle->delete();
@@ -163,22 +176,22 @@ class PerformanceCycleController extends Controller
             {
                 return redirect()->back()->with('error', __('Permission denied.'));
             }
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 
     public function reviews($id)
     {
-        if(\Auth::user()->can('Create Goal Tracking'))
-        {
+        // if(\Auth::user()->can('Create Goal Tracking'))
+        // {
             return view('performancecycle.reviews');
-        }
-        else
-        {
-            return redirect()->back()->with('error', __('Permission denied.'));
-        }
+        // }
+        // else
+        // {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
     }
 }

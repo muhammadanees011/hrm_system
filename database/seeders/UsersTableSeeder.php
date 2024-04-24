@@ -2346,6 +2346,7 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 "name" => "Create Discussion",
+                "name" => "Manage Meeting Template",
                 "guard_name" => "web",
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
@@ -2736,6 +2737,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Case"],
             ["name" => "View Discussion"],
             ["name" => "Create Discussion"],
+            ["name" => "Manage Meeting Template"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -3072,6 +3074,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Case"],
             ["name" => "View Discussion"],
             ["name" => "Create Discussion"],
+            ["name" => "Manage Meeting Template"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);
@@ -3227,6 +3230,8 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Health And Fitness"],
             ["name" => "Manage Retirement"],
             ["name" => "Create Retirement"],
+            ["name" => "Manage Goal Tracking"],
+            ["name" => "Manage Meeting Template"],
         ];
 
         $managerRole->givePermissionTo($managerPermission);
@@ -3313,6 +3318,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Delete Case"],
             ["name" => "View Discussion"],
             ["name" => "Create Discussion"],
+            ["name" => "Manage Goal Tracking"],
         ];
 
         $employeeRole->givePermissionTo($employeePermission);

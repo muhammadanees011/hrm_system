@@ -153,6 +153,12 @@
                                 {!! Form::label('probation_days', __('Enter Probation Days'), ['class' => 'form-label']) !!}
                                 {!! Form::number('probation_days', null, ['class' => 'form-control']) !!}
                             </div>
+                            <div class="form-group col-md-6">
+                                {{ Form::label('manager', __('Select Manager'), ['class' => 'form-label']) }}
+                                <div class="form-icon-user">
+                                {{ Form::select('manager_id', $managers, null, ['class' => 'form-control ', 'id' => 'manager_id', 'required' => 'required', 'placeholder' => 'Select Manager']) }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

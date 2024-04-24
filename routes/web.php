@@ -40,7 +40,6 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExpenseTypeController;
 use App\Http\Controllers\GPNoteController;
 use App\Http\Controllers\GoalTrackingController;
-use App\Http\Controllers\GoalTypeController;
 use App\Http\Controllers\HealthAssessmentController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HomeController;
@@ -110,6 +109,11 @@ use App\Http\Controllers\FlexiTimeController;
 use App\Http\Controllers\PerformanceCycleController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\WorkforcePlanningController;
+use App\Http\Controllers\GoalResultController;
+use App\Http\Controllers\EmployeeReviewController;
+use App\Http\Controllers\ReviewQuestionController;
+use App\Http\Controllers\MeetingTemplateController;
+use App\Http\Controllers\MeetingTemplatePointController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
@@ -1029,9 +1033,44 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::resource('goaltracking', GoalTrackingController::class)->middleware(['auth', 'XSS',]);
-    Route::get('goaltracking/goals/{id?}', [GoalTrackingController::class, 'goals'])->name('goaltracking.goals')->middleware(['auth', 'XSS',]);
-    Route::get('goaltracking/details/{id?}', [GoalTrackingController::class, 'goaldetails'])->name('goaltracking.goal.details')->middleware(['auth', 'XSS',]);
+    Route::resource('goaltracking', GoalTrackingController::class)->middleware( ['auth', 'XSS',]);
+    Route::get('goal/goals/{id?}',[GoalTrackingController::class,'goals'])->name('goaltracking.goals')->middleware( ['auth', 'XSS',]);
+    Route::get('goal/status/{id?}/{status?}',[GoalTrackingController::class,'changeGoalStatus'])->name('goaltracking.goals.status')->middleware( ['auth', 'XSS',]);
+    Route::get('goal/visibility/{id?}/{visibility?}',[GoalTrackingController::class,'changeVisibility'])->name('goaltracking.goals.visibility')->middleware( ['auth', 'XSS',]);
+    Route::delete('goal/delete/{id?}',[GoalTrackingController::class,'destroy'])->name('goaltracking.delete')->middleware( ['auth', 'XSS',]);
+    Route::put('goal/update/{id?}',[GoalTrackingController::class,'update'])->name('goaltracking.update')->middleware( ['auth', 'XSS',]);
+    Route::get('goaltracking/details/{id?}',[GoalTrackingController::class,'goaldetails'])->name('goaltracking.goal.details')->middleware( ['auth', 'XSS',]);
+
+    Route::get('goal/result/{id?}',[GoalResultController::class,'create'])->name('goal.result.create')->middleware( ['auth', 'XSS',]);
+    Route::post('goal/result/store/{id?}',[GoalResultController::class,'store'])->name('goal.result.store')->middleware( ['auth', 'XSS',]);
+    Route::get('goal/result/edit/{id?}',[GoalResultController::class,'edit'])->name('goal.result.edit')->middleware( ['auth', 'XSS',]);
+    Route::put('goal/result/update/{id?}',[GoalResultController::class,'update'])->name('goal.result.update')->middleware( ['auth', 'XSS',]);
+    Route::get('goal/result/delete/{id?}',[GoalResultController::class,'destroy'])->name('goal.result.delete')->middleware( ['auth', 'XSS',]);
+    Route::get('goal/result/achieved/{id?}',[GoalResultController::class,'achieved'])->name('goal.result.achieved')->middleware( ['auth', 'XSS',]);
+
+    Route::resource('employeereviews', EmployeeReviewController::class)->middleware( ['auth', 'XSS',]);
+    Route::get('employeereviews/complete/{id?}', [EmployeeReviewController::class,'completeReview'])->name('employeereviews.complete')->middleware( ['auth', 'XSS',]);
+    Route::put('employeereviews/reviewees/{id?}', [EmployeeReviewController::class,'updateReviewees'])->name('employeereviews.reviewees')->middleware( ['auth', 'XSS',]);
+    Route::get('employeereviews/revieweeslist/{id?}', [EmployeeReviewController::class,'revieweesList'])->name('employeereviews.reviewees.list')->middleware( ['auth', 'XSS',]);
+    Route::get('employeereviews/review-questions/{review_id?}/{user_id?}', [EmployeeReviewController::class,'reviewQuestions'])->name('employeereviews.review.questions')->middleware( ['auth', 'XSS',]);
+    Route::post('submit_review_result', [EmployeeReviewController::class,'submit_review_result'])->name('submit_review_result')->middleware( ['auth', 'XSS',]);
+    Route::get('employeereviews/feedback/{review_id}/{user_id}/{reviewer_id?}', [EmployeeReviewController::class,'feedback'])->name('employeereviews.feedback')->middleware( ['auth', 'XSS',]);
+
+    Route::get('reviewquestions/create/{id?}', [ReviewQuestionController::class,'create'])->name('reviewquestions.create')->middleware( ['auth', 'XSS',]);
+    Route::post('reviewquestions/store/{id?}', [ReviewQuestionController::class,'store'])->name('reviewquestions.store')->middleware( ['auth', 'XSS',]);
+    Route::get('reviewquestions/delete/{id?}/{review_id?}', [ReviewQuestionController::class,'destroy'])->name('reviewquestions.delete')->middleware( ['auth', 'XSS',]);
+    Route::get('reviewquestions/edit/{id?}', [ReviewQuestionController::class,'edit'])->name('reviewquestions.edit')->middleware( ['auth', 'XSS',]);
+    Route::put('reviewquestions/update/{id?}/{review_id?}', [ReviewQuestionController::class,'update'])->name('reviewquestions.update')->middleware( ['auth', 'XSS',]);
+
+    Route::resource('meetingtemplate', MeetingTemplateController::class)->middleware( ['auth', 'XSS',]);
+    Route::get('meeting/details/{id?}', [MeetingController::class, 'details'])->name('meeting.details')->middleware(['auth','XSS']);
+    
+    Route::get('meetingtemplatepoint/create/{template_id?}', [MeetingTemplatePointController::class,'create'])->name('meetingtemplatepoint.create')->middleware( ['auth', 'XSS',]);
+    Route::post('meetingtemplatepoint/store/{template_id?}', [MeetingTemplatePointController::class,'store'])->name('meetingtemplatepoint.store')->middleware( ['auth', 'XSS',]);
+    Route::get('meetingtemplatepoint/delete/{template_id?}/{point_id?}', [MeetingTemplatePointController::class,'destroy'])->name('meetingtemplatepoint.delete')->middleware( ['auth', 'XSS',]);
+    Route::get('meetingtemplatepoint/edit/{template_id?}/{point_id?}', [MeetingTemplatePointController::class,'edit'])->name('meetingtemplatepoint.edit')->middleware( ['auth', 'XSS',]);
+    Route::put('meetingtemplatepoint/update/{template_id?}/{point_id?}', [MeetingTemplatePointController::class,'update'])->name('meetingtemplatepoint.update')->middleware( ['auth', 'XSS',]);
+    Route::put('meetingnotes/notes/{meeting_id?}', [MeetingController::class,'notes'])->name('meeting.notes')->middleware( ['auth', 'XSS',]);
 
     Route::resource('company-policy', CompanyPolicyController::class)->middleware(
         [

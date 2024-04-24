@@ -27,9 +27,25 @@ class GoalTracking extends Model
         return $this->hasOne('App\Models\PerformanceCycle', 'id', 'performancecycle_id');
     }
 
+    public function goalResults()
+    {
+        return $this->hasMany('App\Models\GoalResult', 'goal_id', 'id');
+    }
+
     public static $status = [
-        'Not Started',
-        'In Progress',
-        'Completed',
+        'Pending',
+        'Done',
+        'On Track',
+        'Off Track',
     ];
+
+    public static $visibility=[
+        'Private',
+        'Shared',
+    ];
+
+    public static function getVisibilityOptions()
+    {
+        return self::$visibility;
+    }
 }
