@@ -10,6 +10,7 @@ class EmployeeOnboardingFile extends Model
     use HasFactory;
     protected $fillable = [
         'employee_onboarding_template_id',
+        'uuid',
         'file_type',
         'file_path',
     ];

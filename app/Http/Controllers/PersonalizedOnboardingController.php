@@ -112,8 +112,9 @@ class PersonalizedOnboardingController extends Controller
                 $question = EmployeeOnboardingQuestion::create([
                     'name' => $questionData['name'],
                     'type' => $questionData['type'],
-                    'word_count' => $questionData['word_count'],
+                    'word_count' => null,
                     'employee_onboarding_template_id' => $onboardingTemplate->id,
+                    'uuid' => uniqid(),
                 ]);
                 // If the question type is radio, create options
                 if ($questionData['type'] == 'radio') {
@@ -139,6 +140,7 @@ class PersonalizedOnboardingController extends Controller
                     // Create a new attachment
                     EmployeeOnboardingFile::create([
                         'employee_onboarding_template_id' => $onboardingTemplate->id,
+                        'uuid' => uniqid(),
                         'file_type' => $request->input('files')[$i]['type'],
                         'file_path' => $fileName,
                     ]);
@@ -150,12 +152,199 @@ class PersonalizedOnboardingController extends Controller
             return redirect()->route('personlized-onboarding.index')->with('error', __('Permission denied.'));
         }
     }
+
+    public function edit($id)
+    {
+        // dd($employeeOnboardingTemplate);
+        if (\Auth::user()->can('Edit Job OnBoard Template')) {
+            $branches = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            $branches->prepend('Select Branch', 0);
+            $template = EmployeeOnboardingTemplate::where('id', '=', $id)->with(['questions', 'files'])->first();
+            return view('PersonalizedOnboarding.edit', compact('template', 'branches'));
+        } else {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+    }
+    public function update(Request $request, $id)
+    {
+        if (\Auth::user()->can('Edit Job OnBoard Template')) {
+            // Validate the request data
+            $validator = \Validator::make($request->all(), [
+                'branch' => 'required',
+                'department' => 'required',
+                'header_option' => 'required|in:video_url,video_upload,image',
+                'header_description' => 'required|string',
+                'header_title' => 'required|string',
+                'attachments_status' => 'nullable',
+                'video_url' => 'nullable|url',
+                'video_file' => 'nullable|file|mimes:mp4,mov,avi',
+                'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'askinfo_questions.*.name' => 'required|string|max:255',
+                'askinfo_questions.*.type' => ['required', Rule::in(['text', 'textarea', 'radio', 'file'])],
+                'askinfo_questions.*.word_count' => 'nullable|integer|min:1',
+                'askinfo_questions.*.options.*' => 'nullable|string|max:255',
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                $messages = $validator->getMessageBag();
+                return redirect()->back()->with('error', $messages->first());
+            }
+
+            $template = EmployeeOnboardingTemplate::where('id', $id)->first();
+            $template->name = $request->name;
+            $template->branch = $request->branch;
+            $template->department = $request->department;
+            $template->header_description = $request->header_description;
+            $template->header_title = $request->header_title;
+            // Check if header_option has changed
+            if ($request->header_option !== $template->header_option) {
+                // If the new header_option is 'video_upload'
+                if ($request->header_option === 'video_upload') {
+                    // Remove the existing image_file
+                    if ($template->image_file_path) {
+                        Storage::delete('uploads/employeeOnboardingTemplate/header/' . $template->image_file_path);
+                        $template->image_file_path = null;
+                    }
+
+                    // Handle the video_file
+                    if ($request->hasFile('video_file')) {
+                        // Upload and store the new video_file
+                        $videoFileName = $request->file('video_file')->store('uploads/employeeOnboardingTemplate/header/');
+                        $template->video_file_path = $videoFileName;
+                    }
+                }
+
+                // If the new header_option is 'image'
+                if ($request->header_option === 'image') {
+                    // Remove the existing video_file
+                    if ($template->video_file_path) {
+                        Storage::delete('uploads/employeeOnboardingTemplate/header/' . $template->video_file_path);
+                        $template->video_file_path = null;
+                    }
+
+                    // Handle the image_file
+                    if ($request->hasFile('image_file')) {
+                        // Upload and store the new image_file
+                        $imageFileName = $request->file('image_file')->store('uploads/employeeOnboardingTemplate/header/');
+                        $template->image_file_path = $imageFileName;
+                    }
+                }
+
+                // Update the header_option field
+                $template->header_option = $request->header_option;
+            } else {
+                // If header_option remains the same, handle only file updates
+                if ($request->header_option === 'video_upload' && $request->hasFile('video_file')) {
+                    // Remove the existing video_file
+                    if ($template->video_file_path) {
+                        Storage::delete('uploads/employeeOnboardingTemplate/header/' . $template->video_file_path);
+                        $template->video_file_path = null;
+                    }
+
+                    // Upload and store the new video_file
+                    $videoFileName = $request->file('video_file')->store('uploads/employeeOnboardingTemplate/header/');
+                    $template->video_file_path = $videoFileName;
+                }
+
+                if ($request->header_option === 'image' && $request->hasFile('image_file')) {
+                    // Remove the existing image_file
+                    if ($template->image_file_path) {
+                        Storage::delete('uploads/employeeOnboardingTemplate/header/' . $template->image_file_path);
+                        $template->image_file_path = null;
+                    }
+
+                    // Upload and store the new image_file
+                    $imageFileName = $request->file('image_file')->store('uploads/employeeOnboardingTemplate/header/');
+                    $template->image_file_path = $imageFileName;
+                }
+            }
+            $template->save();
+
+            foreach ($request->input('questions') as $questionUUID => $questionData) {
+                $questionExist = EmployeeOnboardingQuestion::where('uuid', $questionUUID)->first();
+                if ($questionExist) {
+                    $questionExist->name = $questionData['name'];
+                    $questionExist->type = $questionData['type'];
+                    if ($questionExist->type == 'radio') {
+                        $questionExist->options = json_encode($questionData['options']);
+                    }
+                    $questionExist->save();
+                } else {
+                    // Create a new Question
+                    $question = EmployeeOnboardingQuestion::create([
+                        'name' => $questionData['name'],
+                        'type' => $questionData['type'],
+                        'word_count' => null,
+                        'employee_onboarding_template_id' => $template->id,
+                        'uuid' => uniqid(),
+                    ]);
+                    // If the question type is radio, create options
+                    if ($questionData['type'] == 'radio') {
+                        $questionAsRadio = EmployeeOnboardingQuestion::where('id', $question->id)->first();
+                        $questionAsRadio->options = json_encode($questionData['options']);
+                        $questionAsRadio->save();
+                    }
+                }
+            }
+
+            if ($request->attachments_status == 'on' && $request->input('files')) {
+                foreach ($request->input('files') as $fileUUID => $fileData) {
+                    $fileExist = EmployeeOnboardingFile::where('uuid', $fileUUID)->first();
+                    if ($fileExist) {
+                        $fileExist->file_type = $fileData['type'];
+                        $fileExist->save();
+                    }
+                }
+            }
+
+            if ($request->attachments_status == 'on' && $request->file('files')) {
+                for ($i = 0; $i < count($request->file('files')); $i++) {
+                    $file = $request->file('files')[$i]['file'];
+                    $filenameWithExt = $request->file('files')[$i]['file']->getClientOriginalName();
+                    $filename        = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                    $extension       = $request->file('files')[$i]['file']->getClientOriginalExtension();
+                    $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+                    $dir = 'uploads/employeeOnboardingTemplate/';
+                    // Utility::upload_file($request->file('files'), $request->file('files')[$i]['file'], $fileNameToStore, $dir, []);
+                    $file->storeAs($dir, $fileNameToStore);
+
+                    $fileName   = $fileNameToStore ? $fileNameToStore : null;
+
+                    // Create a new attachment
+                    EmployeeOnboardingFile::create([
+                        'employee_onboarding_template_id' => $template->id,
+                        'uuid' => uniqid(),
+                        'file_type' => $request->input('files')[$i]['type'],
+                        'file_path' => $fileName,
+                    ]);
+                }
+            }
+
+            return redirect()->route('personlized-onboarding.index')->with('success', __('Employee Onboarding Template updated successfully.'));
+        } else {
+            return redirect()->route('personlized-onboarding.edit', $id)->with('error', __('Permission denied.'));
+        }
+    }
+
     public function show($id, $jobApplicationId = null)
     {
         $template = EmployeeOnboardingTemplate::where('id', '=', $id)->with(['questions', 'files', 'branches', 'departments'])->first();
         return view('PersonalizedOnboarding.show', compact('template', 'jobApplicationId'));
     }
 
+    public function destroyQuestion($id)
+    {
+        EmployeeOnboardingQuestion::where('id', $id)->first()->delete();
+        return response()->json('sccuessfully deleted!', 200);
+    }
+    public function destroyFile($id)
+    {
+        $file = EmployeeOnboardingFile::where('id', $id)->first();
+        Storage::delete('uploads/employeeOnboardingTemplate/' . $file->file_path);
+        $file->delete();
+        return response()->json('sccuessfully deleted!', 200);
+    }
     public function destroy($id)
     {
         if (\Auth::user()->can('Delete Job OnBoard Template')) {
@@ -241,11 +430,11 @@ class PersonalizedOnboardingController extends Controller
     {
         $askDetails = EmployeeOnboardingAnswer::where('job_application_id', $jobApplicationId)->with('onboardingQuestion')->get()->sortBy('id');
         $fileApprovals = EmployeeOnboardingFileApproval::where('job_application_id', $jobApplicationId)
-                    ->whereHas('onboardingFile', function ($query) {
-                        $query->where('file_type', 'read_and_approve');
-                    })
-                    ->get()
-                    ->sortBy('id');
+            ->whereHas('onboardingFile', function ($query) {
+                $query->where('file_type', 'read_and_approve');
+            })
+            ->get()
+            ->sortBy('id');
 
 
         if (count($askDetails) > 0 || count($fileApprovals) > 0) {

@@ -30,6 +30,7 @@ return new class extends Migration
         Schema::create('employee_onboarding_questions', function (Blueprint $table) {
             $table->id();
             $table->integer('employee_onboarding_template_id');
+            $table->string('uuid');
             $table->string('name');
             $table->enum('type', ['text', 'textarea', 'radio', 'file']);
             $table->integer('word_count')->nullable();
@@ -40,6 +41,7 @@ return new class extends Migration
         Schema::create('employee_onboarding_files', function (Blueprint $table) {
             $table->id();
             $table->integer('employee_onboarding_template_id');
+            $table->string('uuid');
             $table->enum('file_type', ['read_and_approve', 'read']);
             $table->string('file_path');
             $table->timestamps();

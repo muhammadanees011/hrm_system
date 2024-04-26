@@ -26,7 +26,7 @@
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="{{route('onboarding.personalized.show', $template->id)}}" class="dropdown-item" data-url="#" data-ajax-popup="true" data-title="{{ __('Preview Template') }}"><i class="ti ti-eye "></i><span class="ms-2">{{ __('Preview') }}</span></a>
 
-                        <!-- <a href="#" class="dropdown-item" data-url="#" data-ajax-popup="true" data-title="{{ __('Update Template') }}"><i class="ti ti-edit "></i><span class="ms-2">{{ __('Edit') }}</span></a> -->
+                        <a href="{{route('personlized-onboarding.edit', $template->id)}}" class="dropdown-item" data-url="#" data-ajax-popup="true" data-title="{{ __('Update Template') }}"><i class="ti ti-edit "></i><span class="ms-2">{{ __('Edit') }}</span></a>
 
                         {!! Form::open([
                         'method' => 'DELETE',
