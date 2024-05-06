@@ -1,5 +1,5 @@
 @php
-    $chatgpt = Utility::getValByName('enable_chatgpt');
+$chatgpt = Utility::getValByName('enable_chatgpt');
 @endphp
 
 {{ Form::model($holiday, ['route' => ['holiday.update', $holiday->id], 'method' => 'PUT']) }}
@@ -7,9 +7,7 @@
 
     @if ($chatgpt == 'on')
     <div class="card-footer text-end">
-        <a href="#" class="btn btn-sm btn-primary" data-size="medium" data-ajax-popup-over="true"
-            data-url="{{ route('generate', ['holiday']) }}" data-bs-toggle="tooltip" data-bs-placement="top"
-            title="{{ __('Generate') }}" data-title="{{ __('Generate Content With AI') }}">
+        <a href="#" class="btn btn-sm btn-primary" data-size="medium" data-ajax-popup-over="true" data-url="{{ route('generate', ['holiday']) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('Generate') }}" data-title="{{ __('Generate Content With AI') }}">
             <i class="fas fa-robot"></i>{{ __(' Generate With AI') }}
         </a>
     </div>
@@ -21,20 +19,25 @@
             {{ Form::text('occasion', null, ['class' => 'form-control','placeholder'=>'Enter Occasion']) }}
         </div>
         <div class="row col-md-12">
-        <div class="form-group col-md-6">
-            {{ Form::label('start_date', __('Start Date'), ['class' => 'col-form-label']) }}
-            {{ Form::date('start_date', null, ['class' => 'form-control ']) }}
-        </div>
-        <div class="form-group col-md-6">
-            {{ Form::label('end_date', __('End Date'), ['class' => 'col-form-label']) }}
-            {{ Form::date('end_date', null, ['class' => 'form-control ']) }}
-        </div>
+            <div class="form-group col-md-6">
+                {{ Form::label('start_date', __('Start Date'), ['class' => 'col-form-label']) }}
+                {{ Form::date('start_date', null, ['class' => 'form-control ']) }}
+            </div>
+            <div class="form-group col-md-6">
+                {{ Form::label('end_date', __('End Date'), ['class' => 'col-form-label']) }}
+                {{ Form::date('end_date', null, ['class' => 'form-control ']) }}
+            </div>
+            <div class="form-group col-md-6">
+                <div class="form-check">
+                    {{ Form::checkbox('request_next_year', 1, false, ['class' => 'form-check-input', 'id' => 'requestNextYear']) }}
+                    {{ Form::label('request_next_year', __('Request for Next Year'), ['class' => 'form-check-label']) }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <div class="modal-footer">
     <input type="button" value="Cancel" class="btn btn-light" data-bs-dismiss="modal">
-     <input type="submit" value="{{ __('Update') }}" class="btn  btn-primary">
+    <input type="submit" value="{{ __('Update') }}" class="btn  btn-primary">
 </div>
 {{ Form::close() }}
-

@@ -41,6 +41,7 @@ use App\Http\Controllers\ExpenseTypeController;
 use App\Http\Controllers\GPNoteController;
 use App\Http\Controllers\GoalTrackingController;
 use App\Http\Controllers\HealthAssessmentController;
+use App\Http\Controllers\HolidayCarryOverController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncomeTypeController;
@@ -111,6 +112,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\WorkforcePlanningController;
 use App\Http\Controllers\GoalResultController;
 use App\Http\Controllers\EmployeeReviewController;
+use App\Http\Controllers\HolidayConfigurationController;
 use App\Http\Controllers\ReviewQuestionController;
 use App\Http\Controllers\MeetingTemplateController;
 use App\Http\Controllers\MeetingTemplatePointController;
@@ -426,7 +428,29 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+
+    Route::get('holiday/update/status/{id}', [HolidayController::class, 'updateStatus'])->name('holiday.update.status')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
     Route::resource('holiday', HolidayController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::resource('holiday-carryover', HolidayCarryOverController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::get('holiday-carryover/update/status/{id}', [HolidayCarryOverController::class, 'updateStatus'])->name('holiday-carryover.update.status')->middleware(
         [
             'auth',
             'XSS',
@@ -1238,6 +1262,11 @@ Route::group(['middleware' => ['verified']], function () {
     // Route::get('job/requirement/{code}/{lang}', [JobController::class, 'jobRequirement'])->name('job.requirement');
     // Route::get('job/apply/{code}/{lang}', [JobController::class, 'jobApply'])->name('job.apply');
     // Route::post('job/apply/data/{code}', [JobController::class, 'jobApplyData'])->name('job.apply.data');
+
+    Route::put('holiday-configuration/{id}', [HolidayConfigurationController::class, 'update'])->name('holiday-configuraton.update');
+    Route::resource('holiday-configuration', HolidayConfigurationController::class)->middleware(['auth', 'XSS']);
+
+
 
     Route::resource('position', PositionController::class)->middleware(
         [
