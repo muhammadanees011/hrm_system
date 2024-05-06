@@ -61,7 +61,7 @@ class CaseCategoryController extends Controller
 
     public function edit(CaseCategory $caseCategory)
     {
-        if (\Auth::user()->can('Edit Branch')) {
+        if (\Auth::user()->can('Edit Case Category')) {
             if ($caseCategory->created_by == \Auth::user()->creatorId()) {
 
                 return view('caseCategory.edit', compact('caseCategory'));

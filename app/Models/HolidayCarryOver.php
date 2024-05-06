@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Holiday extends Model
+class HolidayCarryOver extends Model
 {
+    use HasFactory;
+
+    protected $table = 'holiday_carryovers';
     protected $fillable = [
-        'date',
-        'occasion',
         'total_days',
+        'status',
         'user_id',
         'created_by',
     ];

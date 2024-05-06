@@ -1,6 +1,6 @@
 @php
-    $setting = App\Models\Utility::settings();
-    $chatgpt = Utility::getValByName('enable_chatgpt');
+$setting = App\Models\Utility::settings();
+$chatgpt = Utility::getValByName('enable_chatgpt');
 @endphp
 
 {{ Form::open(['url' => 'holiday', 'method' => 'post']) }}
@@ -8,16 +8,14 @@
 
     @if ($chatgpt == 'on')
     <div class="card-footer text-end">
-        <a href="#" class="btn btn-sm btn-primary" data-size="medium" data-ajax-popup-over="true"
-            data-url="{{ route('generate', ['holiday']) }}" data-bs-toggle="tooltip" data-bs-placement="top"
-            title="{{ __('Generate') }}" data-title="{{ __('Generate Content With AI') }}">
+        <a href="#" class="btn btn-sm btn-primary" data-size="medium" data-ajax-popup-over="true" data-url="{{ route('generate', ['holiday']) }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('Generate') }}" data-title="{{ __('Generate Content With AI') }}">
             <i class="fas fa-robot"></i>{{ __(' Generate With AI') }}
         </a>
     </div>
     @endif
 
     <div class="row">
-    <div class="form-group col-md-12">
+        <div class="form-group col-md-12">
             {{ Form::label('occasion', __('Occasion'), ['class' => 'col-form-label']) }}
             {{ Form::text('occasion', null, ['class' => 'form-control','placeholder'=>'Enter Occasion']) }}
         </div>
@@ -29,12 +27,17 @@
             {{ Form::label('end_date', __('End Date'), ['class' => 'col-form-label']) }}
             {{ Form::date('end_date', null, ['class' => 'form-control current_date','autocomplete'=>'off']) }}
         </div>
+        <div class="form-group col-md-6">
+            <div class="form-check">
+                {{ Form::checkbox('request_next_year', 1, false, ['class' => 'form-check-input', 'id' => 'requestNextYear']) }}
+                {{ Form::label('request_next_year', __('Request for Next Year'), ['class' => 'form-check-label']) }}
+            </div>
+        </div>
         @if(isset($setting['is_enabled']) && $setting['is_enabled'] =='on')
         <div class="form-group col-md-6">
             {{ Form::label('synchronize_type', __('Synchroniz in Google Calendar ?'), ['class' => 'form-label']) }}
             <div class=" form-switch">
-                <input type="checkbox" class="form-check-input mt-2" name="synchronize_type" id="switch-shadow"
-                    value="google_calender">
+                <input type="checkbox" class="form-check-input mt-2" name="synchronize_type" id="switch-shadow" value="google_calender">
                 <label class="form-check-label" for="switch-shadow"></label>
             </div>
         </div>

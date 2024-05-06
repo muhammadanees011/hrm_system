@@ -2680,4 +2680,14 @@ class User extends Authenticatable implements MustVerifyEmail
         $role = Role::findByName($this->type);
         return $role->hasPermissionTo($permission);
     }
+
+    public function holidays()
+    {
+        return $this->hasMany(Holiday::class);
+    }
+
+    public function holidayCarryOvers()
+    {
+        return $this->hasMany(HolidayCarryOver::class);
+    }
 }

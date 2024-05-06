@@ -175,5 +175,12 @@
             </a>
         @endcan
 
+        @can('Manage Holiday Configuration')
+            <a href="{{ route('holiday-configuration.index') }}"
+                class="list-group-item list-group-item-action border-0 {{ request()->is('holiday-configuration*') ? 'active' : '' }}">{{ __('Holiday Configuration') }}
+                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+            </a>
+        @endcan
+
     </div>
 </div>

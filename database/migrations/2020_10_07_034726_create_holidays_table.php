@@ -19,6 +19,10 @@ class CreateHolidaysTable extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->text('occasion');
+            $table->integer('total_days');
+            $table->integer('user_id');
+            $table->integer('isNextYear');
+            $table->string('status');
             $table->integer('created_by');
             $table->timestamps();
         }

@@ -4,20 +4,79 @@ namespace App\Http\Controllers;
 
 use App\Exports\HolidayExport;
 use App\Imports\HolidayImport;
+use App\Models\AttendanceEmployee;
 use App\Models\Holiday as LocalHoliday;
+use App\Models\HolidayConfiguration;
 use App\Models\Utility;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\GoogleCalendar\Event as GoogleEvent;
+use Carbon\Carbon;
+
 
 class HolidayController extends Controller
 {
 
     public function index(Request $request)
     {
+        $holidayPerMonth = 0;
+        $monthsSinceStart = 0;
+        $availableEntitlement = 0;
+
         if (\Auth::user()->can('Manage Holiday')) {
-            $holidays = LocalHoliday::where('created_by', '=', \Auth::user()->creatorId());
+            $holidayConfig = HolidayConfiguration::where('created_by', '=', \Auth::user()->creatorId())->first();
+            $holidayPerMonth = round($holidayConfig->annual_entitlement / 12, 1);
+            // calculating renew year since start interval
+            $renewDate = new DateTime($holidayConfig->annual_renew_date);
+            $currentDate = new DateTime();
+            $interval = $currentDate->diff($renewDate);
+            $monthsSinceStart = $interval->m < 0 ? $interval->m . ' Month(s)' : $interval->d . ' Days';
+
+            // calculating available entitlement
+            $startDate = Carbon::parse($holidayConfig->annual_renew_date)->startOfDay();
+            $endDate = Carbon::today();
+
+            if (\Auth::user()->type == 'employee') {
+                $holidays = LocalHoliday::where('created_by', '=', \Auth::user()->creatorId())->where('user_id', \Auth::user()->id);
+                $attendanceRecords = AttendanceEmployee::where('date', '>=', $startDate)
+                    ->where('date', '<=', $endDate)
+                    ->where('employee_id', auth()->user()->employee->id)
+                    ->where('status', 'Present')
+                    ->count();
+                $totalApprovedDays = auth()->user()->holidays()
+                    ->where('created_at', '>=', $startDate)
+                    ->where('created_at', '<=', $endDate)
+                    ->where('status', 'Approved')
+                    ->sum('total_days');
+
+                $totalApprovedCarryOverDaysThisYear = auth()->user()->holidayCarryOvers()
+                    ->whereDate('created_at', '>=', $startDate)
+                    ->whereDate('created_at', '<=', $endDate)
+                    ->where('status', 'Approved')
+                    ->sum('total_days');
+
+                $previousRenewStartDate = Carbon::parse($holidayConfig->annual_renew_date)->subYear()->startOfDay();
+                $previousRenewEndDate = $startDate->copy()->subDay();
+
+                $totalApprovedCarryOverDays = auth()->user()->holidayCarryOvers()
+                    ->whereDate('created_at', '>=', $previousRenewStartDate)
+                    ->whereDate('created_at', '<=', $previousRenewEndDate)
+                    ->where('status', 'Approved')
+                    ->sum('total_days');
+
+                $totalCarryOvers = abs($totalApprovedCarryOverDaysThisYear - $totalApprovedCarryOverDays);
+
+                // dd($totalCarryOvers);
+
+
+                $availableEntitlement = intval(round($holidayConfig->annual_entitlement * ($attendanceRecords / $holidayConfig->total_annual_working_days))) - ($totalApprovedDays + $totalCarryOvers);
+            } else {
+                $holidays = LocalHoliday::where('created_by', '=', \Auth::user()->creatorId());
+            }
+
+
 
             if (!empty($request->start_date)) {
                 $holidays->where('start_date', '>=', $request->start_date);
@@ -26,8 +85,10 @@ class HolidayController extends Controller
                 $holidays->where('end_date', '<=', $request->end_date);
             }
             $holidays = $holidays->get();
+            $approvedHolidays = $holidays->where('status', 'Approved')->count();
+            $rejectedHolidays = $holidays->where('status', 'Rejected')->count();
 
-            return view('holiday.index', compact('holidays'));
+            return view('holiday.index', compact('holidays', 'holidayConfig', 'holidayPerMonth', 'monthsSinceStart', 'availableEntitlement', 'approvedHolidays', 'rejectedHolidays'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -62,10 +123,67 @@ class HolidayController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
 
+            // Logic to check employee is eligible for requesting holidays as per alotted one
+            $start = Carbon::parse($request->start_date);
+            $end = Carbon::parse($request->end_date);
+            $totalDays = $end->diffInDays($start) + 1;
+
+            $holidayConfig = HolidayConfiguration::where('created_by', '=', \Auth::user()->creatorId())->first();
+            // calculating available entitlement
+            $startDate = Carbon::parse($holidayConfig->annual_renew_date)->startOfDay();
+            $endDate = Carbon::today();
+
+            $attendanceRecords = AttendanceEmployee::where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->where('employee_id', auth()->user()->employee->id)
+                ->where('status', 'Present')
+                ->count();
+
+            $totalApprovedDays = auth()->user()->holidays()
+                ->where('created_at', '>=', $startDate)
+                ->where('created_at', '<=', $endDate)
+                ->where('status', 'Approved')
+                ->sum('total_days');
+
+            $totalApprovedCarryOverDaysThisYear = auth()->user()->holidayCarryOvers()
+                ->whereDate('created_at', '>=', $startDate)
+                ->whereDate('created_at', '<=', $endDate)
+                ->where('status', 'Approved')
+                ->sum('total_days');
+
+            $previousRenewStartDate = Carbon::parse($holidayConfig->annual_renew_date)->subYear()->startOfDay();
+            $previousRenewEndDate = $startDate->copy()->subDay();
+
+            $totalApprovedCarryOverDays = auth()->user()->holidayCarryOvers()
+                ->whereDate('created_at', '>=', $previousRenewStartDate)
+                ->whereDate('created_at', '<=', $previousRenewEndDate)
+                ->where('status', 'Approved')
+                ->sum('total_days');
+
+            $totalCarryOvers = abs($totalApprovedCarryOverDaysThisYear - $totalApprovedCarryOverDays);
+
+            // dd($totalCarryOvers);
+
+
+            $availableEntitlement = intval(round($holidayConfig->annual_entitlement * ($attendanceRecords / $holidayConfig->total_annual_working_days))) - ($totalApprovedDays + $totalCarryOvers);
+
+            if ($totalDays > $availableEntitlement) {
+                return redirect()->back()->with('error', 'Please request the holidays as per available holiday entitlement');
+            }
+
+            if ($request->request_next_year && Carbon::parse($holidayConfig->annual_renew_date) > $start) {
+                return redirect()->back()->with('error', 'Please request the holidays in next year range');
+            }
+
             $holiday             = new LocalHoliday();
+            $holiday->occasion          = $request->occasion;
+            $holiday->total_days          = $totalDays;
+            $holiday->user_id          = \Auth::user()->id();
             $holiday->occasion          = $request->occasion;
             $holiday->start_date        = $request->start_date;
             $holiday->end_date          = $request->end_date;
+            $holiday->isNextYear          = $request->request_next_year;
+            $holiday->status          = 'Pending';
             $holiday->created_by = \Auth::user()->creatorId();
             $holiday->save();
 
@@ -73,7 +191,7 @@ class HolidayController extends Controller
             $setting = Utility::settings(Auth::user()->creatorId());
             if (isset($setting['Holiday_notification']) && $setting['Holiday_notification'] == 1) {
                 // $msg = $request->occasion . ' ' . __("on") . ' ' . $request->date . '.';
-                
+
                 $uArr = [
                     'occasion_name' => $request->occasion,
                     'start_date' => $request->start_date,
@@ -86,7 +204,7 @@ class HolidayController extends Controller
             $setting = Utility::settings(\Auth::user()->creatorId());
             if (isset($setting['telegram_Holiday_notification']) && $setting['telegram_Holiday_notification'] == 1) {
                 // $msg = $request->occasion . ' ' . __("on") . ' ' . $request->date . '.';
-                
+
                 $uArr = [
                     'occasion_name' => $request->occasion,
                     'start_date' => $request->start_date,
@@ -131,7 +249,7 @@ class HolidayController extends Controller
 
     public function show($id)
     {
-        $holidays = LocalHoliday::where('id',$id)->first();
+        $holidays = LocalHoliday::where('id', $id)->first();
         return view('holiday.show', compact('holidays'));
     }
 
@@ -163,8 +281,57 @@ class HolidayController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
+            // Logic to check employee is eligible for requesting holidays as per alotted one
+            $start = Carbon::parse($request->start_date);
+            $end = Carbon::parse($request->end_date);
+            $totalDays = $end->diffInDays($start) + 1;
+
+            $holidayConfig = HolidayConfiguration::where('created_by', '=', \Auth::user()->creatorId())->first();
+            // calculating available entitlement
+            $startDate = Carbon::parse($holidayConfig->annual_renew_date)->startOfDay();
+            $endDate = Carbon::today();
+
+            $attendanceRecords = AttendanceEmployee::where('date', '>=', $startDate)
+                ->where('date', '<=', $endDate)
+                ->where('employee_id', $holiday->user_id)
+                ->where('status', 'Present')
+                ->count();
+
+            $totalApprovedDays = auth()->user()->holidays()
+                ->where('created_at', '>=', $startDate)
+                ->where('created_at', '<=', $endDate)
+                ->where('status', 'Approved')
+                ->sum('total_days');
+
+            $totalApprovedCarryOverDaysThisYear = auth()->user()->holidayCarryOvers()
+                ->whereDate('created_at', '>=', $startDate)
+                ->whereDate('created_at', '<=', $endDate)
+                ->where('status', 'Approved')
+                ->sum('total_days');
+
+            $previousRenewStartDate = Carbon::parse($holidayConfig->annual_renew_date)->subYear()->startOfDay();
+            $previousRenewEndDate = $startDate->copy()->subDay();
+
+            $totalApprovedCarryOverDays = auth()->user()->holidayCarryOvers()
+                ->whereDate('created_at', '>=', $previousRenewStartDate)
+                ->whereDate('created_at', '<=', $previousRenewEndDate)
+                ->where('status', 'Approved')
+                ->sum('total_days');
+
+            $totalCarryOvers = abs($totalApprovedCarryOverDaysThisYear - $totalApprovedCarryOverDays);
+
+            // dd($totalCarryOvers);
+
+
+            $availableEntitlement = intval(round($holidayConfig->annual_entitlement * ($attendanceRecords / $holidayConfig->total_annual_working_days))) - ($totalApprovedDays + $totalCarryOvers);
+
+            if ($holiday->total_days < $totalDays && $totalDays > $availableEntitlement) {
+                return redirect()->back()->with('error', 'Please request the holidays as per available holiday entitlement');
+            }
+
 
             $holiday->occasion          = $request->occasion;
+            $holiday->total_days          = $totalDays;
             $holiday->start_date        = $request->start_date;
             $holiday->end_date          = $request->end_date;
             $holiday->save();
@@ -176,6 +343,18 @@ class HolidayController extends Controller
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
+    }
+
+    public function updateStatus(Request $request, $holidayId)
+    {
+        $holiday = LocalHoliday::where('id', $holidayId)->first();
+        $holiday->status = $request->status;
+        $holiday->save();
+
+        return redirect()->route('holiday.index')->with(
+            'success',
+            'Holiday successfully updated.'
+        );
     }
 
 
@@ -233,26 +412,22 @@ class HolidayController extends Controller
 
     public function calender(Request $request)
     {
-        if(\Auth::user()->can('Manage Holiday'))
-        {
+        if (\Auth::user()->can('Manage Holiday')) {
             $transdate = date('Y-m-d', time());
 
             $holidays = LocalHoliday::where('created_by', '=', \Auth::user()->creatorId());
 
-            if(!empty($request->start_date))
-            {
+            if (!empty($request->start_date)) {
                 $holidays->where('start_date', '>=', $request->start_date);
             }
-            if(!empty($request->end_date))
-            {
+            if (!empty($request->end_date)) {
                 $holidays->where('end_date', '<=', $request->end_date);
             }
             $holidays = $holidays->get();
 
             $arrHolidays = [];
 
-            foreach($holidays as $holiday)
-            {
+            foreach ($holidays as $holiday) {
                 $arr['id']        = $holiday['id'];
                 $arr['title']     = $holiday['occasion'];
                 $arr['start']     = $holiday['date'];
@@ -263,10 +438,8 @@ class HolidayController extends Controller
             }
             $arrHolidays = str_replace('"[', '[', str_replace(']"', ']', json_encode($arrHolidays)));
 
-            return view('holiday.calender', compact('arrHolidays','transdate','holidays'));
-        }
-        else
-        {
+            return view('holiday.calender', compact('arrHolidays', 'transdate', 'holidays'));
+        } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
