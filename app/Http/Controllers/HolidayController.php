@@ -178,7 +178,7 @@ class HolidayController extends Controller
             $holiday             = new LocalHoliday();
             $holiday->occasion          = $request->occasion;
             $holiday->total_days          = $totalDays;
-            $holiday->user_id          = \Auth::user()->id();
+            $holiday->user_id          = auth()->id();
             $holiday->occasion          = $request->occasion;
             $holiday->start_date        = $request->start_date;
             $holiday->end_date          = $request->end_date;
