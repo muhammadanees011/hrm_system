@@ -39,9 +39,10 @@
                             @foreach ($performancecycles as $performancecycle)
                                 <tr>
                                     <td style="background-color:#f5f5f5;">
-                                        <!-- <a href="{{ route('performancecycle.show', $performancecycle->id)}}" data-url="{{ route('performancecycle.show', $performancecycle->id) }}"> -->
+                                        <a href="{{ route('goaltracking.index',$performancecycle->id)}}">
                                             {{ $performancecycle->title }}
-                                        <!-- </a> -->
+                                            <i class="ti ti-arrow-right"></i>
+                                        </a>
                                     </td>
                                     <td>
                                         @foreach($performancecycle->participant_roles as $participant)
@@ -64,11 +65,11 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($performancecycle->status=='running')
+                                        @if($performancecycle->status=='Inprogress')
                                         <span class="badge rounded p-2 m-1 px-3 bg-primary ">
                                             {{ $performancecycle->status }}
                                         </span>
-                                        @elseif($performancecycle->status=='ended')
+                                        @elseif($performancecycle->status=='Completed')
                                         <span class="badge rounded p-2 m-1 px-3 bg-danger ">
                                             {{ $performancecycle->status }}
                                         </span>

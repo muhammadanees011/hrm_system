@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\DB;
 class GoalTrackingController extends Controller
 {
 
-    public function index()
+    public function index($performance_cycle_id)
     {
         // if(\Auth::user()->can('Manage Goal Tracking'))
         // {
             $user = \Auth::user();
-            $goalTrackings = GoalTracking::with(['employee', 'performanceCycle'])
+            $goalTrackings = GoalTracking::where('performancecycle_id',$performance_cycle_id)->with(['employee', 'performanceCycle'])
             ->whereIn('id', function ($query) {
                 $query->selectRaw('MIN(id)')
                 ->from('goal_trackings')
@@ -46,7 +46,7 @@ class GoalTrackingController extends Controller
 
             $goalTrackings = $goalTrackings->get();
 
-            return view('goaltracking.index', compact('goalTrackings'));
+            return view('goaltracking.index', compact('goalTrackings','performance_cycle_id'));
         // }else{
         //     return redirect()->back()->with('error', __('Permission denied.'));
         // }

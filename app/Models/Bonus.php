@@ -10,4 +10,9 @@ class Bonus extends Model
         'name',
         'created_by',
     ];
+
+    public function employee()
+    {
+        return $this->hasOne('App\Models\Employee', 'id', 'employee_id')->first();
+    }
 }

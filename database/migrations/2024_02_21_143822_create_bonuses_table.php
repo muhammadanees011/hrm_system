@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('bonuses', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->integer('created_by')->nullable();
+            $table->integer('employee_id');
+            $table->string('title');
+            $table->float('amount', 15,2);
+            $table->integer('created_by');
             $table->timestamps();
         });
     }

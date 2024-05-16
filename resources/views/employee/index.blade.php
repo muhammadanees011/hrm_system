@@ -12,14 +12,14 @@
 @section('action-button')
 
 <div class="employees-actions">
-
+ 
 <div class="employees-nav me-2">
     <div class="nav-titles">
         <div class="dropdown">
         <button class="dropbtn">Documents &#9660;</button>
         <div class="dropdown-content">
-            <a href="{{ route('document-upload.index') }}" target="_blank">Documents </a>
-            <a href="{{ route('document.directory') }}" target="_blank">New Documents</a>
+            <!-- <a href="{{ route('document-upload.index') }}" target="_blank">Documents </a> -->
+            <a href="{{ route('documentdirectories.index') }}">Employee Documents</a>
         </div>
         </div>
     </div>
@@ -30,10 +30,10 @@
         <div class="dropdown">
         <button class="dropbtn">Leaves &#9660;</button>
         <div class="dropdown-content">
-            <a href="{{ route('leave.index') }}" target="_blank">Leave Request </a>
-            <a href="{{ route('carryover.index') }}" target="_blank">CarryOver Request</a>
-            <a href="{{ route('leave.team') }}" target="_blank">Team Time Off</a>
-            <a href="{{ route('holiday.index') }}" target="_blank">Holidays</a>
+            <a href="{{ route('leave.index') }}">Leave Request </a>
+            <a href="{{ route('carryover.index') }}" >CarryOver Request</a>
+            <a href="{{ route('leave.team') }}">Team Time Off</a>
+            <a href="{{ route('holiday.index') }}">Holidays</a>
         </div>
         </div>
     </div>
@@ -44,8 +44,8 @@
         <div class="dropdown">
         <button class="dropbtn">Payrolls &#9660;</button>
         <div class="dropdown-content">
-        <a href="{{ route('setsalary.index') }}" target="_blank">Set Salary </a>
-        <a href="{{ route('payslip.index') }}" target="_blank">Payslip </a>
+        <a href="{{ route('setsalary.index') }}">Set Salary </a>
+        <a href="{{ route('payslip.index') }}">Payslip </a>
         </div>
         </div>
     </div>
@@ -56,9 +56,9 @@
         <div class="dropdown">
         <button class="dropbtn">Performance &#9660;</button>
         <div class="dropdown-content">
-            <a href="{{ route('performancecycle.index') }}" target="_blank">Manage Cycles </a>
-            <a href="{{ route('goaltracking.index') }}" target="_blank">People's Goals </a>
-            <a href="{{ route('employeereviews.index') }}" target="_blank">Employee Reviews</a>
+            <a href="{{ route('performancecycle.index') }}">Manage Cycles </a>
+            <a href="{{ route('meetingtemplate.index') }}">{{ __("1 on 1's") }} </a>
+            <a href="{{ route('employeereviews.index') }}">Employee Reviews</a>
         </div>
         </div>
     </div>

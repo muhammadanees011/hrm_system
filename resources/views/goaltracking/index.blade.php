@@ -29,7 +29,7 @@
                                 <th>{{ __('Employement Type') }}</th>
                                 <th>{{ __('Overall Progress') }}</th>
                                 <th>{{ __('Status') }}</th>
-                                <th>{{ __('Visibility') }}</th>
+                                <th>{{ __('Disciplinary') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,7 +70,13 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $goalTracking->total_shared }} Shared, {{ $goalTracking->total_private }} personal</td>
+                                    <td>
+                                        <a href="{{ route('disciplinarywarning.index', ['employee_id' => $goalTracking->employee->id, 'performance_cycle_id' => $performance_cycle_id]) }}">
+                                            <div class="goals-status text-white d-flex justify-content-center" style="background-color:red; width:75%; height:23px; border-radius:8px;">
+                                                warnings
+                                            </div>
+                                        </a>
+                                    </td>
                                     
                                 </tr>
                             @endforeach

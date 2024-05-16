@@ -132,9 +132,30 @@ class Employee extends Model
             $total_over_time = $amount + $total_over_time;
         }
 
+        //Bonus
+        $bonuses      = Bonus::where('employee_id', '=', $this->id)->get();
+        $total_bonus = 0;
+        foreach ($bonuses as $bonus) {
+            $amount          = $bonus->amount;
+            $total_bonus     = $amount + $total_bonus;
+        }
+
+        //Income Tax
+        $employee              = Employee::where('id', '=', $this->id)->first();
+        $income_tax_percentage = PayrollSetup::first();
+        $income_tax_percentage = $income_tax_percentage ? $income_tax_percentage->income_tax_percentage:null ; 
+        $employee_salary       = (!empty($employee->salary) ? $employee->salary : 0);
+        $income_tax            = ($employee_salary) * ($income_tax_percentage ? ($income_tax_percentage/100) : 0);
+
+        //Provident Funds
+        $provident_funds_deduction_percentage = PayrollSetup::first();
+        $provident_funds_deduction_percentage = $provident_funds_deduction_percentage ? $provident_funds_deduction_percentage->provident_funds_deduction_percentage:null ; 
+        $employee_salary       = (!empty($employee->salary) ? $employee->salary : 0);
+        $provident_funds       = ($employee_salary) * ($provident_funds_deduction_percentage ? ($provident_funds_deduction_percentage/100) : 0);
+
 
         //Net Salary Calculate
-        $advance_salary = $total_allowance + $total_commission - $total_loan - $total_saturation_deduction + $total_other_payment + $total_over_time;
+        $advance_salary = $total_allowance + $total_commission + $total_bonus - $provident_funds - $income_tax - $total_loan - $total_saturation_deduction + $total_other_payment + $total_over_time;
 
         $employee       = Employee::where('id', '=', $this->id)->first();
 
@@ -142,6 +163,35 @@ class Employee extends Model
 
         return $net_salary;
     }
+
+    public static function incometax($id)
+    {
+        //incometax
+        $employee              = Employee::where('id', '=', $id)->first();
+        $income_tax_percentage = PayrollSetup::first();
+        $income_tax_percentage = $income_tax_percentage ? $income_tax_percentage->income_tax_percentage:null ; 
+        $employee_salary       = (!empty($employee->salary) ? $employee->salary : 0);
+        $income_tax            = ($employee_salary) * ($income_tax_percentage ? ($income_tax_percentage/100) : 0);
+
+        $income_tax = json_encode($income_tax);
+
+        return $income_tax;
+    }
+
+    public static function providentfunds($id)
+    {
+        //Provident Funds
+        $employee              = Employee::where('id', '=', $id)->first();
+        $provident_funds_deduction_percentage = PayrollSetup::first();
+        $provident_funds_deduction_percentage = $provident_funds_deduction_percentage ? $provident_funds_deduction_percentage->provident_funds_deduction_percentage:null ; 
+        $employee_salary       = (!empty($employee->salary) ? $employee->salary : 0);
+        $provident_funds       = ($employee_salary) * ($provident_funds_deduction_percentage ? ($provident_funds_deduction_percentage/100) : 0);
+
+        $provident_funds = json_encode($provident_funds);
+
+        return $provident_funds;
+    }
+
 
     public static function allowance($id)
     {
@@ -223,6 +273,20 @@ class Employee extends Model
         $over_time_json = json_encode($over_times);
 
         return $over_time_json;
+    }
+
+    public static function bonus($id)
+    {
+        //Overtime
+        $bonuses      = Bonus::where('employee_id', '=', $id)->get();
+        $total_bonus  = 0;
+        foreach ($bonuses as $bonus) {
+            $amount          = $bonus->amount;
+            $total_bonus     = $amount + $total_bonus;
+        }
+        $over_time_json = json_encode($bonuses);
+
+        return $bonuses;
     }
 
     public static function employee_id()

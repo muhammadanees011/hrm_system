@@ -67,11 +67,11 @@
                                     class="ti ti-key"></i>
                                 <span class="ms-1">{{ __('On Track') }}</span>
                             </a>
-                            <a href="{{route('goaltracking.goals.visibility', ['id' => $goal->id, 'visibility' => $goal->visibility === 'Shared' ? 'Private':'Shared'])}}" class="dropdown-item" data-ajax-popup="false"
+                            <!-- <a href="{{route('goaltracking.goals.visibility', ['id' => $goal->id, 'visibility' => $goal->visibility === 'Shared' ? 'Private':'Shared'])}}" class="dropdown-item" data-ajax-popup="false"
                                 data-title="{{ __('Change Password') }}"
                                 data-url="#"><i class="ti ti-key"></i>
                                 <span class="ms-1">Make {{  $goal->visibility === "Shared" ? "Private":"Shared" }}</span>
-                            </a>
+                            </a> -->
                             {!! Form::open(['method' => 'DELETE', 'route' => ['goaltracking.delete', $goal->id], 'id' => 'delete-form-' . $goal->id]) !!}
 
                                 <a href="#" class="bs-pass-para dropdown-item"
@@ -92,7 +92,7 @@
                     </div>
                 </div>
                 <div class="">
-                    <a href="{{route('goaltracking.goal.details',$goal->id)}}" target="_blank">
+                    <a href="{{route('goaltracking.goal.details',$goal->id)}}">
                         <h5>{{$goal->title}}</h5>
                     </a>
                 </div>

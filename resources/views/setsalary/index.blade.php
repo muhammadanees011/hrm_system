@@ -11,6 +11,38 @@
 
 
 @section('content')
+
+
+<style>
+.emp-col {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+}
+
+.emp-col a {
+    display: flex;
+    align-items: center; /* Vertical alignment */
+    text-decoration: none; /* Remove underline from link */
+}
+
+.emp-col img {
+    height: 40px; /* Adjust the height as needed */
+    width: 40px; /* Adjust the width as needed */
+    margin-right: 10px; /* Spacing between image and text */
+}
+
+.emp-name {
+    display: flex;
+    flex-direction: column;
+}
+
+.emp-name small {
+    margin-left: auto; /* Push the employee ID to the right */
+}
+
+</style>
+
+
     <div class="col-md-12 col-lg-12 col-sm-12 col-xl-12">
         <div class="card">
             <div class="card-header card-body table-border-style">
@@ -19,8 +51,8 @@
                     <table class="table" id="pc-dt-simple">
                         <thead>
                             <tr>
-                                <th>{{ __('Employee Id') }}</th>
-                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Employee') }}</th>
+                                <!-- <th>{{ __('Name') }}</th> -->
                                 <th>{{ __('Payroll Type') }}</th>
                                 <th>{{ __('Salary') }}</th>
                                 <th>{{ __('Net Salary') }}</th>
@@ -30,13 +62,21 @@
                         <tbody>
                             @foreach ($employees as $employee)
                                 <tr>
-                                    <td>
+                                    <td class="emp-col">
                                         <a href="{{ route('setsalary.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}"
-                                            class="btn btn-outline-primary">
-                                            {{ \Auth::user()->employeeIdFormat($employee->employee_id) }}
+                                            class="">
+                                            <img class="rounded-circle me-4" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
+                                            <span class="emp-name">
+                                            <small class=" ps-1">{{ \Auth::user()->employeeIdFormat($employee->employee_id) }}</small>
+                                            {{ $employee->name }}
+                                            <!-- <i class="ti ti-arrow-right"></i> -->
+                                            </span>
                                         </a>
                                     </td>
-                                    <td>{{ $employee->name }}</td>
+                                    <!-- <td>
+                                        <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 10%;width: 10%" />
+                                        {{ $employee->name }}
+                                    </td> -->
                                     <td>{{ $employee->salary_type() }}</td>
                                     <td>{{ \Auth::user()->priceFormat($employee->salary) }}</td>
                                     <td>{{ !empty($employee->get_net_salary()) ? \Auth::user()->priceFormat($employee->get_net_salary()) : '' }}

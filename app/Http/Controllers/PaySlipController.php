@@ -14,6 +14,7 @@ use App\Models\Expense;
 use App\Models\OtherPayment;
 use App\Models\Overtime;
 use App\Models\PaySlip;
+use App\Models\Bonus;
 use App\Models\Resignation;
 use App\Models\SaturationDeduction;
 use App\Models\Termination;
@@ -137,6 +138,10 @@ class PaySlipController extends Controller
                     $payslipEmployee->saturation_deduction = Employee::saturation_deduction($employee->id);
                     $payslipEmployee->other_payment        = Employee::other_payment($employee->id);
                     $payslipEmployee->overtime             = Employee::overtime($employee->id);
+                    $payslipEmployee->bonus                = Employee::bonus($employee->id);
+                    $payslipEmployee->incometax            = Employee::incometax($employee->id);
+                    $payslipEmployee->providentfunds       = Employee::providentfunds($payslipEmployee->employee_id);
+                    $payslipEmployee->bonus                = Employee::bonus($payslipEmployee->employee_id);
                     $payslipEmployee->created_by           = \Auth::user()->creatorId();
                     
                     $payslipEmployee->save();
@@ -216,7 +221,6 @@ class PaySlipController extends Controller
     {
 
         $payslip = PaySlip::find($paySlip);
-
         return view('payslip.show', compact('payslip'));
     }
     public function search_json(Request $request)
@@ -476,6 +480,16 @@ class PaySlipController extends Controller
             }
         }
 
+        if (isset($request->bonus) && !empty($request->bonus)) {
+            $bonuses   = $request->bonus;
+            $bonusIds = $request->bonus_id;
+            foreach ($bonuses as $k => $bonus) {
+                $bonusData         = Bonus::find($bonusIds[$k]);
+                $bonusData->amount = $bonus;
+                $bonusData->save();
+            }
+        }
+
 
         if (isset($request->rate) && !empty($request->rate)) {
             $rates   = $request->rate;
@@ -498,6 +512,9 @@ class PaySlipController extends Controller
         $payslipEmployee->saturation_deduction = Employee::saturation_deduction($payslipEmployee->employee_id);
         $payslipEmployee->other_payment        = Employee::other_payment($payslipEmployee->employee_id);
         $payslipEmployee->overtime             = Employee::overtime($payslipEmployee->employee_id);
+        $payslipEmployee->incometax            = Employee::incometax($payslipEmployee->employee_id);
+        $payslipEmployee->providentfunds       = Employee::providentfunds($payslipEmployee->employee_id);
+        $payslipEmployee->bonus                = Employee::bonus($payslipEmployee->employee_id);
         $payslipEmployee->net_payble           = Employee::find($payslipEmployee->employee_id)->get_net_salary();
         $payslipEmployee->save();
 
