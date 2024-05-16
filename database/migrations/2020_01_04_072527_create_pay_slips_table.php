@@ -27,6 +27,9 @@ class CreatePaySlipsTable extends Migration
             $table->text('saturation_deduction');
             $table->text('other_payment');
             $table->text('overtime');
+            $table->text('incometax');
+            $table->text('bonus');
+            $table->text('providentfunds');
             $table->integer('created_by');
             $table->timestamps();
         }

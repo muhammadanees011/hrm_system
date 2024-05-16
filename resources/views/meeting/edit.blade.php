@@ -3,6 +3,7 @@
     $chatgpt = Utility::getValByName('enable_chatgpt');
 @endphp
 {{ Form::model($meeting, ['route' => ['meeting.update', $meeting->id], 'method' => 'PUT']) }}
+{{ Form::hidden('meeting_template_id', $meeting_template_id) }}
 <div class="modal-body">
 
     @if ($chatgpt == 'on')
@@ -35,11 +36,6 @@
             {{ Form::select('invitee_id', $invitees, null, ['class' => 'form-control select2', 'required' => 'required']) }}
         </div>
 
-        <div class="form-group col-lg-12">
-            {{ Form::label('meeting_template_id', __('Meeting Templates'), ['class' => 'col-form-label']) }}
-            {{ Form::select('meeting_template_id', $templates, null, ['class' => 'form-control select2', 'required' => 'required']) }}
-        </div>
-
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 {{ Form::label('date', __('Meeting Date'), ['class' => 'form-label']) }}
@@ -65,6 +61,15 @@
                     {{ Form::time('end_time', null, ['class' => 'form-control', 'required' => 'required', 'id' => 'endTime']) }}
                 </div>
             </div>
+        </div>
+        
+        <div class="form-group col-md-6">
+            {{ Form::label('status', __('Status'), ['class' => 'col-form-label']) }}
+            <select name="status" class="form-control " id="status">
+                <option value="Scheduled" @if ($meeting->status == 'Scheduled') selected @endif>{{ __('Scheduled') }}</option>
+                <option value="In Progress" @if ($meeting->status == 'In Progress') selected @endif>{{ __('Inprogress') }}</option>
+                <option value="Completed" @if ($meeting->status == 'Completed') selected @endif>{{ __('Completed') }}</option>
+            </select>
         </div>
 
         <div class="col-lg-12 col-md-12 col-sm-12">

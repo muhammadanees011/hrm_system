@@ -158,6 +158,23 @@
                                                 </tr>
                                             @endforeach
                                         @endforeach
+
+                                        @foreach ($payslipDetail['earning']['bonus'] as $bonus)
+                                            @php
+                                                $arrayJson = json_decode($bonus->bonus);
+                                            @endphp
+                                            @foreach ($arrayJson as $bonus)
+                                                <tr>
+                                                    <td>{{ __('Bonus') }}</td>
+                                                    <td>{{ $bonus->title }}</td>
+                                                    <td>-</td>
+                                                    <td class="text-right">
+                                                        {{ \Auth::user()->priceFormat( $bonus->amount) }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endforeach
+
                                     </tbody>
                                 </table>
                             </div>
@@ -215,7 +232,32 @@
                                                 </tr>
                                             @endforeach
                                         @endforeach
-                                    </tbody>
+
+                    
+                                        @foreach ($payslipDetail['deduction']['incometax'] as $incometax)
+                                            @if($incometax->incometax)
+                                                <tr>
+                                                    <td>{{ __('Income Tax') }}</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td class="text-right">{{ $incometax->incometax }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+
+                                        
+                    
+                                        @foreach ($payslipDetail['deduction']['providentfunds'] as $providentfunds)
+                                            @if($incometax->providentfunds)
+                                                <tr>
+                                                    <td>{{ __('Provident Funds') }}</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td class="text-right">{{ $providentfunds->providentfunds }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                            </tbody>
                                 </table>
                             </div>
 

@@ -16,7 +16,7 @@
     </a> -->
 
     @can('Create Meeting')
-        <a href="#" data-url="{{ route('meeting.create') }}" data-ajax-popup="true"
+        <a href="#" data-url="{{ route('meeting.create',$meeting_template_id) }}" data-ajax-popup="true"
             data-title="{{ __('New Task-1-on-1 Meeting') }}" data-size="md" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
@@ -49,7 +49,7 @@
                             @foreach ($meetings as $meeting)
                                 <tr>
                                     <td>
-                                        <a href="{{route('meeting.details',$meeting->id)}}" target="_blank">
+                                        <a href="{{route('meeting.details',$meeting->id)}}">
                                             {{ $meeting->title }}
                                             <i class="ti ti-arrow-right"></i>
                                         </a>
@@ -64,16 +64,26 @@
                                         {{$meeting->invitee->name}}
                                     </td>
                                     <td>
+                                        @if($meeting->status=="Scheduled")
                                         <span class="badge rounded p-2 m-1 px-3 bg-warning ">
-                                        {{$meeting->status}}
+                                            {{$meeting->status}}
                                         </span>
+                                        @elseif($meeting->status=="In Progress")
+                                        <span class="badge rounded p-2 m-1 px-3 bg-primary ">
+                                            {{$meeting->status}}
+                                        </span>
+                                        @elseif($meeting->status=="Completed")
+                                        <span class="badge rounded p-2 m-1 px-3 bg-danger ">
+                                            {{$meeting->status}}
+                                        </span>
+                                        @endif
                                     </td>
                                     <td class="Action">
                                         <span>
                                             @can('Edit Meeting')
                                                 <div class="action-btn bg-info ms-2">
                                                     <a href="#" class="mx-3 btn btn-sm  align-items-center"
-                                                        data-url="{{ URL::to('meeting/' . $meeting->id . '/edit') }}"
+                                                        data-url="{{ URL::to('meeting/edit/' . $meeting->id . '/'.$meeting_template_id) }}"
                                                         data-ajax-popup="true" data-size="lg" data-bs-toggle="tooltip"
                                                         title="" data-title="{{ __('Edit Meeting') }}"
                                                         data-bs-original-title="{{ __('Edit') }}">

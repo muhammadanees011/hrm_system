@@ -25,17 +25,76 @@
     </script>
 @endpush
 @section('action-button')
-    @can('Manage Employee')
+    <!-- @can('Manage Employee')
         <a href="#" data-url="{{ route('employementcheck.create') }}" data-ajax-popup="true" data-size="lg"
             data-title="{{ __('Create New Employement Check') }}" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
-    @endcan
+    @endcan -->
 @endsection
 @section('content')
 
-        <div class="card  mt-0 pt-1 pb-1" style="background-color: #E5E4E2;">
+<style>
+    .dir-name p{
+        font-size:12px;
+        font-weight:600;
+    }
+    .dir-name{
+        height:90px;
+        width:100px;
+    }
+    .dir:hover{
+        border:2px solid orange;
+        border-radius:4px;
+        padding:5px;
+        cursor:pointer;
+    }
+
+</style>
+
+    @for($i=0; $i< 10; $i++)
+        <div class="mb-5 mt-5" style="width:9rem;height:4rem; margin-bottom:10rem;">
+            <div class="card p-0 dir"  style="width:8rem; height:9rem;">
+                <div class="card-header border-0 pb-0">
+                    <div class="card-header-right">
+                        <div class="btn-group card-option" style="width:2rem !important;">
+                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="feather icon-more-vertical"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a href="#" class="dropdown-item" data-url=""
+                                    data-ajax-popup="true" data-title="{{ __('Update User') }}"><i
+                                        class="ti ti-trash "></i><span class="ms-2 me-0">{{ __('Delete') }}</span></a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                        <div class="dir-name">
+                        <img src="{{asset( '/assets/images/folder.png' )}}" height="40" width="40" alt="pdf" class="pdf-icon">
+                        <p>Health Assessments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endfor
+
+    <div class="col-xl-2 col-lg-4 col-sm-6 mt-5">
+        <a href="#" class="btn-addnew-project " data-ajax-popup="true" data-url="{{ route('documentdirectories.create') }}"
+            data-title="{{ __('Create New Directory') }}" data-bs-toggle="tooltip" title=""
+            class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
+            <div class="bg-warning proj-add-icon" style="width:40px;height:55px;">
+                <i class="ti ti-plus"></i>
+            </div>
+            <h6 class="mt-4 mb-2">{{ __('New Directory') }}</h6>
+            <p class="text-muted text-center">{{ __('Click here to add new directory') }}</p>
+        </a>
+    </div>
+
+        <!-- <div class="card  mt-0 pt-1 pb-1" style="background-color: #E5E4E2;">
             <div class="container-kanban">
                 <div class="row" style=" height:80vh;">
                     <div class="col-md-3 doc-folders " style="border-right:3px solid white !important;">
@@ -132,14 +191,13 @@
                             @endcan
                             </span>
                         </div>
-                        <!-- <hr class="files-hr"> -->
                         @endfor
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    
+     -->
 @endsection
 
 @push('script-page')

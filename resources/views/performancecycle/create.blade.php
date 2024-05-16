@@ -43,9 +43,9 @@
         <div class="form-group col-md-6">
             {{ Form::label('status', __('Status'), ['class' => 'col-form-label']) }}
             <select name="status" class="form-control  select2" id="status">
-                <option value="running">{{ __('Running') }}</option>
-                <option value="ended">{{ __('Ended') }}</option>
-                <option value="draft">{{ __('Draft') }}</option>
+                <option value="Inprogress">{{ __('Inprogress') }}</option>
+                <option value="Completed">{{ __('Completed') }}</option>
+                <option value="Pending">{{ __('Pending') }}</option>
             </select>
         </div>
 

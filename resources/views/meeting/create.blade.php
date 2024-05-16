@@ -3,6 +3,7 @@
     $chatgpt = Utility::getValByName('enable_chatgpt');
 @endphp
 {{ Form::open(['url' => 'meeting', 'method' => 'post']) }}
+{{ Form::hidden('meeting_template_id', $meeting_template_id) }}
 <div class="modal-body">
 
     @if ($chatgpt == 'on')
@@ -34,12 +35,7 @@
             {{ Form::label('invitee_id', __('Invitee'), ['class' => 'col-form-label']) }}
             {{ Form::select('invitee_id', $invitees, null, ['class' => 'form-control select2', 'required' => 'required']) }}
         </div>
-
-        <div class="form-group col-lg-12">
-            {{ Form::label('meeting_template_id', __('Meeting Templates'), ['class' => 'col-form-label']) }}
-            {{ Form::select('meeting_template_id', $templates, null, ['class' => 'form-control select2', 'required' => 'required']) }}
-        </div>
-
+        
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 {{ Form::label('date', __('Meeting Date'), ['class' => 'form-label']) }}

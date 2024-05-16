@@ -38,6 +38,9 @@
                     <li class="nav-item">
                         <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" href="#overtime" role="tab" aria-controls="pills-contact" aria-selected="false">{{__('Overtime')}}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" href="#bonus" role="tab" aria-controls="pills-contact" aria-selected="false">{{__('Bonus')}}</a>
+                    </li>
                 </ul>
                 <div class="tab-content pt-4">
                     <div id="allowance" class="tab-pane in active">
@@ -157,6 +160,26 @@
                                             <div class="col-md-6 form-group">
                                                 {!! Form::label('hours',$overtime->title.' '.__('Hours'),['class'=>'col-form-label']) !!}
                                                 {!! Form::text('hours[]', $overtime->rate, ['class' => 'form-control']) !!}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="bonus" class="tab-pane">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card bg-none mb-0">
+                                    <div class="row px-3">
+                                        @php
+                                            $bonuses = json_decode($payslip->bonus);
+                                        @endphp
+                                        @foreach($bonuses as $bonus)
+                                            <div class="col-md-12 form-group">
+                                                {!! Form::label('bonus', $bonus->title.' '.__('Rate'),['class'=>'col-form-label']) !!}
+                                                {!! Form::text('bonus[]', $bonus->amount, ['class' => 'form-control']) !!}
+                                                {!! Form::hidden('bonus_id[]', $bonus->id, ['class' => 'form-control']) !!}
                                             </div>
                                         @endforeach
                                     </div>

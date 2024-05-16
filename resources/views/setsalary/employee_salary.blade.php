@@ -11,9 +11,49 @@
 @endsection
 
 @section('content')
-    <div class="col-12">
-        <div class="row">
-            <div class="col-xl-6">
+<style>
+    .nav-tabs .active{
+        background:orange !important;
+        color:white !important;
+    }
+    .set-card{
+        height:70vh !important;
+    }
+</style>
+
+
+<div class="col-12 mb-5">
+    <div class="row">
+        <ul class="nav nav-tabs ms-2" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="salary-tab" data-bs-toggle="tab" data-bs-target="#salary" type="button" role="tab" aria-controls="salary" aria-selected="true">Employee Salary</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="allowance-tab" data-bs-toggle="tab" data-bs-target="#allowance" type="button" role="tab" aria-controls="allowance" aria-selected="false">Allowence</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="commission-tab" data-bs-toggle="tab" data-bs-target="#commission" type="button" role="tab" aria-controls="commission" aria-selected="false">Commission</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="loan-tab" data-bs-toggle="tab" data-bs-target="#loan" type="button" role="tab" aria-controls="loan" aria-selected="false">Loan</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="saturation-tab" data-bs-toggle="tab" data-bs-target="#saturation" type="button" role="tab" aria-controls="saturation" aria-selected="false">Saturation Deduction</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="other_payments-tab" data-bs-toggle="tab" data-bs-target="#other_payments" type="button" role="tab" aria-controls="other_payments" aria-selected="false">Other Payment</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="overtime-tab" data-bs-toggle="tab" data-bs-target="#overtime" type="button" role="tab" aria-controls="overtime" aria-selected="false">Overtime</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="bonuses-tab" data-bs-toggle="tab" data-bs-target="#bonuses" type="button" role="tab" aria-controls="bonuses" aria-selected="false">Bonuses</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="salary" role="tabpanel" aria-labelledby="salary-tab">
+            <!-- Salary -->
+            <div class="col-xl-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -25,7 +65,7 @@
 
                                     <a data-url="{{ route('employee.basic.salary', $employee->id) }}" data-ajax-popup="true"
                                         data-title="{{ __('Set Basic Sallary') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Set Salary') }}">
+                                        class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Set Salary') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
 
@@ -53,8 +93,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane fade" id="allowance" role="tabpanel" aria-labelledby="allowance-tab">
             <!-- allowance -->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -65,7 +107,7 @@
                                 <div class="col-1 text-end">
                                     <a data-url="{{ route('allowances.create', $employee->id) }}" data-ajax-popup="true"
                                         data-title="{{ __('Create Allowance') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+                                        class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
                                 </div>
@@ -141,9 +183,10 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Commission -->
-            <div class="col-md-6">
+        </div>
+        <div class="tab-pane fade" id="commission" role="tabpanel" aria-labelledby="commission-tab">
+             <!-- Commission -->
+             <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -154,7 +197,7 @@
                                 <div class="col-1 text-end">
                                     <a data-url="{{ route('commissions.create', $employee->id) }}" data-ajax-popup="true"
                                         data-title="{{ __('Create Commission') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+                                        class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
 
@@ -233,8 +276,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane fade" id="loan" role="tabpanel" aria-labelledby="loan-tab">
             <!-- loan-->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -245,7 +290,7 @@
                                 <div class="col-1 text-end">
                                     <a data-url="{{ route('loans.create', $employee->id) }}" data-ajax-popup="true"
                                         data-title="{{ __('Create Loan') }}" data-bs-toggle="tooltip" title=""
-                                        data-size="lg" class="btn btn-sm btn-primary"
+                                        data-size="lg" class="btn btn-sm btn-warning"
                                         data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
@@ -329,8 +374,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane fade" id="saturation" role="tabpanel" aria-labelledby="saturation-tab">
             <!-- Saturation -->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -342,7 +389,7 @@
                                     <a data-url="{{ route('saturationdeductions.create', $employee->id) }}"
                                         data-ajax-popup="true" data-size="lg"
                                         data-title="{{ __('Create Saturation Deduction') }}" data-bs-toggle="tooltip"
-                                        title="" class="btn btn-sm btn-primary"
+                                        title="" class="btn btn-sm btn-warning"
                                         data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
@@ -421,8 +468,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane fade" id="other_payments" role="tabpanel" aria-labelledby="other_payments-tab">
             <!-- other payment-->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -434,7 +483,7 @@
 
                                     <a data-url="{{ route('otherpayments.create', $employee->id) }}" data-ajax-popup="true"
                                         data-title="{{ __('Create Other Payment') }}" data-bs-toggle="tooltip"
-                                        title="" class="btn btn-sm btn-primary"
+                                        title="" class="btn btn-sm btn-warning"
                                         data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
@@ -510,8 +559,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane fade" id="overtime" role="tabpanel" aria-labelledby="overtime-tab">
             <!--overtime-->
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
@@ -522,7 +573,7 @@
                                 <div class="col-1 text-end">
                                     <a data-url="{{ route('overtimes.create', $employee->id) }}" data-ajax-popup="true"
                                         data-title="{{ __('Create Overtime') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+                                        class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
                                 </div>
@@ -591,19 +642,21 @@
                     </div>
                 </div>
             </div>
-            <!--bonus-->
-            <!-- <div class="col-md-6">
+        </div>
+        <div class="tab-pane fade" id="bonuses" role="tabpanel" aria-labelledby="bonuses-tab">
+            <!--bonuses-->
+            <div class="col-md-12">
                 <div class="card set-card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-11">
-                                <h5>{{ __('Bonus') }}</h5>
+                                <h5>{{ __('Bonuses') }}</h5>
                             </div>
-                            @can('Create Overtime')
+                            @can('Create Bonus')
                                 <div class="col-1 text-end">
-                                    <a data-url="{{ route('overtimes.create', $employee->id) }}" data-ajax-popup="true"
-                                        data-title="{{ __('Create Overtime') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+                                    <a data-url="{{ route('bonus.create', $employee->id) }}" data-ajax-popup="true"
+                                        data-title="{{ __('Create Bonus') }}" data-bs-toggle="tooltip" title=""
+                                        class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
                                         <i class="ti ti-plus"></i>
                                     </a>
                                 </div>
@@ -616,7 +669,7 @@
                                 <thead>
                                     <tr>
                                         <th>{{ __('Employee Name') }}</th>
-                                        <th>{{ __('Bonus Type') }}</th>
+                                        <th>{{ __('Bonus Title') }}</th>
                                         <th>{{ __('Amount') }}</th>
                                         @if (\Auth::user()->type != 'employee')
                                             <th>{{ __('Action') }}</th>
@@ -624,35 +677,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($overtimes as $overtime)
+                                    @foreach ($bonuses as $bonus)
                                         <tr>
-                                            <td>{{ !empty($overtime->employee()) ? $overtime->employee()->name : '' }}
+                                            <td>{{ !empty($bonus->employee()) ? $bonus->employee()->name : '' }}
                                             </td>
-                                            <td>{{ $overtime->title }}</td>
-                                            <td>{{ $overtime->number_of_days }}</td>
-                                            <td>{{ $overtime->hours }}</td>
-                                            <td>{{ \Auth::user()->priceFormat($overtime->rate) }}</td>
+                                            <td>{{ $bonus->title }}</td>
+                                            <td>{{ \Auth::user()->priceFormat($bonus->amount) }}</td>
                                             <td class="Action">
-                                                <span>
+                                                <span class="d-flex">
                                                     @can('Edit Overtime')
                                                         <div class="action-btn bg-info ms-2">
                                                             <a class="mx-3 btn btn-sm  align-items-center"
-                                                                data-url="{{ URL::to('overtime/' . $overtime->id . '/edit') }}"
+                                                                data-url="{{route('bonus.edit',$bonus->id)}}"
                                                                 data-ajax-popup="true" data-size="md"
                                                                 data-bs-toggle="tooltip" title=""
-                                                                data-title="{{ __('Edit OverTime') }}"
+                                                                data-title="{{ __('Edit Bonus') }}"
                                                                 data-bs-original-title="{{ __('Edit') }}">
                                                                 <i class="ti ti-pencil text-white"></i>
                                                             </a>
                                                         </div>
                                                     @endcan
                                                     @can('Delete Overtime')
-                                                        <div class="action-btn bg-danger ms-2">
-                                                            {!! Form::open([
-                                                                'method' => 'DELETE',
-                                                                'route' => ['overtime.destroy', $overtime->id],
-                                                                'id' => 'delete-form-' . $overtime->id,
-                                                            ]) !!}
+                                                        {!! Form::open(['method' => 'DELETE', 'route' => ['bonus.delete', $bonus->id], 'id' => 'delete-form-' . $bonus->id]) !!}
+                                                        <div class="action-btn bg-danger ms-1">
                                                             <a class="mx-3 btn btn-sm  align-items-center bs-pass-para"
                                                                 data-bs-toggle="tooltip" title=""
                                                                 data-bs-original-title="Delete" aria-label="Delete"><i
@@ -669,169 +716,13 @@
                         </div>
                     </div>
                 </div>
-            </div> -->
-             <!--provident funds deductions-->
-             <!-- <div class="col-md-6">
-                <div class="card set-card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-11">
-                                <h5>{{ __('Provident Funds Deductions') }}</h5>
-                            </div>
-                            @can('Create Overtime')
-                                <div class="col-1 text-end">
-                                    <a data-url="{{ route('overtimes.create', $employee->id) }}" data-ajax-popup="true"
-                                        data-title="{{ __('Create Overtime') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
-                                        <i class="ti ti-plus"></i>
-                                    </a>
-                                </div>
-                            @endcan
-                        </div>
-                    </div>
-                    <div class=" card-body table-border-style" style=" overflow:auto">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('Employee Name') }}</th>
-                                        <th>{{ __('Percentage') }}</th>
-                                        <th>{{ __('Amount') }}</th>
-                                        @if (\Auth::user()->type != 'employee')
-                                            <th>{{ __('Action') }}</th>
-                                        @endif
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($overtimes as $overtime)
-                                        <tr>
-                                            <td>{{ !empty($overtime->employee()) ? $overtime->employee()->name : '' }}
-                                            </td>
-                                            <td>{{ $overtime->title }}</td>
-                                            <td>{{ $overtime->number_of_days }}</td>
-                                            <td>{{ $overtime->hours }}</td>
-                                            <td>{{ \Auth::user()->priceFormat($overtime->rate) }}</td>
-                                            <td class="Action">
-                                                <span>
-                                                    @can('Edit Overtime')
-                                                        <div class="action-btn bg-info ms-2">
-                                                            <a class="mx-3 btn btn-sm  align-items-center"
-                                                                data-url="{{ URL::to('overtime/' . $overtime->id . '/edit') }}"
-                                                                data-ajax-popup="true" data-size="md"
-                                                                data-bs-toggle="tooltip" title=""
-                                                                data-title="{{ __('Edit OverTime') }}"
-                                                                data-bs-original-title="{{ __('Edit') }}">
-                                                                <i class="ti ti-pencil text-white"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
-                                                    @can('Delete Overtime')
-                                                        <div class="action-btn bg-danger ms-2">
-                                                            {!! Form::open([
-                                                                'method' => 'DELETE',
-                                                                'route' => ['overtime.destroy', $overtime->id],
-                                                                'id' => 'delete-form-' . $overtime->id,
-                                                            ]) !!}
-                                                            <a class="mx-3 btn btn-sm  align-items-center bs-pass-para"
-                                                                data-bs-toggle="tooltip" title=""
-                                                                data-bs-original-title="Delete" aria-label="Delete"><i
-                                                                    class="ti ti-trash text-white text-white"></i></a>
-                                                            </form>
-                                                        </div>
-                                                    @endcan
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            <!--tax deductions-->
-            <!-- <div class="col-md-6">
-                <div class="card set-card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-11">
-                                <h5>{{ __('Tax Deductions') }}</h5>
-                            </div>
-                            @can('Create Overtime')
-                                <div class="col-1 text-end">
-                                    <a data-url="{{ route('overtimes.create', $employee->id) }}" data-ajax-popup="true"
-                                        data-title="{{ __('Create Overtime') }}" data-bs-toggle="tooltip" title=""
-                                        class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
-                                        <i class="ti ti-plus"></i>
-                                    </a>
-                                </div>
-                            @endcan
-                        </div>
-                    </div>
-                    <div class=" card-body table-border-style" style=" overflow:auto">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('Employee Name') }}</th>
-                                        <th>{{ __('Type') }}</th>
-                                        <th>{{ __('Percentage') }}</th>
-                                        <th>{{ __('Amount') }}</th>
-                                        @if (\Auth::user()->type != 'employee')
-                                            <th>{{ __('Action') }}</th>
-                                        @endif
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($overtimes as $overtime)
-                                        <tr>
-                                            <td>{{ !empty($overtime->employee()) ? $overtime->employee()->name : '' }}
-                                            </td>
-                                            <td>{{ $overtime->title }}</td>
-                                            <td>{{ $overtime->title }}</td>
-                                            <td>{{ $overtime->number_of_days }}</td>
-                                            <td>{{ $overtime->hours }}</td>
-                                            <td>{{ \Auth::user()->priceFormat($overtime->rate) }}</td>
-                                            <td class="Action">
-                                                <span>
-                                                    @can('Edit Overtime')
-                                                        <div class="action-btn bg-info ms-2">
-                                                            <a class="mx-3 btn btn-sm  align-items-center"
-                                                                data-url="{{ URL::to('overtime/' . $overtime->id . '/edit') }}"
-                                                                data-ajax-popup="true" data-size="md"
-                                                                data-bs-toggle="tooltip" title=""
-                                                                data-title="{{ __('Edit OverTime') }}"
-                                                                data-bs-original-title="{{ __('Edit') }}">
-                                                                <i class="ti ti-pencil text-white"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
-                                                    @can('Delete Overtime')
-                                                        <div class="action-btn bg-danger ms-2">
-                                                            {!! Form::open([
-                                                                'method' => 'DELETE',
-                                                                'route' => ['overtime.destroy', $overtime->id],
-                                                                'id' => 'delete-form-' . $overtime->id,
-                                                            ]) !!}
-                                                            <a class="mx-3 btn btn-sm  align-items-center bs-pass-para"
-                                                                data-bs-toggle="tooltip" title=""
-                                                                data-bs-original-title="Delete" aria-label="Delete"><i
-                                                                    class="ti ti-trash text-white text-white"></i></a>
-                                                            </form>
-                                                        </div>
-                                                    @endcan
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
+            </div>
+        </div>
+
         </div>
     </div>
+</div>
+
 @endsection
 
 @push('script-page')

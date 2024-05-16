@@ -16,6 +16,25 @@ use Spatie\GoogleCalendar\Event as GoogleEvent;
 
 class MeetingController extends Controller
 {
+    public function list($meeting_template_id)
+    {
+        if (\Auth::user()->can('Manage Meeting')) {
+            $employees = Employee::get();
+            if (Auth::user()->type == 'employee') {
+                $user = \Auth::user();
+                $meetings = LocalMeeting::where('meeting_template_id',$meeting_template_id)->where('organizer_id', '=', $user->id) 
+                    ->orWhere('invitee_id', '=', $user->id) 
+                    ->get();
+            } else {
+                $meetings = LocalMeeting::where('meeting_template_id',$meeting_template_id)->where('created_by', '=', \Auth::user()->creatorId())->get();
+            }
+
+            return view('meeting.index', compact('meeting_template_id','meetings', 'employees'));
+        } else {
+            return redirect()->back()->with('error', __('Permission denied.'));
+        }
+    }
+
     public function index()
     {
         if (\Auth::user()->can('Manage Meeting')) {
@@ -35,7 +54,7 @@ class MeetingController extends Controller
         }
     }
 
-    public function create()
+    public function create($meeting_template_id)
     {
         $user=\Auth::user();
         if (\Auth::user()->can('Create Meeting')) {
@@ -46,7 +65,7 @@ class MeetingController extends Controller
             }
             $invitees = User::where('type', '!=', 'company')->get()->pluck('name', 'id');
             $templates = MeetingTemplate::get()->pluck('title', 'id');
-            return view('meeting.create', compact('organizers','invitees','templates'));
+            return view('meeting.create', compact('meeting_template_id','organizers','invitees','templates'));
         } else {
             return response()->json(['error' => __('Permission denied.')], 401);
         }
@@ -99,7 +118,7 @@ class MeetingController extends Controller
                 Utility::addCalendarDataTime($request1, $type);
             }
 
-            return redirect()->route('meeting.index')->with('success', __('Meeting successfully created.'));
+            return redirect()->route('meeting.list',$request->meeting_template_id)->with('success', __('Meeting successfully created.'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -112,7 +131,7 @@ class MeetingController extends Controller
         // return redirect()->route('meeting.index');
     }
 
-    public function edit($meeting)
+    public function edit($meeting,$meeting_template_id)
     {
         $user=\Auth::user();
         if (\Auth::user()->can('Edit Meeting')) {
@@ -125,7 +144,7 @@ class MeetingController extends Controller
                 }
                 $invitees = User::where('type', '!=', 'company')->get()->pluck('name', 'id');
                 $templates = MeetingTemplate::get()->pluck('title', 'id');
-                return view('meeting.edit', compact('meeting', 'invitees','templates','organizers'));
+                return view('meeting.edit', compact('meeting_template_id','meeting', 'invitees','templates','organizers'));
             } else {
                 return response()->json(['error' => __('Permission denied.')], 401);
             }
@@ -134,7 +153,7 @@ class MeetingController extends Controller
         }
     }
 
-    public function update(Request $request, LocalMeeting $meeting)
+    public function update(Request $request,$meeting)
     {
         if (\Auth::user()->can('Edit Meeting')) {
             $validator = \Validator::make(
@@ -147,6 +166,7 @@ class MeetingController extends Controller
                     'date' => 'required',
                     'start_time' => 'required',
                     'end_time' => 'required',
+                    'status' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -154,7 +174,8 @@ class MeetingController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
-
+            
+            $meeting=LocalMeeting::find($meeting);
             if ($meeting->created_by == \Auth::user()->creatorId()) {
                 $meeting->organizer_id  = $request->organizer_id;
                 $meeting->invitee_id    = $request->invitee_id;
@@ -164,10 +185,10 @@ class MeetingController extends Controller
                 $meeting->start_time    = $request->start_time;
                 $meeting->end_time      = $request->end_time;
                 $meeting->note          = $request->note;
-                $meeting->created_by    = \Auth::user()->creatorId();
+                $meeting->status        = $request->status;
                 $meeting->save();
 
-                return redirect()->route('meeting.index')->with('success', __('Meeting successfully updated.'));
+                return redirect()->route('meeting.list',$request->meeting_template_id)->with('success', __('Meeting successfully updated.'));
             } else {
                 return redirect()->back()->with('error', __('Permission denied.'));
             }
@@ -176,13 +197,14 @@ class MeetingController extends Controller
         }
     }
 
-    public function destroy(LocalMeeting $meeting)
+    public function destroy($meeting)
     {
         if (\Auth::user()->can('Delete Meeting')) {
+            $meeting=LocalMeeting::find($meeting);
             if ($meeting->created_by == \Auth::user()->creatorId()) {
+                $meeting_template_id=$meeting->meeting_template_id;
                 $meeting->delete();
-
-                return redirect()->route('meeting.index')->with('success', __('Meeting successfully deleted.'));
+                return redirect()->route('meeting.list',$meeting_template_id)->with('success', __('Meeting successfully deleted.'));
             } else {
                 return redirect()->back()->with('error', __('Permission denied.'));
             }

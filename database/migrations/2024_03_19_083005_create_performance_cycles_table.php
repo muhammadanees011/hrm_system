@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->json('participants')->nullable();
             $table->integer('progress')->nullable();
-            $table->enum('status', ['draft', 'ended', 'running']);
+            $table->enum('status', ['Pending', 'Completed', 'Inprogress']);
             $table->integer('created_by');
             $table->timestamps();
         });

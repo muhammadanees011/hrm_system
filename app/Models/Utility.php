@@ -296,6 +296,24 @@ class Utility extends Model
             }
         }
 
+        // bonus
+        $earning['bonus'] = PaySlip::where('employee_id', $employeeId)->where('salary_month', $month)->get();
+
+        $employess = Employee::find($employeeId);
+
+        $totalBonus = 0;
+
+        $arrayJson = json_decode($earning['bonus']);
+
+        foreach ($arrayJson as $earn) {
+            $bonusjson = json_decode($earn->bonus);
+
+            foreach ($bonusjson as $bonus) {
+                $empcom = $bonus->amount;
+                $totalBonus += $empcom;
+            }
+        }
+
         // otherpayment
         $earning['otherPayment']      = PaySlip::where('employee_id', $employeeId)->where('salary_month', $month)->get();
 
@@ -332,6 +350,10 @@ class Utility extends Model
             }
         }
 
+        
+        $deduction['incometax'] = PaySlip::where('employee_id', $employeeId)->where('salary_month', $month)->get();
+        $deduction['providentfunds'] = PaySlip::where('employee_id', $employeeId)->where('salary_month', $month)->get();
+        
         // loan
         $deduction['loan'] = PaySlip::where('employee_id', $employeeId)->where('salary_month', $month)->get();
 
@@ -376,10 +398,20 @@ class Utility extends Model
             }
         }
 
+        $incometax = json_decode($deduction['incometax']);
+        foreach ($incometax as $deductions) {
+            $totalIncomeTax = json_decode($deductions->incometax);
+        }
+
+        $providentfunds = json_decode($deduction['providentfunds']);
+        foreach ($providentfunds as $deductions) {
+            $totalProvidentFunds = json_decode($deductions->providentfunds);
+        }
+
         $payslip['earning']        = $earning;
-        $payslip['totalEarning']   = $totalAllowance + $totalCommission + $totalotherpayment + $ot;
+        $payslip['totalEarning']   = $totalAllowance + $totalCommission + $totalotherpayment + $ot + $totalBonus;
         $payslip['deduction']      = $deduction;
-        $payslip['totalDeduction'] = $totalloan + $totaldeduction;
+        $payslip['totalDeduction'] = $totalloan + $totaldeduction + $totalIncomeTax + $totalProvidentFunds;
 
         return $payslip;
     }

@@ -39,7 +39,7 @@
                             @foreach ($reviews as $review)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('employeereviews.reviewees.list', $review->id)  }}" target="_blank">
+                                        <a href="{{ route('employeereviews.reviewees.list', $review->id)  }}">
                                             {{$review->title}}
                                             <i class="ti ti-arrow-right"></i>
                                         </a>
@@ -71,7 +71,7 @@
                                             <span>
 
                                             <div class="action-btn bg-primary ms-2">
-                                                <a href="{{ route('employeereviews.show',$review->id) }}" target="_blank" class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Review Questions') }}">
+                                                <a href="{{ route('employeereviews.show',$review->id) }}" class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Review Questions') }}">
                                                     <i class="ti ti-file text-white"></i>
                                                 </a>
                                             </div>

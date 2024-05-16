@@ -13,6 +13,15 @@ use App\Models\LoanOption;
 use App\Models\OtherPayment;
 use App\Models\Overtime;
 use App\Models\PayslipType;
+use App\Models\PayrollSetup;
+use App\Models\BonusRequest;
+use App\Models\LoanRequest;
+use App\Models\AdvanceSalaryRequest;
+use App\Models\LeaveEncashmentRequest;
+use App\Models\OvertimeRequest;
+use App\Models\AllowanceRequest;
+use App\Models\CommissionRequest;
+use App\Models\Bonus;
 use App\Models\SaturationDeduction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -50,6 +59,7 @@ class SetSalaryController extends Controller
                 $saturationdeductions = SaturationDeduction::where('employee_id', $currentEmployee->id)->get();
                 $otherpayments        = OtherPayment::where('employee_id', $currentEmployee->id)->get();
                 $overtimes            = Overtime::where('employee_id', $currentEmployee->id)->get();
+                $bonuses              = Bonus::where('employee_id', $currentEmployee->id)->get();
                 $employee             = Employee::where('user_id', '=', \Auth::user()->id)->first();
 
                 return view('setsalary.employee_salary', compact('employee', 'payslip_type', 'allowance_options', 'commissions', 'loan_options', 'overtimes', 'otherpayments', 'saturationdeductions', 'loans', 'deduction_options', 'allowances'));
@@ -60,6 +70,7 @@ class SetSalaryController extends Controller
                 $saturationdeductions = SaturationDeduction::where('employee_id', $id)->get();
                 $otherpayments        = OtherPayment::where('employee_id', $id)->get();
                 $overtimes            = Overtime::where('employee_id', $id)->get();
+                $bonuses              = Bonus::where('employee_id', $id)->get();
                 $employee             = Employee::find($id);
 
                 return view('setsalary.edit', compact('employee', 'payslip_type', 'allowance_options', 'commissions', 'loan_options', 'overtimes', 'otherpayments', 'saturationdeductions', 'loans', 'deduction_options', 'allowances'));
@@ -90,6 +101,7 @@ class SetSalaryController extends Controller
             $saturationdeductions = SaturationDeduction::where('employee_id', $currentEmployee->id)->get();
             $otherpayments        = OtherPayment::where('employee_id', $currentEmployee->id)->get();
             $overtimes            = Overtime::where('employee_id', $currentEmployee->id)->get();
+            $bonuses              = Bonus::where('employee_id', $currentEmployee->id)->get();
             $employee             = Employee::where('user_id', '=', \Auth::user()->id)->first();
 
             foreach ($allowances as  $value) {
@@ -140,6 +152,7 @@ class SetSalaryController extends Controller
             $saturationdeductions = SaturationDeduction::where('employee_id', $id)->get();
             $otherpayments        = OtherPayment::where('employee_id', $id)->get();
             $overtimes            = Overtime::where('employee_id', $id)->get();
+            $bonuses              = Bonus::where('employee_id', $id)->get();
             $employee             = Employee::find($id);
 
             foreach ($allowances as  $value) {
@@ -182,7 +195,7 @@ class SetSalaryController extends Controller
                 }
             }
 
-            return view('setsalary.employee_salary', compact('employee', 'payslip_type', 'allowance_options', 'commissions', 'loan_options', 'overtimes', 'otherpayments', 'saturationdeductions', 'loans', 'deduction_options', 'allowances'));
+            return view('setsalary.employee_salary', compact('bonuses','employee', 'payslip_type', 'allowance_options', 'commissions', 'loan_options', 'overtimes', 'otherpayments', 'saturationdeductions', 'loans', 'deduction_options', 'allowances'));
         }
     }
 
@@ -229,5 +242,56 @@ class SetSalaryController extends Controller
         $employee     = Employee::find($id);
 
         return view('setsalary.basic_salary', compact('employee', 'payslip_type', 'accounts'));
+    }
+
+    public function payrollmanage()
+    {
+        $leaveencashmentrequests=LeaveEncashmentRequest::get();
+        $loanrequests=LoanRequest::get();
+        $advancesalaryrequests=AdvanceSalaryRequest::get();
+        $allowancerequests=AllowanceRequest::get();
+        $commissionrequests=CommissionRequest::get();
+        $overtimerequests=OvertimeRequest::get();
+        $bonusrequests=BonusRequest::get();
+        return view('setsalary.manage_payroll',compact('leaveencashmentrequests','advancesalaryrequests','loanrequests','bonusrequests','allowancerequests','overtimerequests','commissionrequests'));
+    }
+
+    public function payrollsetup()
+    {
+        $setup = PayrollSetup::first();
+        return view('setsalary.payroll_setup',compact('setup'));
+    }
+
+    public function payrollsetupUpdate(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'income_tax_percentage' => 'nullable',
+                'late_arrival_or_early_departure_amount' => 'nullable',
+                'late_arrival_or_early_departure_threshold' => 'nullable',
+                'provident_funds_deduction_percentage' => 'nullable',
+                'salary_calculation_method' => 'nullable',
+                'pay_frequency' => 'nullable',
+            ]
+        );
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+
+            return redirect()->back()->with('error', $messages->first());
+        }
+        $setup = PayrollSetup::first();
+        if(!$setup){
+            $setup = new PayrollSetup();   
+        }
+        $setup->income_tax_percentage = $request->income_tax_percentage;
+        $setup->late_arrival_or_early_departure_amount = $request->late_arrival_or_early_departure_amount;
+        $setup->late_arrival_or_early_departure_threshold = $request->late_arrival_or_early_departure_threshold;
+        $setup->provident_funds_deduction_percentage = $request->provident_funds_deduction_percentage;
+        $setup->salary_calculation_method = $request->salary_calculation_method;
+        $setup->pay_frequency = $request->pay_frequency;
+        $setup->save();
+
+        return redirect()->back()->with('success', 'Payroll Setup Updated.');
     }
 }

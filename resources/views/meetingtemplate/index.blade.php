@@ -73,7 +73,9 @@
             </div>
             <div class="card-body">
                 <div class="">
-                    <h5>{{$meetingtemplate->title}}</h5>
+                    <a href="{{ route('meeting.list', $meetingtemplate->id)}}">
+                        <h5>{{$meetingtemplate->title}}</h5>
+                    </a>
                     <p class="text-dark">{{$meetingtemplate->description}}</p>
                 </div>
                 <div style="height:3rem;">
@@ -83,7 +85,7 @@
                     <div class="col-md-12 d-flex justify-content-end">
                     <div class="me-2">
                         <h6 class="text-warning">
-                        <a href="{{route('meetingtemplate.show', $meetingtemplate->id)}}" target="_blank" class="text-warning">
+                        <a href="{{route('meetingtemplate.show', $meetingtemplate->id)}}" class="text-warning">
                              Manage
                         </a>
                         </h6>
