@@ -20,6 +20,8 @@ class CreateAppraisalsTable extends Migration
             $table->integer('employee')->default(0);
             $table->string('rating')->nullable();
             $table->string('appraisal_date');
+            $table->string('completion_date')->nullable();
+            $table->string('notes_date')->nullable();
             $table->integer('customer_experience')->default(0);
             $table->integer('marketing')->default(0);
             $table->integer('administration')->default(0);
@@ -27,6 +29,7 @@ class CreateAppraisalsTable extends Migration
             $table->integer('integrity')->default(0);
             $table->integer('attendance')->default(0);
             $table->text('remark')->nullable();
+            $table->text('notes')->nullable();
             $table->integer('created_by')->default(0);
             $table->timestamps();
         }

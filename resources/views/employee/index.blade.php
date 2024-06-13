@@ -56,9 +56,13 @@
         <div class="dropdown">
         <button class="dropbtn">Performance &#9660;</button>
         <div class="dropdown-content">
-            <a href="{{ route('performancecycle.index') }}">Manage Cycles </a>
+            <a href="{{ route('performancecycle.index') }}">{{ __("Manage Performance") }} </a>
             <a href="{{ route('meetingtemplate.index') }}">{{ __("1 on 1's") }} </a>
-            <a href="{{ route('employeereviews.index') }}">Employee Reviews</a>
+            <a href="{{ route('employeereviews.index') }}">{{ __('Employee Reviews') }}</a>
+            <a href="{{ route('appraisal.index') }}">{{ __('Appraisal') }}</a>
+            <a href="{{ route('trainingevent.index') }}">{{ __('Manage Training Events') }}</a>
+            <a href="{{ route('trainingeventrequest.index') }}">{{ __('Training Event Requests') }}</a>
+            <a href="{{ route('employee.probation.index') }}">{{ __('Probation') }}</a>
         </div>
         </div>
     </div>
@@ -132,7 +136,10 @@
   }
   
   /* Change color of links on hover */
-  .dropdown-content a:hover {background-color: orange;}
+  .dropdown-content a:hover {
+    background-color: orange;
+    color:white !important;
+}
   
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown-content {display: block;}

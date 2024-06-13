@@ -62,8 +62,20 @@
                 <div class="card-body">
                     @foreach($warnings as $warning)
                     <div class="row tasks-bg">
-                        <div class="col-md-11 col-sm-12 d-flex justify-content-between mx-auto">
+                        <div class="col-md-9 col-sm-9 d-flex justify-content-between mx-auto">
                             <h5 class="mt-2">{{$warning->title}}</h5>
+                        </div>
+                        <div class="col-2">
+                            <div class="progress-wrapper">
+                                <span class="progress-percentage"><small
+                                        class="font-weight-bold"></small>{{$warning->progress ? $warning->progress : 0}}%</span>
+                                <div class="progress progress-xs  w-100">
+                                    <div class="progress-bar bg-{{ Utility::getProgressColor($warning->progress ? $warning->progress : 0) }}"
+                                        role="progressbar" aria-valuenow="{{$warning->progress ? $warning->progress : 0}}"
+                                        aria-valuemin="0" aria-valuemax="100"
+                                        style="width: {{$warning->progress ? $warning->progress : 0}}%;"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-1">
                             <div class="dropdown">

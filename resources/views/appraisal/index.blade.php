@@ -86,8 +86,8 @@
                                 <th>{{ __('Department') }}</th>
                                 <th>{{ __('Designation') }}</th>
                                 <th>{{ __('Employee') }}</th>
-                                <th>{{ __('Target Rating') }}</th>
-                                <th>{{ __('Overall Rating') }}</th>
+                                <!-- <th>{{ __('Target Rating') }}</th>
+                                <th>{{ __('Overall Rating') }}</th> -->
                                 <th>{{ __('Appraisal Date') }}</th>
                                 @if (Gate::check('Edit Appraisal') || Gate::check('Delete Appraisal') || Gate::check('Show Appraisal'))
                                     <th width="200px">{{ __('Action') }}</th>
@@ -95,35 +95,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
-
                             @foreach ($appraisals as $appraisal)
-                            @php
-                            $designation=!empty($appraisal->employees) ?  $appraisal->employees->designation->id : '-';
-                            $targetRating =  Utility::getTargetrating($designation,$competencyCount);
-                            if(!empty($appraisal->rating)&&($competencyCount!=0))
-                            {
-                                $rating = json_decode($appraisal->rating,true);
-                                $starsum = array_sum($rating);
-                                $overallrating = $starsum/$competencyCount;
-                            }
-                            else{
-                                $overallrating = 0;
-                            }
-                            @endphp
-                                @php
-                                    if (!empty($appraisal->rating)) {
-                                        $rating = json_decode($appraisal->rating, true);
-                                        if (!empty($rating)) {
-                                            $starsum = array_sum($rating);
-                                            $overallrating = $starsum / count($rating);
-                                        } else {
-                                            $overallrating = 0;
-                                        }
-                                    } else {
-                                        $overallrating = 0;
-                                    }
-                                @endphp
                                 <tr>
                                     <td>{{ !empty($appraisal->branches) ? $appraisal->branches->name : '' }}</td>
                                     <td>{{ !empty($appraisal->employees) ?  $appraisal->employees->department->name : '-'}}
@@ -131,36 +103,6 @@
                                     <td>{{ !empty($appraisal->employees) ? $appraisal->employees->designation->name : '-' }}
                                     </td>
                                     <td>{{ !empty($appraisal->employees) ? $appraisal->employees->name : '-' }}</td>
-                                    <td >
-                                        @for($i=1; $i<=5; $i++)
-                                         @if($targetRating < $i)
-                                            @if(is_float($targetRating) && (round($targetRating) == $i))
-                                            <i class="text-warning fas fa-star-half-alt"></i>
-                                            @else
-                                            <i class="fas fa-star"></i>
-                                            @endif
-                                         @else
-                                         <i class="text-warning fas fa-star"></i>
-                                         @endif
-                                        @endfor
-
-                                       <span class="theme-text-color">({{number_format($targetRating,1)}})</span>
-                                    </td>
-                                    <td>
-
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($overallrating < $i)
-                                                @if (is_float($overallrating) && round($overallrating) == $i)
-                                                    <i class="text-warning fas fa-star-half-alt"></i>
-                                                @else
-                                                    <i class="fas fa-star"></i>
-                                                @endif
-                                            @else
-                                                <i class="text-warning fas fa-star"></i>
-                                            @endif
-                                        @endfor
-                                        <span class="theme-text-color">({{ number_format($overallrating, 1) }})</span>
-                                    </td>
                                     <td>{{ $appraisal->appraisal_date }}</td>
                                     <td class="Action">
                                         @if (Gate::check('Edit Appraisal') || Gate::check('Delete Appraisal') || Gate::check('Show Appraisal'))

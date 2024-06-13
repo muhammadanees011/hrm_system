@@ -10,9 +10,11 @@
 @endsection
 
 @section('action-button')
-<a href="#" data-url="{{ route('holiday-carryover.create') }}" data-ajax-popup="true" data-title="{{ __('Create New Holiday CarryOver') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
-    <i class="ti ti-plus"></i>
-</a>
+    @can('Create Holiday CarryOver')
+    <a href="#" data-url="{{ route('holiday-carryover.create') }}" data-ajax-popup="true" data-title="{{ __('Create New Holiday CarryOver') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+        <i class="ti ti-plus"></i>
+    </a>
+    @endcan
 @endsection
 
 

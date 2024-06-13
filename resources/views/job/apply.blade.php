@@ -465,9 +465,8 @@ $enable_cookie = \App\Models\Utility::getCookieSetting('enable_cookie');
                         return;
                     }
                 }
-
                 // Handle the end of questions (e.g., submit the form)
-                alert('All questions completed!');
+                // alert('All questions completed!');
                 document.getElementById('application-submit-btn').style.display = 'inline';
                 document.getElementById('next-question').style.display = 'none';
             }
@@ -512,8 +511,6 @@ $enable_cookie = \App\Models\Utility::getCookieSetting('enable_cookie');
             });
         });
     </script>
-
-
 
     @if ($message = Session::get('success'))
     <script>

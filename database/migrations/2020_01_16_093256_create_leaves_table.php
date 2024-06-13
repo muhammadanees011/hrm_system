@@ -23,6 +23,7 @@ class CreateLeavesTable extends Migration
             $table->string('total_leave_days');
             $table->string('leave_reason');
             $table->string('remark')->nullable();
+            $table->boolean('is_paid_leave')->default(false);
             $table->string('status');
             $table->integer('created_by');
             $table->timestamps();

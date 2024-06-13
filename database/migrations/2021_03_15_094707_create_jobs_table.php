@@ -26,6 +26,7 @@ class CreateJobsTable extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('status')->nullable();
+            $table->integer('question_template_id')->nullable();
             $table->string('applicant')->nullable();
             $table->string('visibility')->nullable();
             $table->string('code')->nullable();

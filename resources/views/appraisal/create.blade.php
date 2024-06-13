@@ -42,19 +42,34 @@
                 </div>
             </div>
         </div>
-
-
-
         <div class="col-md-6">
             <div class="form-group">
-                {{ Form::label('appraisal_date', __('Select Month*'), ['class' => 'col-form-label']) }}
+                {{ Form::label('appraisal_date', __('Start Month*'), ['class' => 'col-form-label']) }}
                 {{ Form::month('appraisal_date', '', ['class' => 'form-control ', 'autocomplete' => 'off', 'required' => 'required', 'id' => 'current_month']) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ Form::label('completion_date', __('Completion Month*'), ['class' => 'col-form-label']) }}
+                {{ Form::month('completion_date', '', ['class' => 'form-control ', 'autocomplete' => 'off', 'required' => 'required', 'id' => 'current_month']) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ Form::label('notes_date', __('Notes Date*'), ['class' => 'col-form-label']) }}
+                {{ Form::date('notes_date', '', ['class' => 'form-control ', 'autocomplete' => 'off', 'required' => 'required', 'id' => 'current_day']) }}
             </div>
         </div>
         <div class="col-md-12">
             <div class="form-group">
-                {{ Form::label('remark', __('Remarks'), ['class' => 'col-form-label']) }}
+                {{ Form::label('remark', __('Target'), ['class' => 'col-form-label']) }}
                 {{ Form::textarea('remark', null, ['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Enter remark']) }}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                {{ Form::label('notes', __('Notes'), ['class' => 'col-form-label']) }}
+                {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Enter remark']) }}
             </div>
         </div>
     </div>

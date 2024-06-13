@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('performancecycle_id')->references('id')->on('performance_cycles')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
+            $table->integer('progress')->nullable();
             $table->integer('created_by')->nullable();
             $table->timestamps();
         });

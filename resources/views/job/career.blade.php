@@ -100,6 +100,11 @@ $themeColor = $color;
             <section class="placedjob-section">
                 <div class="container">
                     <div class="section-title bg-light">
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
                         @php
                         $totaljob = \App\Models\Job::where('created_by', '=', $id)->count();
                         @endphp
@@ -162,6 +167,27 @@ $themeColor = $color;
 <script src="{{ asset('js/site.core.js') }}"></script>
 <script src="{{ asset('js/site.js') }}"></script>
 <script src="{{ asset('js/demo.js') }} "></script>
+
+
+@if ($message = session('success'))
+<script>
+    show_toastr('{{ '
+        success ' }}', '{!! $message !!}');
+</script>
+@endif
+@if ($message = session('error'))
+<script>
+    show_toastr('{{ '
+        error ' }}', '{!! $message !!}');
+</script>
+@endif
+
+<script>
+    window.addEventListener('DOMContentLoaded', callback());
+    function callback(){
+    }
+</script>
+
 
 @stack('custom-scripts')
 @if($enable_cookie['enable_cookie'] == 'on')

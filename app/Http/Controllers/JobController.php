@@ -231,7 +231,7 @@ class JobController extends Controller
             $currantLang = !empty($user) && !empty($user->lang) ? $user->lang : 'en';
         }
 
-
+       
         return view('job.career', compact('companySettings', 'jobs', 'languages', 'currantLang', 'id'));
     }
 
@@ -409,8 +409,9 @@ class JobController extends Controller
         $questionResponses->each(function ($response) {
             $response->save();
         });
-
-        return redirect()->back()->with('success', __('Job application successfully send.'));
+        session()->flash('success', __('Job application successfully sent.'));
+        return redirect()->route('career',['id'=>1,'lang'=>'eng']);
+        // return redirect()->back()->with('success', __('Job application successfully send.'));
     }
     public function filesUpload(Request $request)
     {

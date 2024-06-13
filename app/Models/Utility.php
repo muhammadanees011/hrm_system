@@ -1223,20 +1223,6 @@ class Utility extends Model
             return 'dark_logo.png';
         }
     }
-    public static function getTargetrating($designationid, $competencyCount)
-    {
-        $indicator = Indicator::where('designation', $designationid)->first();
-
-        if (!empty($indicator->rating) && ($competencyCount != 0)) {
-            $rating = json_decode($indicator->rating, true);
-            $starsum = array_sum($rating);
-
-            $overallrating = $starsum / $competencyCount;
-        } else {
-            $overallrating = 0;
-        }
-        return $overallrating;
-    }
 
     public static function upload_file($request, $key_name, $name, $path, $custom_validation = [])
     {

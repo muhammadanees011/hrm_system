@@ -27,15 +27,15 @@ class HolidayController extends Controller
 
         if (\Auth::user()->can('Manage Holiday')) {
             $holidayConfig = HolidayConfiguration::where('created_by', '=', \Auth::user()->creatorId())->first();
-            $holidayPerMonth = round($holidayConfig->annual_entitlement / 12, 1);
+            $holidayPerMonth = round(($holidayConfig ? $holidayConfig->annual_entitlement : 0) / 12, 1);
             // calculating renew year since start interval
-            $renewDate = new DateTime($holidayConfig->annual_renew_date);
+            $renewDate = new DateTime($holidayConfig ? $holidayConfig->annual_renew_date:'');
             $currentDate = new DateTime();
             $interval = $currentDate->diff($renewDate);
             $monthsSinceStart = $interval->m < 0 ? $interval->m . ' Month(s)' : $interval->d . ' Days';
 
             // calculating available entitlement
-            $startDate = Carbon::parse($holidayConfig->annual_renew_date)->startOfDay();
+            $startDate = Carbon::parse($holidayConfig ? $holidayConfig->annual_renew_date :'')->startOfDay();
             $endDate = Carbon::today();
 
             if (\Auth::user()->type == 'employee') {
@@ -167,23 +167,23 @@ class HolidayController extends Controller
 
             $availableEntitlement = intval(round($holidayConfig->annual_entitlement * ($attendanceRecords / $holidayConfig->total_annual_working_days))) - ($totalApprovedDays + $totalCarryOvers);
 
-            if ($totalDays > $availableEntitlement) {
-                return redirect()->back()->with('error', 'Please request the holidays as per available holiday entitlement');
-            }
+            // if ($totalDays > $availableEntitlement) {
+            //     return redirect()->back()->with('error', 'Please request the holidays as per available holiday entitlement');
+            // }
 
-            if ($request->request_next_year && Carbon::parse($holidayConfig->annual_renew_date) > $start) {
-                return redirect()->back()->with('error', 'Please request the holidays in next year range');
-            }
+            // if ($request->request_next_year && Carbon::parse($holidayConfig->annual_renew_date) > $start) {
+            //     return redirect()->back()->with('error', 'Please request the holidays in next year range');
+            // }
 
             $holiday             = new LocalHoliday();
-            $holiday->occasion          = $request->occasion;
-            $holiday->total_days          = $totalDays;
-            $holiday->user_id          = auth()->id();
-            $holiday->occasion          = $request->occasion;
-            $holiday->start_date        = $request->start_date;
-            $holiday->end_date          = $request->end_date;
-            $holiday->isNextYear          = $request->request_next_year;
-            $holiday->status          = 'Pending';
+            $holiday->occasion   = $request->occasion;
+            $holiday->total_days = $totalDays;
+            $holiday->user_id    = auth()->id();
+            $holiday->occasion   = $request->occasion;
+            $holiday->start_date = $request->start_date;
+            $holiday->end_date   = $request->end_date;
+            $holiday->isNextYear = $request->request_next_year;
+            $holiday->status     = 'Pending';
             $holiday->created_by = \Auth::user()->creatorId();
             $holiday->save();
 

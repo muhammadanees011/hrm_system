@@ -138,14 +138,14 @@ class HolidayCarryOverController extends Controller
             // dd($totalCarryOvers);
 
 
-            $availableEntitlement = intval(round($holidayConfig->annual_entitlement * ($attendanceRecords / $holidayConfig->total_annual_working_days))) - ($totalApprovedDays + $totalCarryOvers);
-            if ($totalDays > $availableEntitlement) {
-                return redirect()->back()->with('error', 'Please request the holiday carry-overs as per available holiday entitlement');
-            }
+            // $availableEntitlement = intval(round($holidayConfig->annual_entitlement * ($attendanceRecords / $holidayConfig->total_annual_working_days))) - ($totalApprovedDays + $totalCarryOvers);
+            // if ($totalDays > $availableEntitlement) {
+            //     return redirect()->back()->with('error', 'Please request the holiday carry-overs as per available holiday entitlement');
+            // }
 
-            if (Carbon::parse($holidayConfig->annual_renew_date) > $todayDate) {
-                return redirect()->back()->with('error', 'Please request the holidays in next year range');
-            }
+            // if (Carbon::parse($holidayConfig->annual_renew_date) > $todayDate) {
+            //     return redirect()->back()->with('error', 'Please request the holidays in next year range');
+            // }
 
             $holiday             = new HolidayCarryOver();
             $holiday->total_days          = $totalDays;
@@ -237,9 +237,9 @@ class HolidayCarryOverController extends Controller
                     return redirect()->back()->with('error', 'Please request the holiday carry-overs as per available holiday entitlement');
                 }
 
-                if (Carbon::parse($holidayConfig->annual_renew_date) > $todayDate) {
-                    return redirect()->back()->with('error', 'Please request the holidays in next year range');
-                }
+                // if (Carbon::parse($holidayConfig->annual_renew_date) > $todayDate) {
+                //     return redirect()->back()->with('error', 'Please request the holidays in next year range');
+                // }
 
                 $holidayCarryover->total_days       = $request->total_days;
                 $holidayCarryover->save();

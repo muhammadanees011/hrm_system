@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             $this->call(NotificationSeeder::class);
             $this->call(AiTemplateSeeder::class);
             $this->call(EclaimSeeder::class);
+            $this->call(JobWordCountSeeder::class);
+            $this->call(LeaveTypeSeeder::class);
         // }else {
         //     Utility::languagecreate();
         // }

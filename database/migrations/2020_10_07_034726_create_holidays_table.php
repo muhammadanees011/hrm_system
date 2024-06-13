@@ -21,8 +21,8 @@ class CreateHolidaysTable extends Migration
             $table->text('occasion');
             $table->integer('total_days');
             $table->integer('user_id');
-            $table->integer('isNextYear');
-            $table->string('status');
+            $table->integer('isNextYear')->nullable();
+            $table->enum('status', ['Approved', 'Pending', 'Rejected'])->default('Pending');
             $table->integer('created_by');
             $table->timestamps();
         }

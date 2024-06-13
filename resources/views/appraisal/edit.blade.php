@@ -40,13 +40,31 @@
         <div class="col-md-6">
             <div class="form-group">
                 {{ Form::label('appraisal_date', __('Select Month*'), ['class' => 'col-form-label']) }}
-                {{ Form::text('appraisal_date', null, ['class' => 'form-control d_filter' ,'required' => 'required']) }}
+                {{ Form::month('appraisal_date', null, ['class' => 'form-control' ,'required' => 'required']) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ Form::label('completion_date', __('Completion Month*'), ['class' => 'col-form-label']) }}
+                {{ Form::month('completion_date', null, ['class' => 'form-control', 'required' => 'required']) }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ Form::label('notes_date', __('Notes Date*'), ['class' => 'col-form-label']) }}
+                {{ Form::date('notes_date', null, ['class' => 'form-control ','required' => 'required']) }}
             </div>
         </div>
         <div class="col-md-12">
             <div class="form-group">
-                {{ Form::label('remark', __('Remarks'), ['class' => 'col-form-label']) }}
+                {{ Form::label('remark', __('Target'), ['class' => 'col-form-label']) }}
                 {{ Form::textarea('remark', null, ['class' => 'form-control', 'rows' => '3']) }}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                {{ Form::label('notes', __('Notes'), ['class' => 'col-form-label']) }}
+                {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Enter remark']) }}
             </div>
         </div>
     </div>

@@ -88,16 +88,21 @@ class QuestionTemplateController extends Controller
 
     public function edit(QuestionTemplate $questionTemplate)
     {
+        $questionTemplate=QuestionTemplate::where('id',$questionTemplate->id)->with('questions.options')->first();
         return view('questionTemplate.edit', compact('questionTemplate'));
     }
 
     public function update(Request $request, QuestionTemplate $questionTemplate)
     {
-        if (\Auth::user()->can('Edit Question Template')) {
+        if (\Auth::user()->can('Create Question Template')) {
             $validator = \Validator::make(
                 $request->all(),
                 [
-                    'question' => 'required',
+                    'title' => 'required|string|max:255',
+                    'questions.*.name' => 'required|string|max:255',
+                    'questions.*.type' => 'required|in:text,textarea,radio',
+                    'questions.*.word_count' => 'nullable|integer|min:1',
+                    'questions.*.options.*' => 'nullable|string|max:255',
                 ]
             );
             if ($validator->fails()) {
@@ -105,12 +110,45 @@ class QuestionTemplateController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
+            // Create a new QuestionTemplate
+            $questionTemplate = QuestionTemplate::find($request->question_template_id);
+            $questionTemplate->title = $request->title;
+            $questionTemplate->save();
+        
 
-            $customQuestion->question    = $request->question;
-            $customQuestion->is_required = $request->is_required;
-            $customQuestion->save();
+            // Loop through each question in the request
+            foreach ($request->questions as $questionData) {
+                if($questionData['question_id']!=null){
+                $question = Question::find($questionData['question_id']);
+                $question->name = $questionData['name'];
+                $question->type = $questionData['type'];
+                $question->word_count = $questionData['word_count'];
+                $question->question_template_id = $questionTemplate->id;
+                $question->save();
+                }
 
-            return redirect()->back()->with('success', __('Question successfully updated.'));
+                if($questionData['question_id']==null){
+                    $question = Question::create([
+                        'name' => $questionData['name'],
+                        'type' => $questionData['type'],
+                        'word_count' => $questionData['word_count'],
+                        'question_template_id' => $questionTemplate->id,
+                    ]);
+                }
+
+                // If the question type is radio, create options
+                if ($questionData->type === 'radio') {
+                    $index = 0;
+                    foreach ($questionData->options as $optionText) {
+                        $questionOption=QuestionOption::where('question_id',$question->id)->first();
+                        $questionOption->option_text = $optionText;
+                        $questionOption->save();
+                        $index++;
+                    }
+                }
+            }
+
+            return redirect()->route('question-template.index')->with('success', __('Question successfully updated.'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }

@@ -34,7 +34,7 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
         {!! Form::hidden('employee_id', $leave->employee_id, ['id' => 'employee_id']) !!}
     @endif
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="form-group">
                 {{ Form::label('leave_type_id', __('Leave Type'), ['class' => 'col-form-label']) }}
                 {{-- {{ Form::select('leave_type_id', $leavetypes, null, ['class' => 'form-control select', 'placeholder' => __('Select Leave Type')]) }} --}}
@@ -43,6 +43,15 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
                         <option value="{{ $leave->id }}">{{ $leave->title }} (<p class="float-right pr-5">
                                 {{ $leave->days }}</p>)</option>
                     @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ Form::label('is_paid_leave', __('Paid'), ['class' => 'col-form-label']) }}
+                <select name="is_paid_leave" id="leave_duration" class="form-control select">
+                    <option value="1"  @if($leave->is_paid_leave=='1') selected @endif>{{ __('Yes') }}</option>
+                    <option value="0" @if(!$leave->is_paid_leave=='0') selected @endif>{{ __('No') }}</option>
                 </select>
             </div>
         </div>

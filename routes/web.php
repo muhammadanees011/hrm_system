@@ -11,7 +11,10 @@ use App\Http\Controllers\AttendanceEmployeeController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
 use App\Http\Controllers\BonusController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\HolidayPlannerController;
 use App\Http\Controllers\BonusRequestController;
+use App\Http\Controllers\LeaveEntitlementController;
 use App\Http\Controllers\AdvanceSalaryRequestController;
 use App\Http\Controllers\DisciplinaryWarningController;
 use App\Http\Controllers\LeaveEncashmentRequestController;
@@ -117,6 +120,8 @@ use App\Http\Controllers\JobTemplateController;
 use App\Http\Controllers\FlexiTimeController;
 use App\Http\Controllers\PerformanceCycleController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\TrainingEventController;
+use App\Http\Controllers\TrainingEventRequestController;
 use App\Http\Controllers\WorkforcePlanningController;
 use App\Http\Controllers\GoalResultController;
 use App\Http\Controllers\EmployeeReviewController;
@@ -165,6 +170,7 @@ Route::get('/check', [HomeController::class, 'check'])->middleware(
 Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(['XSS']);
 
 Route::get('career/{id}/{lang}', [JobController::class, 'career'])->name('career');
+
 Route::get('job/requirement/{code}/{lang}', [JobController::class, 'jobRequirement'])->name('job.requirement');
 Route::get('job/apply/{code}/{lang}', [JobController::class, 'jobApply'])->name('job.apply');
 Route::post('job/apply/data/{code}', [JobController::class, 'jobApplyData'])->name('job.apply.data');
@@ -335,12 +341,9 @@ Route::group(['middleware' => ['verified']], function () {
     Route::post('personalFile/store', [EmployeeController::class, 'storePersonalFile'])->name('employee.storePersonalFile')->middleware(['auth', 'XSS']);
 
 
-    Route::resource('employee', EmployeeController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
+    Route::resource('employee', EmployeeController::class)->middleware(['auth','XSS',]);
+    Route::post('employee/attendance_overview', [EmployeeController::class, 'attendance_overview'])->name('employee.attendance_overview')->middleware(['auth','XSS',]);
+    
 
     Route::get('otherpayments/create/{eid}', [OtherPaymentController::class, 'otherpaymentCreate'])->name('otherpayments.create')->middleware(
         [
@@ -607,6 +610,9 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('carryover/{id}/action', [CarryOverController::class, 'action'])->name('carryover.action')->middleware(['auth', 'XSS',]);
     Route::post('carryover/changeaction', [CarryOverController::class, 'changeaction'])->name('carryover.changeaction')->middleware(['auth', 'XSS',]);
     Route::get('leave/team', [LeaveController::class, 'teamTimeOff'])->name('leave.team')->middleware(['auth', 'XSS',]);
+    Route::any('leave/team_off', [LeaveController::class, 'teamOff'])->name('leave.team_off')->middleware(['auth','XSS',]);
+    Route::get('leave/setting', [LeaveController::class, 'leave_setting'])->name('leave.leave_setting')->middleware(['auth', 'XSS',]);
+    Route::post('leave_clash', [LeaveController::class, 'leave_clash'])->name('leave.leave_clash')->middleware(['auth', 'XSS',]);
 
     Route::post('event/getdepartment', [EventController::class, 'getdepartment'])->name('event.getdepartment')->middleware(
         [
@@ -622,14 +628,18 @@ Route::group(['middleware' => ['verified']], function () {
     );
 
     Route::get('event/data/{id}', [EventController::class, 'showData'])->name('eventsshow');
-    Route::resource('event', EventController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
+    Route::resource('event', EventController::class)->middleware([ 'auth','XSS',]);
 
+    Route::resource('trainingevent', TrainingEventController::class)->middleware([ 'auth','XSS',]);
+    Route::post('trainingevent/getdepartment', [TrainingEventController::class, 'getdepartment'])->name('trainingevent.getdepartment')->middleware(['auth','XSS',]);
+    Route::post('trainingevent/getemployee', [TrainingEventController::class, 'getemployee'])->name('trainingevent.getemployee')->middleware(['auth','XSS',]);
+    Route::any('trainingevent/get_event_data', [TrainingEventController::class, 'get_event_data'])->name('trainingevent.get_event_data')->middleware(['auth','XSS',]);
 
+    Route::post('trainingeventrequest/store', [TrainingEventRequestController::class, 'store'])->name('trainingeventrequest.store')->middleware(['auth','XSS',]);
+    Route::get('trainingeventrequest', [TrainingEventRequestController::class, 'index'])->name('trainingeventrequest.index')->middleware(['auth','XSS',]);
+    Route::delete('trainingeventrequest/{id?}', [TrainingEventRequestController::class, 'destroy'])->name('trainingeventrequest.destroy')->middleware(['auth','XSS',]);
+    Route::get('trainingeventrequest/{id?}', [TrainingEventRequestController::class, 'edit'])->name('trainingeventrequest.edit')->middleware(['auth','XSS',]);
+    Route::put('trainingeventrequest/{id?}', [TrainingEventRequestController::class, 'update'])->name('trainingeventrequest.update')->middleware(['auth','XSS',]);
 
     Route::get('import/event/file', [EventController::class, 'importFile'])->name('event.file.import');
     Route::post('import/event', [EventController::class, 'import'])->name('event.import');
@@ -1073,18 +1083,7 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::resource('indicator', IndicatorController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
-    Route::resource('appraisal', AppraisalController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
+    Route::resource('appraisal', AppraisalController::class)->middleware(['auth', 'XSS',]);
     Route::resource('goaltype', GoalTypeController::class)->middleware(
         [
             'auth',
@@ -1159,6 +1158,20 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+
+    Route::get('leaveentitlement',[LeaveEntitlementController::class,'index'])->name('leaveentitlement.index');
+    Route::get('leaveentitlement/create',[LeaveEntitlementController::class,'create'])->name('leaveentitlement.create');
+    Route::post('leaveentitlement/store',[LeaveEntitlementController::class,'store'])->name('leaveentitlement.store');
+    Route::get('leaveentitlement/{id?}/edit',[LeaveEntitlementController::class,'edit'])->name('leaveentitlement.edit');
+    Route::put('leaveentitlement/update/{id?}',[LeaveEntitlementController::class,'update'])->name('leaveentitlement.update');
+    Route::delete('leaveentitlement/delete/{id?}',[LeaveEntitlementController::class,'destroy'])->name('leaveentitlement.destroy');
+
+    Route::get('holidayplanner',[HolidayPlannerController::class,'index'])->name('holidayplanner.index');
+    Route::post('getholidayplanner',[HolidayPlannerController::class,'getHolidayPlanner'])->name('getholidayplanner');
+
+    Route::get('notifications',[NotificationController::class,'index'])->name('notifications.list');
+    Route::get('clear-notifications',[NotificationController::class,'clearAll'])->name('notifications.clear');
+    Route::get('seen-notifications',[NotificationController::class,'seenAll'])->name('notifications.seen');
 
     Route::resource('notification-templates', NotificationTemplatesController::class)->middleware(
         [

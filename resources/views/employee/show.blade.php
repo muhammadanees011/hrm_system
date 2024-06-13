@@ -10,6 +10,9 @@
 @endsection
 
 @section('action-button')
+@php
+    $employeeId = $employee->id;
+@endphp
     <div class="float-end">
         @can('edit employee')
             <a href="{{ route('employee.edit', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}"
@@ -78,7 +81,121 @@
     </div>
 @endsection
 
+@push('script-page')
+
+    <script>
+        $(document).ready(function() {
+            var b_id = $('#branch_id').val();
+            // RENDERING OVERVIEW CHART
+            const data = @json($attendanceOverview);
+            renderOverviewChart(data)
+        });
+
+        $(document).on('change','.start-date ,.end-date', function(){
+            const startDate = $('.start-date').val();
+            const endDate = $('.end-date').val();
+            const employeeId = {{ $employeeId }};
+            $.ajax({
+                url: '{{ route('employee.attendance_overview') }}',
+                type: 'POST',
+                data: {
+                    "start_date": startDate,
+                    "end_date": endDate,
+                    "employee_id": employeeId,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    if(response.success){
+                        renderOverviewChart(response.data, true)
+                    }else{
+                        show_toastr('error', response.message)
+                    }
+                }
+            });
+        });
+
+        function renderOverviewChart(data, reRender=false){
+            var options = {
+              chart: {
+              width: 380,
+              type: 'donut',
+            },
+            colors: ['#00E396', '#FF4560', '#008FFB', '#FEB019'],
+            labels: ["Present","Absent","Leaves","Late"],
+            series: data,
+            plotOptions: {
+              pie: {
+                startAngle: -90,
+                endAngle: 270
+              }
+            },
+            dataLabels: {
+              enabled: true
+            },
+            fill: {
+              type: 'gradient',
+            },
+            legend: {
+                formatter: function(val, opts) {
+                    return val + " - " + opts.w.globals.series[opts.seriesIndex]
+                },
+                position: 'bottom',
+                horizontalAlign: 'left',
+            },
+            title: {
+              text: ''
+            },
+            responsive: [{
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 200
+                },
+              }
+            }]
+            };
+
+            var chart = new ApexCharts(document.querySelector("#donut-chart"), options);
+            chart.render();
+
+            if(reRender){
+                chart.destroy();
+                const newData = data
+                // Create a new chart with updated data
+                var newChart = new ApexCharts(document.querySelector("#donut-chart"), {
+                    ...options,
+                    series: newData
+                });
+                newChart.render();
+            }
+        }
+    </script>
+@endpush
+
 @section('content')
+<style>
+    .nav-tabs .active{
+        background:orange !important;
+        color:white !important;
+    }
+    .set-card{
+        height:70vh !important;
+    }
+    .late{
+        background-color:red;
+        border-radius:5px;
+        color:white;
+        display:flex;
+        justify-content:center;
+    }
+    .early_leaving{
+        background-color:orange;
+        border-radius:5px;
+        color:white;
+        display:flex;
+        justify-content:center;
+    }
+</style>
     <div class="row">
         <div class="col-xl-12">
             <div class="row">
@@ -86,7 +203,7 @@
 
                     <div class="card">
                         <div class="card-body employee-detail-body fulls-card">
-                            <h5>{{ __('Personal Detail') }}</h5>
+                            <h5 class="mt-4">{{ __('Personal Detail') }}</h5>
                             <hr>
                             <div class="row">
                                 <div class="col-md-6">
@@ -138,14 +255,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
-
-                    <div class="card " style="height:200px">
-                        <div class="card-body employee-detail-body fulls-card">
-                            <h5>{{ __('Company Detail') }}</h5>
+                            <h5 class="mt-5">{{ __('Company Detail') }}</h5>
                             <hr>
                             <div class="row">
                                 <div class="col-md-6">
@@ -175,50 +285,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-12 col-md-6">
-
-                    <div class="card " style="height:200px">
-                        <div class="card-body employee-detail-body fulls-card">
-                            <h5>{{ __('Document Detail') }}</h5>
+                            <h5 class="mt-5">{{ __('Bank Account Detail') }}</h5>
                             <hr>
-                            <div class="row">
-                                @php
-                                    $employeedoc = $employee->documents()->pluck('document_value', 'document_id');
-                                    $logo = \App\Models\Utility::get_file('uploads/document');
-                                @endphp
-                                @if (!$documents->isEmpty())
-                                    @foreach ($documents as $key => $document)
-                                        <div class="col-md-6">
-                                            <div class="info text-sm">
-                                                <strong class="font-bold">{{ $document->name }} : </strong>
-                                                <span><a href="{{ !empty($employeedoc[$document->id]) ? $logo . '/' . $employeedoc[$document->id] : '' }}"
-                                                        target="_blank">{{ !empty($employeedoc[$document->id]) ? $employeedoc[$document->id] : '' }}</a></span>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="text-center">
-                                        No Document Type Added.!
-                                    </div>
-                                @endif
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
-
-                    <div class="card " style="height:200px">
-                        <div class="card-body employee-detail-body fulls-card">
-                            <h5>{{ __('Bank Account Detail') }}</h5>
-                            <hr>
-                            <div class="row">
+                            <div class="row  mb-2">
                                 <div class="col-md-6">
                                     <div class="info text-sm">
                                         <strong class="font-bold">{{ __('Account Holder Name') }} : </strong>
@@ -261,259 +330,95 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-sm-12 col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-lg-10 col-md-10 col-sm-10">
+                                    <h6>{{ __('Specific Date Attendance Overview') }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    {{ Form::label('start_date', 'Start Date', ['class' => 'control-label']) }}
+                                    {{ Form::date('start_date', isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d'), ['class' => 'form-control month-btn start-date']) }}
+                                </div>
+                                <div class="form-group col-md-6">
+                                    {{ Form::label('end_date', 'End Date', ['class' => 'control-label']) }}
+                                    {{ Form::date('end_date', isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d'), ['class' => 'form-control month-btn end-date']) }}
+                                </div>
+                            </div>
+                            <div id="donut-chart"></div>
+                        </div>
+                    </div>
+                </div>
+          
             </div>
 
+    
+
             <div class="row">
-                <div class="col-sm-12 col-md-6">
-
-                    <div class="card">
-                        <div class="card-body employee-detail-body fulls-card">
-                            <h5>{{ __('Employment History') }}</h5>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Company Name') }} : </strong>
-                                        <span>HeroShield Firefighters</span>
+                <!-- deduction-->
+                            <div class="col-md-12">
+                                <div class="card set-card">
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h5>{{ __('Attendance And Punctuality Report') }}</h5>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm font-style">
-                                        <strong class="font-bold">{{ __('Designation/Role') }} :</strong>
-                                        <span>Deputy Fire Chief</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('From') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('To') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Company Name') }} : </strong>
-                                        <span>HeroShield Firefighters</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm font-style">
-                                        <strong class="font-bold">{{ __('Designation/Role') }} :</strong>
-                                        <span>Deputy Fire Chief</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('From') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('To') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
+                                    <div class=" card-body table-border-style" style=" overflow:auto">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{ __('Date') }}</th>
+                                                    <th>{{ __('Status') }}</th>
+                                                    <th>{{ __('Clock In') }}</th>
+                                                    <th>{{ __('Clock Out') }}</th>
+                                                    <th>{{ __('Late') }}</th>
+                                                    <th>{{ __('Early Leaving') }}</th>
+                                                    <th>{{ __('Overtime') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($attendanceEmployee as $attendance)
+                                                    <tr>
+                                                        <td>{{ \Auth::user()->dateFormat($attendance->date) }}</td>
+                                                        <td>{{ $attendance->status }}</td>
+                                                        <td>{{ $attendance->clock_in != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_in) : '00:00' }}
+                                                        </td>
+                                                        <td>{{ $attendance->clock_out != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_out) : '00:00' }}
+                                                        </td>
+                                                        <td>
+                                                            <div class="late">
+                                                            {{ $attendance->late }}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="early_leaving">
+                                                            {{ $attendance->early_leaving }}
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $attendance->overtime }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Company Name') }} : </strong>
-                                        <span>FireFortress Teams</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm font-style">
-                                        <strong class="font-bold">{{ __('Designation/Role') }} :</strong>
-                                        <span>Fire Chief</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('From') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('To') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Company Name') }} : </strong>
-                                        <span>Lifesaver FlameForce</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm font-style">
-                                        <strong class="font-bold">{{ __('Designation/Role') }} :</strong>
-                                        <span>Lieutenant</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('From') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('To') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Company Name') }} : </strong>
-                                        <span>FirePulse Emergency Solutions</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm font-style">
-                                        <strong class="font-bold">{{ __('Designation/Role') }} :</strong>
-                                        <span>Firefighter</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('From') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('To') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->dob) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
-
-                    <div class="card " style="height:auto">
-                        <div class="card-body employee-detail-body fulls-card">
-                            <h5>{{ __('Achievements') }}</h5>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Award') }} :</strong>
-                                        <span>{{ !empty($employee->designation) ? $employee->designation->name : '' }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Year') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->company_doj) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Award') }} :</strong>
-                                        <span>{{ !empty($employee->designation) ? $employee->designation->name : '' }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Year') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->company_doj) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Award') }} :</strong>
-                                        <span>{{ !empty($employee->designation) ? $employee->designation->name : '' }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Year') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->company_doj) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Award') }} :</strong>
-                                        <span>{{ !empty($employee->designation) ? $employee->designation->name : '' }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Year') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->company_doj) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Award') }} :</strong>
-                                        <span>{{ !empty($employee->designation) ? $employee->designation->name : '' }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Year') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->company_doj) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Award') }} :</strong>
-                                        <span>{{ !empty($employee->designation) ? $employee->designation->name : '' }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="info text-sm">
-                                        <strong class="font-bold">{{ __('Year') }} :</strong>
-                                        <span>{{ \Auth::user()->dateFormat($employee->company_doj) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>                            
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
     </div>
 @endsection
+
+@push('script-page')
+    <script src="{{ asset('assets/js/plugins/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
+@endpush

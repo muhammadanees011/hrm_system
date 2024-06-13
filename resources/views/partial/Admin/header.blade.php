@@ -62,6 +62,38 @@
                         ->count();
                 @endphp
 
+                <li class="dropdown dash-h-item drp-notification">
+                    <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
+                    href="#" role="button" aria-haspopup="false" aria-expanded="false" id="notification-btn">
+                        <i class="ti ti-bell"></i>
+                        <span class="bg-danger dash-h-badge message-counter custom_messanger_counter">{{ $notifications_count }}
+                            <span class="sr-only"></span>
+                        </span>
+                    </a>
+                    <div class="dropdown-menu dash-h-dropdown dropdown-menu-end" id="notification-list">
+                        <div class="noti-header">
+                            <h5 class="m-0">{{ __('Notifications') }}</h5>
+                            <a href="{{route('notifications.clear')}}"
+                            class="dash-head-link mark_all_as_read_message">{{ __('Clear All') }}</a>
+                        </div>
+                        <div class="notification-body dropdown-list-notifications">
+                            <div>
+                                <a href="#" class="show-listView"></a>
+                                @foreach($notifications as $notification)
+                                <div class="mb-1 d-flex">
+                                <i class="fas fa-arrow-right ms-4 mt-1"></i><p style="font-size:12px;" class="ms-2">{{$notification->title}}</p>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="noti-footer">
+                            <div class="d-grid">
+                                <a href="{{route('notifications.seen')}}"
+                                class="btn dash-head-link justify-content-center text-primary mx-0">Mark Seen</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
 
                 @if (Auth::user()->type != 'super admin')
                     <li class="dash-h-item">
@@ -234,5 +266,55 @@
                 },
             });
         })
+    </script>
+
+    <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     var dropdown = document.getElementById('notification-btn');
+        //     dropdown.addEventListener('show.bs.dropdown', function () {
+        //         getNotifications();
+        //     });
+        // });
+
+        // function getNotifications() {
+        //     $.ajax({
+        //         url: '/notifications', // Replace with your actual notifications endpoint
+        //         method: 'GET',
+        //         success: function(response) {
+        //             const data = response.notifications; // Ensure this matches the structure of your response
+        //             console.log(data); // Debug: Log the data to verify it's correct
+
+        //             const notificationList = $('#notification-list');
+        //             const notificationBody = notificationList.find('.notification-body .dropdown-list-notifications');
+                    
+        //             // Clear existing notifications
+        //             notificationBody.empty();
+
+        //             // Check if there are any notifications
+        //             if (data.length === 0) {
+        //                 notificationBody.html('<div class="count-listOfNotifications pb-3"><small style="position: absolute; left: 30%">Your notification list is empty</small></div>');
+        //             } else {
+        //                 // Append new notifications
+        //                 data.forEach(notification => {
+        //                     const notificationItem = $(`
+        //                         <div class="notification-item">
+        //                             <a href="${notification.url}" class="dropdown-item">
+        //                                 <strong>${notification.title}</strong>
+        //                                 <p>${notification.body}</p>
+        //                                 <small>${notification.created_at}</small>
+        //                             </a>
+        //                         </div>
+        //                     `);
+        //                     console.log('notificationItem:', notificationItem); // Debug: Log the item to verify it's being created
+        //                     notificationBody.append(notificationItem);
+        //                 });
+        //             }
+        //         },
+        //         error: function(error) {
+        //             console.error('Error fetching notifications:', error);
+        //         }
+        //     });
+        // }
+
     </script>
 @endpush
