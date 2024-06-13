@@ -66,10 +66,13 @@ class AppraisalController extends Controller
         {
             $validator = \Validator::make(
                 $request->all(), [
-                                   'brances' => 'required',
-                                   'employee' => 'required',
-                                   'rating'=> 'required',
-                               ]
+                    'brances' => 'required',
+                    'employee' => 'required',
+                    'rating'=> 'nullable',
+                    'notes'=> 'required',
+                    'completion_date'=> 'required',
+                    'notes_date'=> 'required',
+                ]
             );
             if($validator->fails())
             {
@@ -82,8 +85,11 @@ class AppraisalController extends Controller
             $appraisal->branch         = $request->brances;
             $appraisal->employee       = $request->employee;
             $appraisal->appraisal_date = $request->appraisal_date;
-            $appraisal->rating         = json_encode($request->rating, true);
+            // $appraisal->rating         = json_encode($request->rating, true);
             $appraisal->remark         = $request->remark;
+            $appraisal->notes          = $request->notes;
+            $appraisal->notes_date     = $request->notes_date;
+            $appraisal->completion_date= $request->completion_date;
             $appraisal->created_by     = \Auth::user()->creatorId();
             $appraisal->save();
 
@@ -93,19 +99,7 @@ class AppraisalController extends Controller
 
     public function show(Appraisal $appraisal)
     {
-        $rating = json_decode($appraisal->rating, true);
-        $performance_types = Performance_Type::where('created_by', '=', \Auth::user()->creatorId())->get();
-        $employee = Employee::find($appraisal->employee);
-        $indicator = Indicator::where('branch',$employee->branch_id)->where('department',$employee->department_id)->where('designation',$employee->designation_id)->first();
-     
-        if ($indicator != null) {
-            $ratings = json_decode($indicator->rating, true);
-        }else {
-            $ratings = null;
-        }
-
-        // $ratings = json_decode($indicator->rating, true);
-        return view('appraisal.show', compact('appraisal', 'performance_types', 'ratings','rating'));
+        return view('appraisal.show', compact('appraisal'));
     }
 
 
@@ -137,10 +131,13 @@ class AppraisalController extends Controller
         {
             $validator = \Validator::make(
                 $request->all(), [
-                                   'brances' => 'required',
-                                   'employees' => 'required',
-                                   'rating'=> 'required',
-                               ]
+                    'brances' => 'required',
+                    'employees' => 'required',
+                    'rating'=> 'nullable',
+                    'notes'=> 'required',
+                    'completion_date'=> 'required',
+                    'notes_date'=> 'required',
+                ]
             );
             if($validator->fails())
             {
@@ -152,8 +149,11 @@ class AppraisalController extends Controller
             $appraisal->branch         = $request->brances;
             $appraisal->employee       = $request->employees;
             $appraisal->appraisal_date = $request->appraisal_date;
-            $appraisal->rating         = json_encode($request->rating, true);
+            // $appraisal->rating         = json_encode($request->rating, true);
             $appraisal->remark         = $request->remark;
+            $appraisal->notes          = $request->notes;
+            $appraisal->notes_date     = $request->notes_date;
+            $appraisal->completion_date= $request->completion_date;
             $appraisal->save();
 
             return redirect()->route('appraisal.index')->with('success', __('Appraisal successfully updated.'));

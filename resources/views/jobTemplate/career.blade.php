@@ -105,8 +105,10 @@ $themeColor = $color;
                         @endphp
 
                         <h2 class="h1 mb-3"> <span class="text-primary">+{{ $totaljob }}
-                            </span>{{ __('Job openings') }}</h2>
-                        <p>{{ __('Always looking for better ways to do things, innovate') }} <br>
+                            </span>{{ __('Job openings') }} 
+                        </h2>
+                        <p>
+                            {{ __('Always looking for better ways to do things, innovate') }} <br>
                             {{ __('and help people achieve their goals') }}.
                         </p>
                     </div>

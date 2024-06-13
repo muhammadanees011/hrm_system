@@ -10,8 +10,11 @@ use App\Models\Employee;
 use App\Models\EmployeeDocument;
 use App\Mail\UserCreate;
 use App\Models\EmployeePersonalFile;
+use App\Models\AttendanceEmployee;
 use App\Models\User;
+use App\Models\Leave;
 use App\Models\Utility;
+use Carbon\Carbon;
 use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -396,9 +399,117 @@ class EmployeeController extends Controller
         }
     }
 
+    public function attendance_overview(Request $request)
+    {
+        try{
+        $start_date = $request->start_date;
+        $end_date =$request->end_date;
+        $empId = $request->employee_id;
+
+        $start_date = Carbon::parse($start_date);
+        $end_date = Carbon::parse($end_date);
+
+
+        $employees =  Employee::find($empId);
+        $employee_count = $employees->count();
+        $dates = [];
+        $on_time_attendances = [];
+        $late_time_attendances = [];
+        $leave_count = [];
+        $absentCount = [];
+
+        $date = Carbon::now()->toDateString();
+        $start_day = $start_date->format('d');
+        $end_day = $end_date->format('d');
+
+        $attendances = AttendanceEmployee::whereBetween('date', [$start_date, $end_date])->get();
+        $on_time_attendances = AttendanceEmployee::whereBetween('date', [$start_date, $end_date])->where('late', '00:00:00')->get();
+        $late_time_attendances = AttendanceEmployee::whereBetween('date', [$start_date, $end_date])->where('late', '!=', '00:00:00')->get();
+        $leaves = Leave::where('start_date', '>=',$start_date)->where('end_date','<=', $end_date)->where('status','Approved')->get();
+        $leave_count = $leaves->count();
+        $onTimeattendancesCount = $on_time_attendances->count();
+        $lateTimeattendancesCount = $late_time_attendances->count();
+        $absentCount = $end_day - $start_day;
+        $attendancesCount = $attendances->count();
+        $labels[] = $date;
+
+        $attendanceData = [
+            [
+                'name' => 'On Time',
+                'data' => $onTimeattendancesCount
+            ],
+            [
+                'name' => 'Late',
+                'data' => $lateTimeattendancesCount
+            ],
+            [
+                'name' => 'Absent',
+                'data' => $absentCount
+            ],
+            [
+                'name' => 'Leaves',
+                'data' => $leave_count
+            ],
+
+        ];
+
+        $attendanceOverview=[$attendancesCount,$absentCount,$leave_count,$lateTimeattendancesCount];
+        $data = $attendanceOverview;
+        return response()->json(['success' => true, 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 200);
+        }
+    }
+
     public function show($id)
     {
+        $empId = Crypt::decrypt($id);
+        $employees =  Employee::find($empId);
+        $employee_count = $employees->count();
+        $dates = [];
+        $on_time_attendances = [];
+        $late_time_attendances = [];
+        $leave_count = [];
+        $absentCount = [];
 
+        $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
+        $date = Carbon::now()->toDateString();
+        $day = Carbon::now()->format('d');
+        $daysInMonth = Carbon::now()->daysInMonth;
+
+        $attendances = AttendanceEmployee::whereBetween('date', [$startOfMonth, $date])->get();
+        // $attendances = AttendanceEmployee::where('date', $date)->get();
+        $on_time_attendances = AttendanceEmployee::whereBetween('date', [$startOfMonth, $date])->where('late', '00:00:00')->get();
+        $late_time_attendances = AttendanceEmployee::whereBetween('date', [$startOfMonth, $date])->where('late', '!=', '00:00:00')->get();
+        $leaves = Leave::where('start_date', '>=',$startOfMonth)->where('end_date','<=', $date)->where('status','Approved')->get();
+        $leave_count = $leaves->count();
+        $onTimeattendancesCount = $on_time_attendances->count();
+        $lateTimeattendancesCount = $late_time_attendances->count();
+        $absentCount = $day - $attendances->count();
+        $attendancesCount = $attendances->count();
+        $labels[] = $date;
+
+        $attendanceData = [
+            [
+                'name' => 'On Time',
+                'data' => $onTimeattendancesCount
+            ],
+            [
+                'name' => 'Late',
+                'data' => $lateTimeattendancesCount
+            ],
+            [
+                'name' => 'Absent',
+                'data' => $absentCount
+            ],
+            [
+                'name' => 'Leaves',
+                'data' => $leave_count
+            ],
+
+        ];
+
+        $attendanceOverview=[$attendancesCount,$absentCount,$leave_count,$lateTimeattendancesCount];
         if (\Auth::user()->can('Show Employee')) {
             $empId        = Crypt::decrypt($id);
             $documents    = Document::where('created_by', \Auth::user()->creatorId())->get();
@@ -407,12 +518,14 @@ class EmployeeController extends Controller
             $designations = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $employee     = Employee::find($empId);
             $employeesId  = \Auth::user()->employeeIdFormat($employee->employee_id);
-            // dd($documents);
-
-            return view('employee.show', compact('employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
+            $attendanceEmployee = AttendanceEmployee::where('employee_id', $employee->employee_id)->get();
+            
+            // $attendanceOverview=[0,30,0,0];
+            return view('employee.show', compact('attendanceOverview','attendanceEmployee','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
+
     }
 
     // public function json(Request $request)

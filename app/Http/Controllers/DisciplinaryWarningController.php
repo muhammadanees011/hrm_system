@@ -28,7 +28,8 @@ class DisciplinaryWarningController extends Controller
                 'employee_id'          => 'nullable',
                 'title'                => 'required',
                 'description'          => 'required',
-                'performance_cycle_id' => 'required'
+                'performance_cycle_id' => 'required',
+                'progress'             => 'required'
             ]
         );
         if($validator->fails())
@@ -42,6 +43,7 @@ class DisciplinaryWarningController extends Controller
         $warning->employee_id           = $request->employee_id;
         $warning->title                 = $request->title;
         $warning->description           = $request->description;
+        $warning->progress              = $request->progress;
         $warning->created_by            = \Auth::user()->creatorId();
         $warning->save();
         return redirect()->route('disciplinarywarning.index',['employee_id'=>$request->employee_id,'performance_cycle_id'=>$request->performance_cycle_id])
@@ -63,7 +65,8 @@ class DisciplinaryWarningController extends Controller
                 'employee_id'          => 'nullable',
                 'title'                => 'required',
                 'description'          => 'required',
-                'performance_cycle_id' => 'required'
+                'performance_cycle_id' => 'required',
+                'progress'             => 'required'
             ]
         );
         if($validator->fails())
@@ -77,6 +80,7 @@ class DisciplinaryWarningController extends Controller
         $warning->employee_id           = $request->employee_id;
         $warning->title                 = $request->title;
         $warning->description           = $request->description;
+        $warning->progress              = $request->progress;
         $warning->save();
         return redirect()->route('disciplinarywarning.index',['employee_id'=>$request->employee_id,'performance_cycle_id'=>$request->performance_cycle_id])
         ->with('success', __('Warning successfully updated.'));

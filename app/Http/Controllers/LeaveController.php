@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Models\Leave as LocalLeave;
 use App\Models\Leave;
 use App\Models\LeaveType;
+use App\Models\LeaveEntitlement;
+use App\Models\HolidaySetting;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,6 +79,7 @@ class LeaveController extends Controller
                     'end_date' => 'required',
                     'leave_reason' => 'required',
                     'remark' => 'required',
+                    'is_paid_leave' => 'required',
                 ]
             );
             if ($validator->fails()) {
@@ -84,6 +87,15 @@ class LeaveController extends Controller
                 
                 return redirect()->back()->with('error', $messages->first());
             }
+
+            $setting=HolidaySetting::where('name','book_same_day')->first();
+            if($setting->value=='no'){
+                $isClash = LocalLeave::where(['start_date' => $request->start_date])->count();
+                if($isClash > 0){
+                    return redirect()->back()->with('error', __("Selected date is already ocuppied."));
+                }
+            }
+
             // CHECK IF USER TRYING TO ADD LEAVE WITH DIFFERENT ROLE
             if(\Auth::user()->type != "employee"){
                 $isAlreadyBooked = LocalLeave::where([
@@ -162,6 +174,7 @@ class LeaveController extends Controller
                 $leave->duration_hours   = $request->hours;
                 $leave->leave_reason     = $request->leave_reason;
                 $leave->remark           = $request->remark;
+                $leave->is_paid_leave    = $request->is_paid_leave;
                 $leave->status           = 'Pending';
                 $leave->created_by       = \Auth::user()->creatorId();
                 $leave->manager_id       = \Auth::user()->type != 'employee' ? \Auth::user()->id: null;
@@ -231,7 +244,6 @@ class LeaveController extends Controller
 
     public function update(Request $request, $leave)
     {
-
         $leave = LocalLeave::find($leave);
         if (\Auth::user()->can('Edit Leave')) {
             if ($leave->created_by == Auth::user()->creatorId()) {
@@ -244,6 +256,7 @@ class LeaveController extends Controller
                         'end_date' => 'required',
                         'leave_reason' => 'required',
                         'remark' => 'required',
+                        'is_paid_leave' => 'required',
                     ]
                 );
                 if ($validator->fails()) {
@@ -303,7 +316,7 @@ class LeaveController extends Controller
 
                     }
                     $leave->remark           = $request->remark;
-
+                    $leave->is_paid_leave    = $request->is_paid_leave;
                     $leave->save();
 
                     return redirect()->route('leave.index')->with('success', __('Leave successfully updated.'));
@@ -354,6 +367,15 @@ class LeaveController extends Controller
             $total_leave_days        = $startDate->diff($endDate)->days;
             $leave->total_leave_days = $total_leave_days;
             $leave->status           = 'Approved';
+
+            $interval = $startDate->diff($endDate);
+            $numberOfDays = $interval->days;
+            $leaveEntitlement=LeaveEntitlement::where('employee_id',$leave->employee_id)->first();
+            if($leaveEntitlement){
+            $leaveEntitlement->absence_count=$leaveEntitlement->absence_count+$numberOfDays;
+            $leaveEntitlement->remaining_allowance=$leaveEntitlement->remaining_allowance-$numberOfDays;
+            $leaveEntitlement->save();
+            }
         }
 
         $leave->save();
@@ -389,6 +411,20 @@ class LeaveController extends Controller
         }
 
         return redirect()->route('leave.index')->with('success', __('Leave status successfully updated.'));
+    }
+
+    public function leave_setting()
+    {
+        $setting=HolidaySetting::where('name','book_same_day')->first();
+        return view('leave.leave_setting',compact('setting'));
+    }
+
+    public function leave_clash(Request $request)
+    {
+        $setting=HolidaySetting::where('name','book_same_day')->first();
+        $setting->value=$request->book_same_day;
+        $setting->save();
+        return redirect()->back()->with('success', __('Leave Setting successfully Updated'));
     }
 
     public function jsoncount(Request $request)
@@ -488,20 +524,68 @@ class LeaveController extends Controller
 
     public function teamTimeOff()
     {
-        if (\Auth::user()->can('Manage Leave')) {
-            if (\Auth::user()->type == 'employee') {
-                $user     = \Auth::user();
-                $employee = Employee::where('user_id', '=', $user->id)->first();
-                $department_id=$employee->department_id;
-                $leaves = LocalLeave::whereHas('employees', function ($query) use ($department_id) {
-                    $query->where('department_id', $department_id);
-                })->get();
-            } else {
-                $leaves = LocalLeave::where('created_by', '=', \Auth::user()->creatorId())->with(['employees', 'leaveType'])->get();
-            }
-            return view('leave.team', compact('leaves'));
+        if (\Auth::user()->type == 'employee') {
+            $user     = \Auth::user();
+            $employee = Employee::where('user_id', '=', $user->id)->first();
+            $department_id=$employee->department_id;
+            $leaves = LocalLeave::whereHas('employees', function ($query) use ($department_id) {
+                $query->where('department_id', $department_id);
+            })->get();
         } else {
-            return redirect()->back()->with('error', __('Permission denied.'));
+            $leaves = LocalLeave::where('created_by', '=', \Auth::user()->creatorId())->with(['employees', 'leaveType'])->get();
         }
+        $current_month_event=$leaves;
+        $arrEvents=[];
+        $employees=[];
+        $events=$leaves;
+        return view('leave.team', compact('arrEvents', 'employees','current_month_event','events'));
+    }
+
+    public function teamOff(Request $request)
+    {
+        if (\Auth::user()->type == 'employee') {
+            $user     = \Auth::user();
+            $employee = Employee::where('user_id', '=', $user->id)->first();
+            $department_id=$employee->department_id;
+            $leaves = LocalLeave::whereHas('employees', function ($query) use ($department_id) {
+                $query->where('department_id', $department_id);
+            })->get();
+        } else {
+            $leaves = LocalLeave::where('created_by', '=', \Auth::user()->creatorId())->with(['employees', 'leaveType'])->get();
+        }
+        $current_month_event=$leaves;
+        $arrEvents=[];
+        $employees=[];
+
+
+        $arrayJson = [];
+        if($request->get('calender_type') == 'google_calender')
+        {
+            $type ='event';
+            $arrayJson =  Utility::getCalendarData($type);
+        }
+        else
+        {
+            $data = $leaves;
+            
+            foreach($data as $val)
+            {
+                $end_date=date_create($val->end_date);
+                date_add($end_date,date_interval_create_from_date_string("1 days"));
+                $arrayJson[] = [
+                    "id"=> $val->id,
+                    "title" => $val->employees->name,
+                    "start" => $val->start_date,
+                    "end" => date_format($end_date,"Y-m-d H:i:s"),
+                    "className" => 'event-danger',
+                    "allDay" => true,
+                     "url"=> null,
+                    // "url"=> route('trainingevent.edit', $val['id']),
+
+                ];
+            }
+        }
+        
+        return $arrayJson;
     }
 }

@@ -247,7 +247,6 @@ class AttendanceEmployeeController extends Controller
                 $absentEmployees = $totalEmployees - (count($todayAttendance) + $onLeaves);
                 $attendanceOverview = [$totalPresents, $absentEmployees, $onLeaves,$late,$totalFlexiTime];
             }
-
             return view('attendance.index', compact('attendanceEmployee', 'labels', 'branch', 'department','attendanceData','attendanceOverview'));
         }
         else

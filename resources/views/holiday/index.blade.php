@@ -23,10 +23,11 @@
 <a href="{{ route('holiday.calender') }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Calendar View') }}">
     <i class="ti ti-calendar"></i>
 </a>
-
+@if (\Auth::user()->type != 'company')
 <a href="#" data-url="{{ route('holiday.create') }}" data-ajax-popup="true" data-title="{{ __('Create New Holiday') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
     <i class="ti ti-plus"></i>
 </a>
+@endif
 @endsection
 
 
@@ -35,7 +36,7 @@
     <div class="mt-2" id="multiCollapseExample1">
         <div class="card">
             <div class="card-body">
-                <h2>{{$holidayConfig->annual_entitlement}} Days</h2>
+                <h2>{{$holidayConfig ? $holidayConfig->annual_entitlement :'NA'}} Days</h2>
                 <span>Annual Entitlement</span>
             </div>
         </div>
@@ -70,7 +71,7 @@
                 <h2>{{$monthsSinceStart}}</h2>
                 <span>Since Year Start</span>
                 <br>
-                <small>Renews at: {{ \Auth::user()->dateFormat($holidayConfig->annual_renew_date) }}</small>
+                <small>Renews at: {{ \Auth::user()->dateFormat($holidayConfig ? $holidayConfig->annual_renew_date :'NA') }}</small>
             </div>
         </div>
     </div>

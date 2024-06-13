@@ -13,7 +13,7 @@
 @section('action-button')
     @can('Create Retirement')
         <a href="#" data-url="{{ route('carryover.create') }}" data-ajax-popup="true"
-            data-title="{{ __('Create New Retirement') }}" data-size="lg" data-bs-toggle="tooltip" title=""
+            data-title="{{ __('Create New Carryover') }}" data-size="lg" data-bs-toggle="tooltip" title=""
             class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
@@ -21,6 +21,91 @@
 @endsection
 
 @section('content')
+
+
+<style>
+
+.employees-actions{
+    display:flex;
+    justify-content:end;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropbtn {
+    background-color: orange;
+    color: white;
+    padding: 6px;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 1px;
+    font-size: 12px;
+  }
+  
+  .dropdown-content a {
+    color: black !important;
+    padding: 5px 12px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: orange;
+    color:white !important;
+}
+  .dropdown:hover .dropdown-content {display: block;}
+  .dropdown:hover .dropbtn {color: white;}
+</style>
+
+    @if (\Auth::user()->type == 'employee')
+    <div class="employees-actions">
+        <div class="employees-nav mb-2">
+            <div class="nav-titles">
+                <div class="dropdown">
+                <button class="dropbtn">Manage Leaves &#9660;</button>
+                <div class="dropdown-content">
+                    <a href="{{ route('carryover.index') }}">{{ __('Leave CarryOver Request') }}</a>
+                    <a href="{{ route('leave.team') }}">{{ __('Team Time Off') }}</a>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @else
+    <div class="employees-actions">
+        <div class="employees-nav me-1 mb-2">
+            <div class="nav-titles">
+                <div class="dropdown">
+                <button class="dropbtn">Manage Leaves &#9660;</button>
+                <div class="dropdown-content">
+                    <a href="{{ route('holidayplanner.index') }}">{{ __("Holiday Planner") }} </a>
+                    <a href="{{ route('leave.index') }}">{{ __("Leave Request") }} </a>
+                    <a href="{{ route('leaveentitlement.index') }}">{{ __("Leave Entitlement Report") }} </a>
+                    <a href="{{ route('leave.team') }}">{{ __('Team Time Off') }}</a>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header card-body table-border-style">

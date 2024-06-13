@@ -2356,6 +2356,54 @@ class UsersTableSeeder extends Seeder
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
             ],
+            [
+                "name" => "Manage Holiday Configuration",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Holiday Configuration",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Holiday Configuration",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Delete Holiday Configuration",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Manage Holiday CarryOver",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Create Holiday CarryOver",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Holiday CarryOver",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Delete Holiday CarryOver",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
         ];
         Permission::insert($arrPermissions);
 
@@ -2743,6 +2791,15 @@ class UsersTableSeeder extends Seeder
             ["name" => "View Discussion"],
             ["name" => "Create Discussion"],
             ["name" => "Manage Meeting Template"],
+            ["name" => "Manage Holiday Configuration"],
+            ["name" => "Create Holiday Configuration"],
+            ["name" => "Edit Holiday Configuration"],
+            ["name" => "Delete Holiday Configuration"],
+
+            // ["name" => "Manage Holiday CarryOver"],
+            // ["name" => "Create Holiday CarryOver"],
+            // ["name" => "Edit Holiday CarryOver"],
+            // ["name" => "Delete Holiday CarryOver"],
         ];
 
         $companyRole->givePermissionTo($companyPermissions);
@@ -3080,6 +3137,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "View Discussion"],
             ["name" => "Create Discussion"],
             ["name" => "Manage Meeting Template"],
+            ["name" => "Manage Holiday Configuration"],
+            ["name" => "Create Holiday Configuration"],
+            ["name" => "Edit Holiday Configuration"],
+            ["name" => "Delete Holiday Configuration"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);
@@ -3237,6 +3298,7 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Retirement"],
             ["name" => "Manage Goal Tracking"],
             ["name" => "Manage Meeting Template"],
+
         ];
 
         $managerRole->givePermissionTo($managerPermission);
@@ -3327,6 +3389,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "View Discussion"],
             ["name" => "Create Discussion"],
             ["name" => "Manage Goal Tracking"],
+            ["name" => "Manage Holiday Configuration"],
+            ["name" => "Create Holiday Configuration"],
+            ["name" => "Edit Holiday Configuration"],
+            ["name" => "Delete Holiday Configuration"],
         ];
 
         $employeeRole->givePermissionTo($employeePermission);

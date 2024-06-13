@@ -30,7 +30,7 @@
         {{-- @endforeach --}}
     @endif
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="form-group">
                 {{ Form::label('leave_type_id', __('Leave Type'), ['class' => 'col-form-label']) }}
                 <select name="leave_type_id" id="leave_type_id" class="form-control select">
@@ -39,6 +39,15 @@
                         <option value="{{ $leave->id }}">{{ $leave->title }} (<p class="float-right pr-5">
                                 {{ $leave->days }}</p>)</option>
                     @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ Form::label('is_paid_leave', __('Paid'), ['class' => 'col-form-label']) }}
+                <select name="is_paid_leave" id="leave_duration" class="form-control select">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
                 </select>
             </div>
         </div>

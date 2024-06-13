@@ -23,6 +23,12 @@
                 {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'Title', 'required' => 'required']) }}
             </div>
         </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                {{ Form::label('progress', __('Progress'), ['class' => 'col-form-label']) }}
+                {{ Form::number('progress', null, ['class' => 'form-control', 'placeholder' => 'enter progress']) }}
+            </div>
+        </div>
         <div class="form-group col-lg-12">
             {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
             {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Description'),'rows'=>'3' , 'required' => 'required']) }}
