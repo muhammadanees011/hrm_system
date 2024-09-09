@@ -23,6 +23,7 @@
         @endif
 
         <div class="row">
+            <!-- Addin comment -->
             <div class="form-group">
                 {{ Form::label('title', __('Event Title'), ['class' => 'col-form-label']) }}
                 {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => __('Enter Event Title')]) }}
