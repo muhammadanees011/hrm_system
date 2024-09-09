@@ -27,7 +27,6 @@
         padding:0px 20px;
     }
 </style>
-
     @foreach($meetingtemplates as $meetingtemplate)
     <div class="col-xl-3">
         <div class="card  text-center">
@@ -39,6 +38,7 @@
                     </p>
                 </div>
                 <div class="card-header-right">
+                    @if(!(\Auth::user()->type=='employee'))
                     <div class="btn-group card-option">
                         <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
@@ -69,6 +69,7 @@
 
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
             <div class="card-body">
@@ -81,6 +82,7 @@
                 <div style="height:3rem;">
                     
                 </div>
+                @if(!(\Auth::user()->type=='employee'))
                 <div class="row mb-1">
                     <div class="col-md-12 d-flex justify-content-end">
                     <div class="me-2">
@@ -92,11 +94,29 @@
                     </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
     @endforeach
 
+    @if($meetingtemplates->isEmpty())
+        @if((\Auth::user()->type=='employee'))
+            <p class="text-muted text-center">{{ __('Meeting Template Does Note Exist, Please ask HR or Admin to create a template') }}</p>
+        @else
+        <div class="col-xl-3 col-lg-4 col-sm-6">
+            <a href="#" class="btn-addnew-project " data-ajax-popup="true" data-url="{{route('meetingtemplate.create')}}"
+                data-title="{{ __('Create New Template') }}" data-bs-toggle="tooltip" title=""
+                class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
+                <div class="bg-warning proj-add-icon">
+                    <i class="ti ti-plus"></i>
+                </div>
+                <h6 class="mt-4 mb-2">{{ __('New Template') }}</h6>
+                <p class="text-muted text-center">{{ __('Click here to add new template') }}</p>
+            </a>
+        </div>
+        @endif
+    @elseif(!(\Auth::user()->type=='employee'))
     <div class="col-xl-3 col-lg-4 col-sm-6">
         <a href="#" class="btn-addnew-project " data-ajax-popup="true" data-url="{{route('meetingtemplate.create')}}"
             data-title="{{ __('Create New Template') }}" data-bs-toggle="tooltip" title=""
@@ -108,6 +128,7 @@
             <p class="text-muted text-center">{{ __('Click here to add new template') }}</p>
         </a>
     </div>
+    @endif
 @endsection
 
 @push('scripts')

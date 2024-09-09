@@ -16,12 +16,12 @@
     @endif
 
     <div class="row">
-        @if (\Auth::user()->type != 'employee')
+        <!-- @if (\Auth::user()->type != 'employee')
             <div class="form-group col-md-6 col-lg-6">
                 {{ Form::label('warning_by', __('Warning By'), ['class' => 'col-form-label']) }}
                 {{ Form::select('warning_by', $employees, null, ['class' => 'form-control select2', 'required' => 'required']) }}
             </div>
-        @endif
+        @endif -->
         <div class="form-group col-md-6 col-lg-6">
             {{ Form::label('warning_to', __('Warning To'), ['class' => 'col-form-label']) }}
             {{ Form::select('warning_to', $employees, null, ['class' => 'form-control select2' ,'required' => 'required']) }}
@@ -35,8 +35,8 @@
             {{ Form::text('warning_date', null, ['class' => 'form-control d_week current_date', 'autocomplete' => 'off' ,'required' => 'required']) }}
         </div>
         <div class="form-group col-md-12">
-            {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
-            {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Description') ,'rows' => '3' ,'required' => 'required']) }}
+            {{ Form::label('description', __('Note'), ['class' => 'col-form-label']) }}
+            {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Note') ,'rows' => '3' ,'required' => 'required']) }}
         </div>
     </div>
 </div>

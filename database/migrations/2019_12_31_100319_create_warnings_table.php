@@ -16,10 +16,11 @@ class CreateWarningsTable extends Migration
         Schema::create('warnings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('warning_to');
-            $table->integer('warning_by');
+            $table->integer('warning_by')->nullable();
             $table->string('subject');
             $table->date('warning_date');
             $table->string('description');
+            $table->string('file')->nullable();
             $table->string('created_by');
             $table->timestamps();
         });

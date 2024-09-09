@@ -87,8 +87,10 @@
         $(document).ready(function() {
             var b_id = $('#branch_id').val();
             // RENDERING OVERVIEW CHART
+            @if(isset($attendanceOverview))
             const data = @json($attendanceOverview);
             renderOverviewChart(data)
+            @endif
         });
 
         $(document).on('change','.start-date ,.end-date', function(){
@@ -358,62 +360,62 @@
             </div>
 
     
-
+            @if(isset($attendanceEmployee))
             <div class="row">
                 <!-- deduction-->
-                            <div class="col-md-12">
-                                <div class="card set-card">
-                                    <div class="card-header">
-                                        <div class="row">
-                                            <div class="col-11">
-                                                <h5>{{ __('Attendance And Punctuality Report') }}</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class=" card-body table-border-style" style=" overflow:auto">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ __('Date') }}</th>
-                                                    <th>{{ __('Status') }}</th>
-                                                    <th>{{ __('Clock In') }}</th>
-                                                    <th>{{ __('Clock Out') }}</th>
-                                                    <th>{{ __('Late') }}</th>
-                                                    <th>{{ __('Early Leaving') }}</th>
-                                                    <th>{{ __('Overtime') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($attendanceEmployee as $attendance)
-                                                    <tr>
-                                                        <td>{{ \Auth::user()->dateFormat($attendance->date) }}</td>
-                                                        <td>{{ $attendance->status }}</td>
-                                                        <td>{{ $attendance->clock_in != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_in) : '00:00' }}
-                                                        </td>
-                                                        <td>{{ $attendance->clock_out != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_out) : '00:00' }}
-                                                        </td>
-                                                        <td>
-                                                            <div class="late">
-                                                            {{ $attendance->late }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="early_leaving">
-                                                            {{ $attendance->early_leaving }}
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ $attendance->overtime }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                <div class="col-md-12">
+                    <div class="card set-card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-11">
+                                    <h5>{{ __('Attendance And Punctuality Report') }}</h5>
                                 </div>
                             </div>
+                        </div>
+                        <div class=" card-body table-border-style" style=" overflow:auto">
+                            <div class="table-responsive">
+                                <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th>{{ __('Clock In') }}</th>
+                                        <th>{{ __('Clock Out') }}</th>
+                                        <th>{{ __('Late') }}</th>
+                                        <th>{{ __('Early Leaving') }}</th>
+                                        <th>{{ __('Overtime') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($attendanceEmployee as $attendance)
+                                        <tr>
+                                            <td>{{ \Auth::user()->dateFormat($attendance->date) }}</td>
+                                            <td>{{ $attendance->status }}</td>
+                                            <td>{{ $attendance->clock_in != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_in) : '00:00' }}
+                                            </td>
+                                            <td>{{ $attendance->clock_out != '00:00:00' ? \Auth::user()->timeFormat($attendance->clock_out) : '00:00' }}
+                                            </td>
+                                            <td>
+                                                <div class="late">
+                                                {{ $attendance->late }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="early_leaving">
+                                                {{ $attendance->early_leaving }}
+                                                </div>
+                                            </td>
+                                            <td>{{ $attendance->overtime }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
+            @endif
         </div>
     </div>
 @endsection

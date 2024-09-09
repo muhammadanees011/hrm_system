@@ -9,6 +9,7 @@ use App\Models\Warning;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\File;
 
 class WarningController extends Controller
 {
@@ -19,7 +20,7 @@ class WarningController extends Controller
             if(Auth::user()->type == 'employee')
             {
                 $emp      = Employee::where('user_id', '=', \Auth::user()->id)->first();
-                $warnings = Warning::where('warning_by', '=', $emp->id)->get();
+                $warnings = Warning::where('warning_to', '=', $emp->id)->get();
             }
             else
             {
@@ -244,4 +245,55 @@ class WarningController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+
+
+    public function createNotes($id)
+    {
+        $warning=Warning::find($id);
+        return view('warning.create_notes',compact('warning'));   
+    }
+
+    public function storeNotes(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'file' => 'required|file|mimes:pdf|max:10240',
+                'warning_id' => 'required',
+                'description' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            $path = public_path() . '/documents_storage';
+            $file->move($path,$fileName);
+        }
+        $promotion=Warning::find($request->warning_id);
+        $promotion->description=$request->description;
+        $promotion->file = $fileName ?? '';
+        $promotion->save();
+
+        return redirect()->back()->with('success', __('Notes successfully Updated.'));
+    }
+
+    public function warning_file($id)
+    {
+        $document = Warning::find($id);
+        $filename=$document->file;
+        $filePath = public_path('documents_storage/' . $filename);
+        if (File::exists($filePath)) {
+            $filePath = public_path('documents_storage/' . $filename);
+            return response()->download($filePath, $filename);
+        } else {
+            return redirect()->back()->with('error', __('File not found.'));
+        }
+    }
+
 }

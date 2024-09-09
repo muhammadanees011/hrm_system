@@ -69,16 +69,16 @@ class ComplaintController extends Controller
             {
                 $validator = \Validator::make(
                     $request->all(), [
-                                       'complaint_from' => 'required',
+                    'complaint_from' => 'required',
                                    ]
                 );
             }
 
             $validator = \Validator::make(
                 $request->all(), [
-                                   'complaint_against' => 'required',
-                                   'title' => 'required',
-                                   'complaint_date' => 'required',
+                                //    'complaint_against' => 'required',
+                'title' => 'required',
+                'complaint_date' => 'required',
                                ]
             );
 
@@ -98,25 +98,25 @@ class ComplaintController extends Controller
             {
                 $complaint->complaint_from = $request->complaint_from;
             }
-            $complaint->complaint_against = $request->complaint_against;
+            // $complaint->complaint_against = $request->complaint_against;
             $complaint->title             = $request->title;
             $complaint->complaint_date    = $request->complaint_date;
             $complaint->description       = $request->description;
             $complaint->created_by        = \Auth::user()->creatorId();
             $complaint->save();
 
-            $setings = Utility::settings();
-            if($setings['employee_complaints'] == 1)
-            {
-                $employee         = Employee::find($complaint->complaint_against);
+        //     $setings = Utility::settings();
+        //     if($setings['employee_complaints'] == 1)
+        //     {
+        //         $employee         = Employee::find($complaint->complaint_against);
 
-            $uArr = [
-                'employee_complaints_name'=>$employee->name, 
+        //     $uArr = [
+        //         'employee_complaints_name'=>$employee->name, 
 
-             ];
-          $resp = Utility::sendEmailTemplate('employee_complaints', [$employee->email], $uArr);
-          return redirect()->route('complaint.index')->with('success', __('Complaint  successfully created.'). ((!empty($resp) && $resp['is_success'] == false && !empty($resp['error'])) ? '<br> <span class="text-danger">' . $resp['error'] . '</span>' : ''));
-            }
+        //      ];
+        //   $resp = Utility::sendEmailTemplate('employee_complaints', [$employee->email], $uArr);
+        //   return redirect()->route('complaint.index')->with('success', __('Complaint  successfully created.'). ((!empty($resp) && $resp['is_success'] == false && !empty($resp['error'])) ? '<br> <span class="text-danger">' . $resp['error'] . '</span>' : ''));
+        //     }
 
             return redirect()->route('complaint.index')->with('success', __('Complaint  successfully created.'));
         }
@@ -173,18 +173,17 @@ class ComplaintController extends Controller
                 {
                     $validator = \Validator::make(
                         $request->all(), [
-                                           'complaint_from' => 'required',
-                                       ]
+                        'complaint_from' => 'required',
+                        ]
                     );
                 }
 
                 $validator = \Validator::make(
                     $request->all(), [
-
-                                       'complaint_against' => 'required',
-                                       'title' => 'required',
-                                       'complaint_date' => 'required',
-                                   ]
+                        // 'complaint_against' => 'required',
+                        'title' => 'required',
+                        'complaint_date' => 'required',
+                    ]
                 );
 
                 if($validator->fails())
@@ -203,7 +202,7 @@ class ComplaintController extends Controller
                 {
                     $complaint->complaint_from = $request->complaint_from;
                 }
-                $complaint->complaint_against = $request->complaint_against;
+                // $complaint->complaint_against = $request->complaint_against;
                 $complaint->title             = $request->title;
                 $complaint->complaint_date    = $request->complaint_date;
                 $complaint->description       = $request->description;
@@ -241,5 +240,32 @@ class ComplaintController extends Controller
         {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
+    }
+
+    public function createNotes($id)
+    {
+        $complaint=Complaint::find($id);
+        return view('complaint.create_notes',compact('complaint'));   
+    }
+
+    public function storeNotes(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'complaint_id' => 'required',
+                'description' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+        $promotion=Complaint::find($request->complaint_id);
+        $promotion->description=$request->description;
+        $promotion->save();
+
+        return redirect()->back()->with('success', __('Notes successfully Updated.'));
     }
 }

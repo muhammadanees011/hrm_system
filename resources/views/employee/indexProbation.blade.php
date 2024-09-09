@@ -43,7 +43,7 @@
                             <th>{{ __('Total Duration') }}</th>
                             <th>{{ __('Duration Left') }}</th>
                             @if (Gate::check('Edit Employee') || Gate::check('Delete Employee'))
-                            <th width="200px">{{ __('Action') }}</th>
+                            <!-- <th width="200px">{{ __('Action') }}</th> -->
                             @endif
                         </tr>
                     </thead>
@@ -87,7 +87,7 @@
                                 @endphp
                             </td>
                             @if (Gate::check('Edit Employee') || Gate::check('Delete Employee'))
-                            <td class="Action">
+                            <!-- <td class="Action">
                                 @if ($employee->is_active == 1)
                                 <span>
                                     @can('Edit Employee Type')
@@ -127,7 +127,7 @@
                                 @else
                                 <i class="ti ti-lock"></i>
                                 @endif
-                            </td>
+                            </td> -->
                             @endif
                         </tr>
                         @endforeach

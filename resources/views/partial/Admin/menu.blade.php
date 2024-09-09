@@ -132,6 +132,9 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                                 <a class="dash-link" href="{{ route('employee.profile') }}">{{ __('Employee Profile') }}</a>
                             </li>
                             @endcan
+                            <li class="dash-item">
+                            <a class="dash-link" href="{{ route('transfer.index') }}">{{ __('Employee Transfer') }}</a>
+                            </li>
                             {{-- @can('Manage Employee Last Login')
                                     <li class="dash-item">
                                         <a class="dash-link" href="{{ route('lastlogin') }}">{{ __('Last Login') }}</a>
@@ -150,15 +153,10 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 @php
                 $employee = App\Models\Employee::where('user_id', \Auth::user()->id)->first();
                 @endphp
-                <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'schemes' ? 'dash-trigger active' : '' }}">
-                    <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span>
-                        <span class="dash-mtext">{{ __('Manage Employee') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
-                    <ul class="dash-submenu ">
-                        <li class="dash-item {{ Request::segment(1) == 'employee' ? 'active' : '' }}">
-                            <a href="{{ route('employee.index') }}" class="dash-link"><span class="dash-mtext">{{ __('Employee') }}</span></a>
-                        </li>
-             
-                    </ul>
+                <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'employee' ? 'dash-trigger active' : '' }}">
+                    <a href="{{ route('employee.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-user"></i></span>
+                        <span class="dash-mtext">{{ __('My Profile') }}</span><span class="dash-arrow"></span>
+                    </a>
                 </li>
                 @else
 
@@ -345,50 +343,15 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 Gate::check('Manage Deposit') ||
                 Gate::check('Manage Expense') ||
                 Gate::check('Manage Transfer Balance'))
-                <li class="dash-item dash-hasmenu">
-                    <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-wallet"></i></span><span class="dash-mtext">{{ __('Finance') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
-                    <ul class="dash-submenu">
+                <li class="dash-item">
+                    <a href="{{ route('accountlist.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-wallet"></i></span><span class="dash-mtext">{{ __('Finance') }}</span></a>
+                    <!-- <ul class="dash-submenu">
                         @can('Manage Account List')
                         <li class="dash-item">
                             <a class="dash-link" href="{{ route('accountlist.index') }}">{{ __('Account List') }}</a>
                         </li>
                         @endcan
-                        @can('View Balance Account List')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('accountbalance') }}">{{ __('Account Balance') }}</a>
-                        </li>
-                        @endcan
-                        @can('Manage Payee')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('payees.index') }}">{{ __('Payees') }}</a>
-                        </li>
-                        @endcan
-
-                        @can('Manage Payer')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('payer.index') }}">{{ __('Payers') }}</a>
-                        </li>
-                        @endcan
-
-                        @can('Manage Deposit')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('deposit.index') }}">{{ __('Deposit') }}</a>
-                        </li>
-                        @endcan
-
-                        @can('Manage Expense')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('expense.index') }}">{{ __('Expense') }}</a>
-                        </li>
-                        @endcan
-
-                        @can('Manage Transfer Balance')
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('transferbalance.index') }}">{{ __('Transfer Balance') }}</a>
-                        </li>
-                        @endcan
-
-                    </ul>
+                    </ul> -->
                 </li>
                 @endif
                 <!-- fianance-->
@@ -428,43 +391,34 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 Gate::check('Manage Announcement') ||
                 Gate::check('Manage Holiday') ||
                 Gate::check('Manage Holiday'))
-                <li class="dash-item dash-hasmenu {{ Request::segment(1) == 'holiday' ? 'dash-trigger active' : '' }}">
-                    <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-user-plus"></i></span><span class="dash-mtext">{{ __('HR Admin Setup') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
-                    <ul class="dash-submenu">
-                        <li class="dash-item {{ Request::segment(1) == 'award' ? 'active' : '' }}">
-                            <a class="dash-link" href="{{ route('award.index') }}">{{ __('Award') }}</a>
-                        </li>
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('transfer.index') }}">{{ __('Transfer') }}</a>
-                        </li>
-                        <!-- <li class="dash-item">
-                            <a class="dash-link"
-                                href="{{ route('resignation.index') }}">{{ __('Resignation') }}</a>
-                            </li> -->
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('travel.index') }}">{{ __('Trip') }}</a>
-                        </li>
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('promotion.index') }}">{{ __('Promotion') }}</a>
-                        </li>
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('complaint.index') }}">{{ __('Complaints') }}</a>
-                        </li>
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('warning.index') }}">{{ __('Warning') }}</a>
-                        </li>
-                        <!-- <li class="dash-item">
-                            <a class="dash-link"
-                                href="{{ route('termination.index') }}">{{ __('Termination') }}</a>
-                            </li> -->
-                        <li class="dash-item">
-                            <a class="dash-link" href="{{ route('announcement.index') }}">{{ __('Announcement') }}</a>
-                        </li>
-                        <!-- <li class="dash-item {{ Request::segment(1) == 'holiday' ? ' active' : '' }}">
-                            <a class="dash-link" href="{{ route('holiday.index') }}">{{ __('Holidays') }}</a>
+                    <li class="dash-item {{ Request::segment(1) == 'award' ? 'dash-trigger active' : '' }} ">
+                        <a href="{{ route('award.index') }}" class="dash-link"><span class="dash-micon">
+                        <img src="{{asset( '/assets/images/icon-awards.png' )}}" alt="{{ env('APP_NAME') }}" class="logo" style="height:1.2rem !important; width:1.2rem !important;" />
+                        </span><span class="dash-mtext">{{ __('Employee of the Month Awards') }}</span></a>
+                    </li>
+                    <!-- <li class="dash-item">
+                        <a class="dash-link"
+                            href="{{ route('resignation.index') }}">{{ __('Resignation') }}</a>
                         </li> -->
-                    </ul>
-                </li>
+                    <li class="dash-item {{ Request::segment(1) == 'travel' ? 'dash-trigger active' : '' }} ">
+                        <a href="{{ route('travel.index') }}" class="dash-link"><span class="dash-micon">
+                        <img src="{{asset( '/assets/images/icon-trips.png' )}}" alt="{{ env('APP_NAME') }}" class="logo" style="height:1.2rem !important; width:1.2rem !important;" />
+                        </span><span class="dash-mtext">{{ __('Work Outings') }}</span></a>
+                    </li>
+                    <li class="dash-item {{ Request::segment(1) == 'complaint' ? 'dash-trigger active' : '' }} ">
+                        <a href="{{ route('complaint.index') }}" class="dash-link"><span class="dash-micon">
+                        <img src="{{asset( '/assets/images/icon-complaints.png' )}}" alt="{{ env('APP_NAME') }}" class="logo" style="height:1.2rem !important; width:1.2rem !important;" />
+                        </span><span class="dash-mtext">{{ __('Complaints') }}</span></a>
+                    </li>
+                    <!-- <li class="dash-item">
+                        <a class="dash-link"
+                            href="{{ route('termination.index') }}">{{ __('Termination') }}</a>
+                        </li> -->
+                    <li class="dash-item {{ Request::segment(1) == 'announcement' ? 'dash-trigger active' : '' }} ">
+                        <a href="{{ route('announcement.index') }}" class="dash-link"><span class="dash-micon">
+                        <img src="{{asset( '/assets/images/icon-announcement.png' )}}" alt="{{ env('APP_NAME') }}" class="logo" style="height:1.2rem !important; width:1.2rem !important;" />
+                        </span><span class="dash-mtext">{{ __('Announcement') }}</span></a>
+                    </li>
                 @endif
                 <!-- HR-->
 

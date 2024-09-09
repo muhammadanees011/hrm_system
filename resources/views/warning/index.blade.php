@@ -28,11 +28,11 @@
                     <table class="table" id="pc-dt-simple">
                         <thead>
                             <tr>
-                                <th>{{ __('Warning By') }}</th>
+                                <!-- <th>{{ __('Warning By') }}</th> -->
                                 <th>{{ __('Warning To') }}</th>
                                 <th>{{ __('Subject') }}</th>
                                 <th>{{ __('Warning Date') }}</th>
-                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Notes') }}</th>
                                 @if (Gate::check('Edit Warning') || Gate::check('Delete Warning'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -42,14 +42,25 @@
 
                             @foreach ($warnings as $warning)
                                 <tr>
-                                    <td>{{ !empty($warning->WarningBy($warning->warning_by)) ? $warning->WarningBy($warning->warning_by)->name : '' }}
-                                    </td>
+                                    <!-- <td>{{ !empty($warning->WarningBy($warning->warning_by)) ? $warning->WarningBy($warning->warning_by)->name : '' }}
+                                    </td> -->
                                     <td>{{ !empty($warning->warningTo($warning->warning_to)) ? $warning->warningTo($warning->warning_to)->name : '' }}
                                     </td>
                                     <td>{{ $warning->subject }}</td>
                                     <td>{{ \Auth::user()->dateFormat($warning->warning_date) }}</td>
                                     <td>{{ $warning->description }}</td>
                                     <td class="Action">
+                                        @can('Edit Warning')
+                                        <div class="action-btn bg-warning ms-2">
+                                            <a href="#"
+                                             data-url="{{ URL::to('create_notes/warning/' . $warning->id) }}"
+                                             class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip"
+                                             data-ajax-popup="true" data-size="md"
+                                              title="" data-bs-original-title="{{ __('Notes') }}">
+                                                <i class="ti ti-file text-white"></i>
+                                            </a>
+                                        </div>
+                                        @endcan
                                         @if (Gate::check('Edit Warning') || Gate::check('Delete Warning'))
                                             <span>
                                                 @can('Edit Warning')
@@ -74,6 +85,11 @@
                                                         </form>
                                                     </div>
                                                 @endcan
+                                                @if($warning->file)
+                                                <a href="{{route('download.warning_file',  $warning->id)}}" class=" btn btn-sm btn-primary d-inline-flex align-items-center">
+                                                    <i class="ti ti-download"></i>
+                                                </a>
+                                                @endif
                                             </span>
                                         @endif
                                     </td>

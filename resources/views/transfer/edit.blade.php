@@ -33,8 +33,8 @@
             {{ Form::text('transfer_date', null, ['class' => 'form-control d_week', 'autocomplete' => 'off' , 'required' => 'required']) }}
         </div>
         <div class="form-group col-lg-12">
-            {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
-            {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Description'),'rows'=>'3' , 'required' => 'required']) }}
+            {{ Form::label('description', __('Note'), ['class' => 'col-form-label']) }}
+            {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Note'),'rows'=>'3' , 'required' => 'required']) }}
         </div>
     </div>
 </div>

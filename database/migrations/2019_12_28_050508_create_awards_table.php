@@ -20,6 +20,7 @@ class CreateAwardsTable extends Migration
             $table->date('date');
             $table->string('gift');
             $table->string('description');
+            $table->string('file')->nullable();
             $table->integer('created_by');
             $table->timestamps();
         });

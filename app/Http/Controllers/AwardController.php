@@ -10,6 +10,7 @@ use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\File;
 
 class AwardController extends Controller
 {
@@ -221,6 +222,56 @@ class AwardController extends Controller
             }
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
+        }
+    }
+
+    
+    public function createNotes($id)
+    {
+        $award=Award::find($id);
+        return view('award.create_notes',compact('award'));   
+    }
+
+    public function storeNotes(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'file' => 'required|file|mimes:pdf|max:10240',
+                'award_id' => 'required',
+                'description' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            $path = public_path() . '/documents_storage';
+            $file->move($path,$fileName);
+        }
+        $award=Award::find($request->award_id);
+        $award->description=$request->description;
+        $award->file = $fileName ?? '';
+        $award->save();
+
+        return redirect()->back()->with('success', __('Notes successfully Updated.'));
+    }
+
+    public function award_file($id)
+    {
+        $document = Award::find($id);
+        $filename=$document->file;
+        $filePath = public_path('documents_storage/' . $filename);
+        if (File::exists($filePath)) {
+            $filePath = public_path('documents_storage/' . $filename);
+            return response()->download($filePath, $filename);
+        } else {
+            return redirect()->back()->with('error', __('File not found.'));
         }
     }
 }
