@@ -92,7 +92,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- Addin comment -->
                                             @empty
                                             <div class="text-center">
                                                 <h6>{{ __('There is no event in this month') }}</h6>
