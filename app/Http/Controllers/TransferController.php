@@ -198,4 +198,31 @@ class TransferController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+
+    public function createNotes($id)
+    {
+        $transfer=Transfer::find($id);
+        return view('transfer.create_notes',compact('transfer'));   
+    }
+
+    public function storeNotes(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'transfer_id' => 'required',
+                'description' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+        $transfer=Transfer::find($request->transfer_id);
+        $transfer->description=$request->description;
+        $transfer->save();
+
+        return redirect()->back()->with('success', __('Notes successfully Updated.'));
+    }
 }

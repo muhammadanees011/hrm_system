@@ -34,7 +34,7 @@
                                 <th>{{ __('Award Type') }}</th>
                                 <th>{{ __('Date') }}</th>
                                 <th>{{ __('Gift') }}</th>
-                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Notes') }}</th>
                                 @if (Gate::check('Edit Award') || Gate::check('Delete Award'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -52,6 +52,17 @@
                                     <td>{{ $award->gift }}</td>
                                     <td>{{ $award->description }}</td>
                                     <td class="Action">
+                                         @can('Edit Award')
+                                        <div class="action-btn bg-warning ms-2">
+                                            <a href="#"
+                                             data-url="{{ URL::to('create_notes/award/' . $award->id) }}"
+                                             class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip"
+                                             data-ajax-popup="true" data-size="md"
+                                              title="" data-bs-original-title="{{ __('Notes') }}">
+                                                <i class="ti ti-file text-white"></i>
+                                            </a>
+                                        </div>
+                                        @endcan
                                         @if (Gate::check('Edit Award') || Gate::check('Delete Award'))
                                             <span>
                                                 @can('Edit Award')
@@ -76,6 +87,11 @@
                                                         </form>
                                                     </div>
                                                 @endcan
+                                                @if($award->file)
+                                                <a href="{{route('download.award_file',  $award->id)}}" class=" btn btn-sm btn-primary d-inline-flex align-items-center">
+                                                    <i class="ti ti-download"></i>
+                                                </a>
+                                                @endif
                                             </span>
                                         @endif
                                     </td>

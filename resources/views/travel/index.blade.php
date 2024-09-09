@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page-title')
-    {{ __('Manage Trip') }}
+    {{ __('Manage Work Outings') }}
 @endsection
 
 @section('breadcrumb')
@@ -13,7 +13,7 @@
    
 
     @can('Create Travel')
-        <a href="#" data-url="{{ route('travel.create') }}" data-ajax-popup="true" data-title="{{ __('Create New Trip') }}" data-size="lg"
+        <a href="#" data-url="{{ route('travel.create') }}" data-ajax-popup="true" data-title="{{ __('Create New Work Outing') }}" data-size="lg"
             data-size="lg" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
             data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
@@ -56,6 +56,15 @@
                                     <td>{{ $travel->place_of_visit }}</td>
                                     <td>{{ $travel->description }}</td>
                                     <td class="Action">
+                                        <div class="action-btn bg-warning ms-2">
+                                            <a href="#"
+                                             data-url="{{ URL::to('create_notes/travel/' . $travel->id) }}"
+                                             class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip"
+                                             data-ajax-popup="true" data-size="md"
+                                              title="" data-bs-original-title="{{ __('Notes') }}">
+                                                <i class="ti ti-file text-white"></i>
+                                            </a>
+                                        </div>
                                         @if (Gate::check('Edit Travel') || Gate::check('Delete Travel'))
                                             <span>
                                                 @can('Edit Travel')
@@ -63,7 +72,7 @@
                                                         <a href="#" class="mx-3 btn btn-sm  align-items-center" data-size="lg"
                                                             data-url="{{ URL::to('travel/' . $travel->id . '/edit') }}"
                                                             data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip"
-                                                            title="" data-title="{{ __('Edit Trip') }}"
+                                                            title="" data-title="{{ __('Edit Work Outing') }}"
                                                             data-bs-original-title="{{ __('Edit') }}">
                                                             <i class="ti ti-pencil text-white"></i>
                                                         </a>

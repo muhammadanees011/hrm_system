@@ -33,8 +33,8 @@
             {{ Form::text('gift', null, ['class' => 'form-control', 'placeholder' => __('Enter Gift')]) }}
         </div>
         <div class="form-group col-md-12">
-            {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
-            {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Description'),'rows'=>'3']) }}
+            {{ Form::label('description', __('Note'), ['class' => 'col-form-label']) }}
+            {{ Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('Enter Note'),'rows'=>'3']) }}
         </div>
     </div>
 </div>

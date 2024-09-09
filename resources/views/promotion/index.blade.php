@@ -34,7 +34,7 @@
                                 <th>{{ __('Designation') }}</th>
                                 <th>{{ __('Promotion Title') }}</th>
                                 <th>{{ __('Promotion Date') }}</th>
-                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Note') }}</th>
                                 @if (Gate::check('Edit Promotion') || Gate::check('Delete Promotion'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -55,6 +55,20 @@
                                     <td>{{ \Auth::user()->dateFormat($promotion->promotion_date) }}</td>
                                     <td>{{ $promotion->description }}</td>
                                     <td class="Action">
+                                    @if($promotion->file)
+                                    <a href="{{route('download.promotion_file',  $promotion->id)}}" class=" btn btn-sm btn-primary d-inline-flex align-items-center">
+                                        <i class="ti ti-download"></i>
+                                    </a>
+                                    @endif
+                                        <div class="action-btn bg-warning ms-2">
+                                            <a href="#"
+                                             data-url="{{ URL::to('create_notes/promotion/' . $promotion->id) }}"
+                                             class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip"
+                                             data-ajax-popup="true" data-size="md"
+                                              title="" data-bs-original-title="{{ __('Notes') }}">
+                                                <i class="ti ti-file text-white"></i>
+                                            </a>
+                                        </div>
                                         @if (Gate::check('Edit Promotion') || Gate::check('Delete Promotion'))
                                             <span>
                                                 @can('Edit Promotion')

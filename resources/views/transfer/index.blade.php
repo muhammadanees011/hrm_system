@@ -35,7 +35,7 @@
                                 <th>{{ __('Branch') }}</th>
                                 <th>{{ __('Department') }}</th>
                                 <th>{{ __('Transfer Date') }}</th>
-                                <th>{{ __('Description') }}</th>
+                                <th>{{ __('Note') }}</th>
                                 @if (Gate::check('Edit Transfer') || Gate::check('Delete Transfer'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -53,6 +53,17 @@
                                     <td>{{ \Auth::user()->dateFormat($transfer->transfer_date) }}</td>
                                     <td>{{ $transfer->description }}</td>
                                     <td class="Action">
+                                        @can('Edit Transfer')
+                                        <div class="action-btn bg-warning ms-2">
+                                            <a href="#"
+                                             data-url="{{ URL::to('create_notes/transfer/' . $transfer->id) }}"
+                                             class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip"
+                                             data-ajax-popup="true" data-size="md"
+                                              title="" data-bs-original-title="{{ __('Notes') }}">
+                                                <i class="ti ti-file text-white"></i>
+                                            </a>
+                                        </div>
+                                        @endcan
                                         @if (Gate::check('Edit Transfer') || Gate::check('Delete Transfer'))
                                             <span>
                                                 @can('Edit Transfer')

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page-title')
-    {{ __('Manage Complaint') }}
+    {{ __('Manage Complaints') }}
 @endsection
 
 @section('breadcrumb')
@@ -29,10 +29,10 @@
                         <thead>
                             <tr>
                                 <th>{{ __('Complaint From') }}</th>
-                                <th>{{ __('Complaint Against') }}</th>
+                                <!-- <th>{{ __('Complaint Against') }}</th> -->
                                 <th>{{ __('Title') }}</th>
                                 <th>{{ __('Complaint Date') }}</th>
-                                <th>{{ __('Description') }}</th>
+                                <!-- <th>{{ __('Description') }}</th> -->
                                 @if (Gate::check('Edit Complaint') || Gate::check('Delete Complaint'))
                                     <th width="200px">{{ __('Action') }}</th>
                                 @endif
@@ -44,12 +44,21 @@
                                 <tr>
                                     <td>{{ !empty($complaint->complaintFrom($complaint->complaint_from)) ? $complaint->complaintFrom($complaint->complaint_from)->name : '' }}
                                     </td>
-                                    <td>{{ !empty($complaint->complaintAgainst($complaint->complaint_against)) ? $complaint->complaintAgainst($complaint->complaint_against)->name : '' }}
-                                    </td>
+                                    <!-- <td>{{ !empty($complaint->complaintAgainst($complaint->complaint_against)) ? $complaint->complaintAgainst($complaint->complaint_against)->name : '' }}
+                                    </td> -->
                                     <td>{{ $complaint->title }}</td>
                                     <td>{{ \Auth::user()->dateFormat($complaint->complaint_date) }}</td>
-                                    <td>{{ $complaint->description }}</td>
+                                    <!-- <td>{{ $complaint->description }}</td> -->
                                     <td class="Action">
+                                        <div class="action-btn bg-warning ms-2">
+                                            <a href="#"
+                                             data-url="{{ URL::to('create_notes/complaint/' . $complaint->id) }}"
+                                             class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip"
+                                             data-ajax-popup="true" data-size="md"
+                                              title="" data-bs-original-title="{{ __('Description') }}">
+                                                <i class="ti ti-file text-white"></i>
+                                            </a>
+                                        </div>
                                         @if (Gate::check('Edit Complaint') || Gate::check('Delete Complaint'))
                                             <span>
                                                 @can('Edit Complaint')

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page-title')
-    {{ __('Manage Meeting') }}
+    {{ __('Manage Meetings') }}
 @endsection
 
 @section('breadcrumb')

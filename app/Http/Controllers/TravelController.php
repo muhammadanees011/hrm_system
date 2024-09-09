@@ -214,4 +214,38 @@ class TravelController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+
+    
+    public function createNotes($id)
+    {
+        $travel=Travel::find($id);
+        return view('travel.create_notes',compact('travel'));   
+    }
+
+    public function storeNotes(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'travel_id' => 'required',
+                'event_details' => 'required',
+                'venue' => 'required',
+                'dress_code' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+
+
+        $travel=Travel::find($request->travel_id);
+        $travel->event_details=$request->event_details;
+        $travel->venue=$request->venue;
+        $travel->dress_code=$request->dress_code;
+        $travel->save();
+
+        return redirect()->back()->with('success', __('Notes successfully Updated.'));
+    }
 }

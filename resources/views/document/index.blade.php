@@ -12,7 +12,7 @@
 @section('action-button')
    @can('Create Document Type')
         <a href="#" data-url="{{ route('document.create') }}" data-ajax-popup="true"
-            data-title="{{ __('Create New  Document Type') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
+            data-title="{{ __('Create New Document Type') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary"
             data-bs-original-title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>

@@ -22,10 +22,10 @@
                 {{ Form::select('complaint_from', $employees, null, ['class' => 'form-control  select2', 'required' => 'required']) }}
             </div>
         @endif
-        <div class="form-group col-md-6 col-lg-6">
+        <!-- <div class="form-group col-md-6 col-lg-6">
             {{ Form::label('complaint_against', __('Complaint Against'), ['class' => 'col-form-label']) }}
             {{ Form::select('complaint_against', $employees, null, ['class' => 'form-control select2' ,'required' => 'required']) }}
-        </div>
+        </div> -->
         <div class="form-group col-md-6 col-lg-6">
             {{ Form::label('title', __('Title'), ['class' => 'col-form-label']) }}
             {{ Form::text('title', null, ['class' => 'form-control','placeholder' =>'Enter Complaint Title' ,'required' => 'required']) }}

@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class LeaveEncashmentRequest extends Model
 {
     use HasFactory;
+
+    public function employee()
+    {
+        return $this->hasOne('App\Models\Employee', 'id', 'employee_id')->first();
+    }
 }

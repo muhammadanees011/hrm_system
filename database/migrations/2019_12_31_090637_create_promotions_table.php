@@ -20,6 +20,7 @@ class CreatePromotionsTable extends Migration
             $table->string('promotion_title');
             $table->date('promotion_date');
             $table->string('description');
+            $table->string('file')->nullable();
             $table->string('created_by');
             $table->timestamps();
         });

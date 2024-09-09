@@ -9,6 +9,7 @@ use App\Models\Promotion;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 
 class PromotionController extends Controller
@@ -193,6 +194,55 @@ class PromotionController extends Controller
         else
         {
             return redirect()->back()->with('error', __('Permission denied.'));
+        }
+    }
+
+    public function createNotes($id)
+    {
+        $promotion=Promotion::find($id);
+        return view('promotion.create_notes',compact('promotion'));   
+    }
+
+    public function storeNotes(Request $request)
+    {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'file' => 'required|file|mimes:pdf|max:10240',
+                'promotion_id' => 'required',
+                'description' => 'required',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            $path = public_path() . '/documents_storage';
+            $file->move($path,$fileName);
+        }
+        $promotion=Promotion::find($request->promotion_id);
+        $promotion->description=$request->description;
+        $promotion->file = $fileName ?? '';
+        $promotion->save();
+
+        return redirect()->back()->with('success', __('Notes successfully Updated.'));
+    }
+
+    public function promotion_file($id)
+    {
+        $document = Promotion::find($id);
+        $filename=$document->file;
+        $filePath = public_path('documents_storage/' . $filename);
+        if (File::exists($filePath)) {
+            $filePath = public_path('documents_storage/' . $filename);
+            return response()->download($filePath, $filename);
+        } else {
+            return redirect()->back()->with('error', __('File not found.'));
         }
     }
 }

@@ -285,7 +285,7 @@ class EmployeeController extends Controller
                     'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:9',
                     'address' => 'required',
                     'document.*' => 'required',
-                    'employee_type' => 'required',
+                    'employee_type' => 'nullable',
                     'probation_days' => 'nullable|required_if:employee_type,Probation|numeric|min:1',
                 ]
             );
@@ -351,6 +351,15 @@ class EmployeeController extends Controller
             $employee = Employee::findOrFail($id);
             $input    = $request->all();
             $employee->fill($input)->save();
+
+            // $notification=new Notification();
+            // $notification->sender_id=\Auth::user()->id;
+            // $notification->receiver_id=$eventrequest->employees->user_id;
+            // $notification->title='Your event perticipation request changed to '.$request->status;
+            // $notification->body =\Auth::user()->name.' has changed Your event perticipation request to '.$request->status.'';
+            // $notification->read=false;
+            // $notification->save();
+
             if ($request->salary) {
                 return redirect()->route('setsalary.index')->with('success', 'Employee successfully updated.');
             }
@@ -610,6 +619,55 @@ class EmployeeController extends Controller
             } catch (\RuntimeException $e) {
                 return redirect()->back()->with('error', __('Employee not avaliable'));
             }
+
+            $employees =  Employee::find($empId);
+            $employee_count = $employees->count();
+            $dates = [];
+            $on_time_attendances = [];
+            $late_time_attendances = [];
+            $leave_count = [];
+            $absentCount = [];
+    
+            $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
+            $date = Carbon::now()->toDateString();
+            $day = Carbon::now()->format('d');
+            $daysInMonth = Carbon::now()->daysInMonth;
+    
+            $attendances = AttendanceEmployee::whereBetween('date', [$startOfMonth, $date])->get();
+            $on_time_attendances = AttendanceEmployee::whereBetween('date', [$startOfMonth, $date])->where('late', '00:00:00')->get();
+            $late_time_attendances = AttendanceEmployee::whereBetween('date', [$startOfMonth, $date])->where('late', '!=', '00:00:00')->get();
+            $leaves = Leave::where('start_date', '>=',$startOfMonth)->where('end_date','<=', $date)->where('status','Approved')->get();
+            $leave_count = $leaves->count();
+            $onTimeattendancesCount = $on_time_attendances->count();
+            $lateTimeattendancesCount = $late_time_attendances->count();
+            $absentCount = $day - $attendances->count();
+            $attendancesCount = $attendances->count();
+            $labels[] = $date;
+    
+            $attendanceData = [
+                [
+                    'name' => 'On Time',
+                    'data' => $onTimeattendancesCount
+                ],
+                [
+                    'name' => 'Late',
+                    'data' => $lateTimeattendancesCount
+                ],
+                [
+                    'name' => 'Absent',
+                    'data' => $absentCount
+                ],
+                [
+                    'name' => 'Leaves',
+                    'data' => $leave_count
+                ],
+    
+            ];
+    
+            $attendanceOverview=[$attendancesCount,$absentCount,$leave_count,$lateTimeattendancesCount];
+
+            $attendanceEmployee = AttendanceEmployee::where('employee_id', $employees->employee_id)->get();
+
             $documents    = Document::where('created_by', \Auth::user()->creatorId())->get();
             $branches     = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $departments  = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
@@ -620,7 +678,7 @@ class EmployeeController extends Controller
             }
             $employeesId  = \Auth::user()->employeeIdFormat($employee->employee_id);
 
-            return view('employee.show', compact('employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
+            return view('employee.show', compact('attendanceOverview','attendanceEmployee','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }

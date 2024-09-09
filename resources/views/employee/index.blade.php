@@ -63,6 +63,8 @@
             <a href="{{ route('trainingevent.index') }}">{{ __('Manage Training Events') }}</a>
             <a href="{{ route('trainingeventrequest.index') }}">{{ __('Training Event Requests') }}</a>
             <a href="{{ route('employee.probation.index') }}">{{ __('Probation') }}</a>
+            <a href="{{ route('promotion.index') }}">{{ __('Employee Promotion') }}</a>
+            <a href="{{ route('warning.index') }}">{{ __('Employee Warnings') }}</a>
         </div>
         </div>
     </div>

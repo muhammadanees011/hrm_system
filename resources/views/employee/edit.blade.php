@@ -184,9 +184,8 @@
             </div>
             @endif
         </div>
-        @if (\Auth::user()->type != 'employee')
         <div class="row">
-            <div class="col-md-6 ">
+            <!-- <div class="col-md-6 ">
                 <div class="card em-card">
                     {{-- <div class="card " style="height: 506px"> --}}
                     <div class="card-header">
@@ -243,7 +242,7 @@
                         @endforeach
                     </div>
                 </div>
-            </div>
+            </div> -->
             {{-- </div> --}}
             <div class="col-md-6">
                 <div class="card ">
@@ -284,84 +283,7 @@
                 </div>
             </div>
         </div>
-        @else
-        <div class="row">
-            <div class="col-md-6 ">
-                <div class="employee-detail-wrap">
-                    <div class="card ">
-                        <div class="card-header">
-                            <h5>{{ __('Document Detail') }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                @php
-                                $employeedoc = $employee->documents()->pluck('document_value', __('document_id'));
-                                @endphp
-                                @foreach ($documents as $key => $document)
-                                <div class="col-md-12">
-                                    <div class="info">
-                                        <strong>{{ $document->name }}</strong>
-                                        <span><a href="{{ !empty($employeedoc[$document->id]) ? asset(Storage::url('uploads/document')) . '/' . $employeedoc[$document->id] : '' }}" target="_blank">{{ !empty($employeedoc[$document->id]) ? $employeedoc[$document->id] : '' }}</a></span>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 ">
-                <div class="employee-detail-wrap">
-                    <div class="card ">
-                        <div class="card-header">
-                            <h5>{{ __('Bank Account Detail') }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="info">
-                                        <strong>{{ __('Account Holder Name') }}</strong>
-                                        <span>{{ $employee->account_holder_name }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info font-style">
-                                        <strong>{{ __('Account Number') }}</strong>
-                                        <span>{{ $employee->account_number }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info font-style">
-                                        <strong>{{ __('Bank Name') }}</strong>
-                                        <span>{{ $employee->bank_name }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info">
-                                        <strong>{{ __('Bank Identifier Code') }}</strong>
-                                        <span>{{ $employee->bank_identifier_code }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info">
-                                        <strong>{{ __('Branch Location') }}</strong>
-                                        <span>{{ $employee->branch_location }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="info">
-                                        <strong>{{ __('Tax Payer Id') }}</strong>
-                                        <span>{{ $employee->tax_payer_id }}</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
+   
 
         @if (\Auth::user()->type != 'employee')
         <div class="float-end">

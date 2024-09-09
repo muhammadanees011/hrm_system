@@ -452,7 +452,7 @@
                                 <tbody>
                                     @foreach($leaveencashmentrequests as $leaveencashmentrequest)
                                         <tr>
-                                            <td>{{ !empty($loanrequest->employee()) ? $loanrequest->employee()->name : '' }}</td>
+                                            <td>{{ !empty($leaveencashmentrequest->employee()) ? $leaveencashmentrequest->employee()->name : '' }}</td>
                                             <td>{{ $leaveencashmentrequest->title}}</td>
                                             <td>{{ $leaveencashmentrequest->description}}</td>
                                             <td>{{ $leaveencashmentrequest->days_requested}}</td>

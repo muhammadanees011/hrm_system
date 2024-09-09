@@ -395,12 +395,11 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::resource('award', AwardController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
+    Route::resource('award', AwardController::class)->middleware(['auth','XSS']);
+    Route::get('create_notes/award/{id?}', [AwardController::class,'createNotes']);
+    Route::post('store_notes/award', [AwardController::class,'storeNotes']);
+    Route::get('download/award/{id?}', [AwardController::class,'award_file'])->name('download.award_file');
+
     Route::get('termination/{id}/description', [TerminationController::class, 'description'])->name('termination.description');
 
     Route::resource('termination', TerminationController::class)->middleware(
@@ -807,36 +806,26 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
-    Route::resource('travel', TravelController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
-    Route::resource('promotion', PromotionController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
-    Route::resource('transfer', TransferController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
-    Route::resource('complaint', ComplaintController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
-    Route::resource('warning', WarningController::class)->middleware(
-        [
-            'auth',
-            'XSS',
-        ]
-    );
+    Route::resource('travel', TravelController::class)->middleware(['auth', 'XSS']);
+    Route::get('create_notes/travel/{id?}', [TravelController::class,'createNotes']);
+    Route::post('store_notes/travel', [TravelController::class,'storeNotes']);
+
+    Route::resource('promotion', PromotionController::class)->middleware([ 'auth','XSS']);
+    Route::get('create_notes/promotion/{id?}', [PromotionController::class,'createNotes']);
+    Route::post('store_notes/promotion', [PromotionController::class,'storeNotes']);
+    Route::get('download/promotion/{id?}', [PromotionController::class,'promotion_file'])->name('download.promotion_file');
+    Route::resource('transfer', TransferController::class)->middleware(['auth','XSS']);
+    Route::get('create_notes/transfer/{id?}', [TransferController::class,'createNotes']);
+    Route::post('store_notes/transfer', [TransferController::class,'storeNotes']);
+
+    Route::resource('complaint', ComplaintController::class)->middleware(['auth','XSS']);
+    Route::get('create_notes/complaint/{id?}', [ComplaintController::class,'createNotes']);
+    Route::post('store_notes/complaint', [ComplaintController::class,'storeNotes']);
+
+    Route::resource('warning', WarningController::class)->middleware(['auth','XSS']);
+    Route::get('create_notes/warning/{id?}', [WarningController::class,'createNotes']);
+    Route::post('store_notes/warning', [WarningController::class,'storeNotes']);
+    Route::get('download/warning/{id?}', [WarningController::class,'warning_file'])->name('download.warning_file');
 
     Route::get('profile', [UserController::class, 'profile'])->name('profile')->middleware(
         [

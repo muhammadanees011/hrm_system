@@ -20,6 +20,96 @@
 @endsection
 
 @section('content')
+
+<style>
+
+.employees-actions{
+    display:flex;
+    justify-content:end;
+}
+
+/* Dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown button */
+  .dropbtn {
+    background-color: orange;
+    color: white;
+    padding: 6px;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  /* Dropdown content */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 1px;
+    font-size: 12px;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black !important;
+    padding: 5px 12px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of links on hover */
+  .dropdown-content a:hover {
+    background-color: orange;
+    color:white !important;
+}
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {color: white;}
+
+</style>
+<div class="employees-actions">
+    <div class="employees-nav me-2 mb-2">
+        <div class="nav-titles">
+            <div class="dropdown">
+            <button class="dropbtn">Finance &#9660;</button>
+            <div class="dropdown-content">
+            @can('View Balance Account List')
+            <a class="dash-link" href="{{ route('accountbalance') }}">{{ __('Account Balance') }}</a>
+            @endcan
+            @can('Manage Payee')
+            <a class="dash-link" href="{{ route('payees.index') }}">{{ __('Payees') }}</a>
+            @endcan
+            @can('Manage Payer')
+            <a class="dash-link" href="{{ route('payer.index') }}">{{ __('Payers') }}</a>
+            @endcan
+            @can('Manage Deposit')
+            <a class="dash-link" href="{{ route('deposit.index') }}">{{ __('Deposit') }}</a>
+            @endcan
+            @can('Manage Expense')
+            <a class="dash-link" href="{{ route('expense.index') }}">{{ __('Expense') }}</a>
+            @endcan
+            @can('Manage Transfer Balance')
+            <a class="dash-link" href="{{ route('transferbalance.index') }}">{{ __('Transfer Balance') }}</a>
+            @endcan
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header card-body table-border-style">
