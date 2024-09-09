@@ -89,7 +89,7 @@ class LeaveController extends Controller
             }
 
             $setting=HolidaySetting::where('name','book_same_day')->first();
-            if($setting->value=='no'){
+            if($setting && $setting->value=='no'){
                 $isClash = LocalLeave::where(['start_date' => $request->start_date])->count();
                 if($isClash > 0){
                     return redirect()->back()->with('error', __("Selected date is already ocuppied."));

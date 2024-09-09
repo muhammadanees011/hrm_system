@@ -19,6 +19,7 @@
                 <p class="upload_file"></p>
             </div>
         </div>
+        <!-- Addin comment -->
         <div class="col-md-12 mt-2 text-right">
             <input type="submit" value="{{ __('Upload') }}"
                 class="btn color_blue line_height_auto text-white border-none">
