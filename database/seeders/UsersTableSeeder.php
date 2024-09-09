@@ -2807,7 +2807,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'company',
                 'email' => 'company@example.com',
-                'password' => Hash::make('1234'),
+                'password' => Hash::make('password'),
                 'type' => 'company',
                 'lang' => 'en',
                 'avatar' => '',
@@ -3149,7 +3149,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'hr',
                 'email' => 'hr@example.com',
-                'password' => Hash::make('1234'),
+                'password' => Hash::make('password'),
                 'type' => 'hr',
                 'lang' => 'en',
                 'avatar' => '',
