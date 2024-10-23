@@ -39,7 +39,7 @@
     </div>
 </div>
 
-<div class="employees-nav me-2">
+<!-- <div class="employees-nav me-2">
     <div class="nav-titles">
         <div class="dropdown">
         <button class="dropbtn">Payrolls &#9660;</button>
@@ -49,7 +49,7 @@
         </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <div class="employees-nav me-2">
     <div class="nav-titles">
