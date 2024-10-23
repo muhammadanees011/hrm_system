@@ -33,6 +33,7 @@ use App\Models\ExperienceCertificate;
 use App\Models\JoiningLetter;
 use App\Models\LoginDetail;
 use App\Models\PaySlip;
+use Spatie\Permission\Models\Role;
 
 //use Faker\Provider\File;
 
@@ -84,10 +85,11 @@ class EmployeeController extends Controller
             $designations     = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $employees        = User::where('created_by', \Auth::user()->creatorId())->get();
             $managers = User::where('type', 'manager')->get()->pluck('name', 'id');
+            $roles = Role::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
 
             $employeesId      = \Auth::user()->employeeIdFormat($this->employeeNumber());
             
-            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings'));
+            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings','roles'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -157,7 +159,11 @@ class EmployeeController extends Controller
                 ]
             );
             $user->save();
-            $user->assignRole('Employee');
+            if ($request['roles']) {
+                $user->assignRole($request['roles']);
+            }else{
+                $user->assignRole('Employee');
+            }
 
 
             if (!empty($request->document) && !is_null($request->document)) {

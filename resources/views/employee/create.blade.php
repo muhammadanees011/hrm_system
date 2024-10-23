@@ -81,6 +81,19 @@
                                 'placeholder' => 'Enter employee Password',
                                 ]) !!}
                             </div>
+
+                            <div class="form-group">
+                                {{ Form::label('roles', __('User Role'), ['class' => 'form-label']) }}
+                                <div class="form-icon-user">
+                                    {{-- {!! Form::select('role', $roles, null, ['class' => 'form-control select2 ', 'required' => 'required']) !!} --}}
+                                    {{ Form::select('roles[]', $roles, null, ['class' => 'form-control select2 user-role', 'id' => 'choices-multiple', 'multiple' => '', 'required' => 'required']) }}
+                                </div>
+                                @error('role')
+                                    <span class="invalid-role" role="alert">
+                                        <strong class="text-danger">{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
                         </div>
                         <div class="form-group">
                             {!! Form::label('address', __('Address'), ['class' => 'form-label']) !!}<span class="text-danger pl-1">*</span>
