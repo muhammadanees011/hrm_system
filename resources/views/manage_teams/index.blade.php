@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page-title')
-{{ __('Manage Employee') }}
+{{ __('Manage Teams') }}
 @endsection
 
 @section('breadcrumb')

@@ -187,7 +187,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
 
                 <!-- payroll-->
                 @if (Gate::check('Manage Set Salary') || Gate::check('Manage Pay Slip'))
-                <!-- <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'setsalary' ? 'dash-trigger active' : '' }}">
+                <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'setsalary' ? 'dash-trigger active' : '' }}">
                     <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-receipt"></i></span><span class="dash-mtext">{{ __('Payroll') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
                     <ul class="dash-submenu ">
                         <li class="dash-item {{ Request::segment(1) == 'setsalary' ? 'active' : '-' }}">
@@ -204,7 +204,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                             <a class="dash-link" href="{{ route('payroll.setup') }}">{{ __('Payroll Setup') }}</a>
                         </li>   
                     </ul>
-                </li> -->
+                </li>
                 @endif
                 <!-- payroll-->
 
@@ -769,6 +769,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
 
 <!--constant-->
                 @if (Gate::check('Manage Department') ||
+                Gate::check('Manage Teams') ||
                 Gate::check('Manage Designation') ||
                 Gate::check('Manage Document Type') ||
                 Gate::check('Manage Branch') ||
@@ -785,7 +786,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 Gate::check('Manage Training Type') ||
                 Gate::check('Manage Job Category') ||
                 Gate::check('Manage Job Stage'))
-                <li class="dash-item dash-hasmenu {{ Request::route()->getName() == 'branch.index' ||Request::route()->getName() == 'department.index' ||Request::route()->getName() == 'designation.index' ||Request::route()->getName() == 'leavetype.index' ||Request::route()->getName() == 'document.index' ||Request::route()->getName() == 'paysliptype.index' ||Request::route()->getName() == 'allowanceoption.index' ||Request::route()->getName() == 'loanoption.index' ||Request::route()->getName() == 'deductionoption.index' ||Request::route()->getName() == 'trainingtype.index' ||Request::route()->getName() == 'awardtype.index' ||Request::route()->getName() == 'terminationtype.index' ||Request::route()->getName() == 'job-category.index' ||Request::route()->getName() == 'job-stage.index' ||Request::route()->getName() == 'performanceType.index' ||Request::route()->getName() == 'competencies.index' ||Request::route()->getName() == 'expensetype.index' ||Request::route()->getName() == 'incometype.index' ||Request::route()->getName() == 'paymenttype.index' ||Request::route()->getName() == 'contract_type.index'? ' active': '' }}">
+                <li class="dash-item dash-hasmenu {{ Request::route()->getName() == 'branch.index' ||Request::route()->getName() == 'department.index' ||Request::route()->getName() == 'teams.index' ||Request::route()->getName() == 'designation.index' ||Request::route()->getName() == 'leavetype.index' ||Request::route()->getName() == 'document.index' ||Request::route()->getName() == 'paysliptype.index' ||Request::route()->getName() == 'allowanceoption.index' ||Request::route()->getName() == 'loanoption.index' ||Request::route()->getName() == 'deductionoption.index' ||Request::route()->getName() == 'trainingtype.index' ||Request::route()->getName() == 'awardtype.index' ||Request::route()->getName() == 'terminationtype.index' ||Request::route()->getName() == 'job-category.index' ||Request::route()->getName() == 'job-stage.index' ||Request::route()->getName() == 'performanceType.index' ||Request::route()->getName() == 'competencies.index' ||Request::route()->getName() == 'expensetype.index' ||Request::route()->getName() == 'incometype.index' ||Request::route()->getName() == 'paymenttype.index' ||Request::route()->getName() == 'contract_type.index'? ' active': '' }}">
                     <a href="{{ route('branch.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-table"></i></span><span class="dash-mtext">{{ __('HRM System Setup') }}</span></a>
                 </li>
                 <!-- <ul class="dash-submenu">

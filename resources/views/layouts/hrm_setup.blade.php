@@ -15,6 +15,13 @@
             </a>
         @endcan
 
+        @can('Manage Teams')
+        @endcan
+            <a href="{{ route('teams.index') }}"
+                class="list-group-item list-group-item-action border-0 {{ request()->is('teams*') ? 'active' : '' }}">{{ __('Teams') }}
+                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+            </a>
+
         @can('Manage Designation')
             <a href="{{ route('designation.index') }}"
                 class="list-group-item list-group-item-action border-0 {{ request()->is('designation*') ? 'active' : '' }}">{{ __('Designation') }}
