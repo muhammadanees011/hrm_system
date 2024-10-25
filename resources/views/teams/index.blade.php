@@ -42,7 +42,7 @@
                         @foreach ($teams as $team)
                             <tr>
                                 <td>{{ !empty($team->id) ? $team->name : '' }}</td>
-                                <td>{{ $team->department->name }}</td>
+                                <td>{{ !empty($team->department_id) ? $team->departments->name : '' }}</td>
                                 <td class="Action">
                                     <span>
                                         @can('Edit Team')

@@ -1,5 +1,5 @@
 
-{{ Form::model($team, ['route' => ['team.update', $team->id], 'method' => 'PUT']) }}
+{{ Form::model($team, ['route' => ['teams.update', $team->id], 'method' => 'PUT']) }}
 <div class="modal-body">
 
     <div class="row">

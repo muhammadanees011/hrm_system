@@ -8,6 +8,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AppraisalController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AttendanceEmployeeController;
+use App\Http\Controllers\TeamsController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
 use App\Http\Controllers\BonusController;
@@ -342,6 +343,11 @@ Route::group(['middleware' => ['verified']], function () {
 
 
     Route::resource('employee', EmployeeController::class)->middleware(['auth','XSS',]);
+
+    Route::resource('teams', TeamsController::class)->middleware(['auth','XSS',]);
+    Route::get('/members', [TeamsController::class, 'getMembers']);
+
+
     Route::post('employee/attendance_overview', [EmployeeController::class, 'attendance_overview'])->name('employee.attendance_overview')->middleware(['auth','XSS',]);
     
 
