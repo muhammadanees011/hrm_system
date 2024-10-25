@@ -17,4 +17,9 @@ class Team extends Model
     {
         return $this->hasOne('App\Models\Department', 'id', 'department_id');
     }
+
+    public function employees()
+    {
+        return $this->hasMany('App\Models\Employee', 'team_id', 'id');
+    }
 }

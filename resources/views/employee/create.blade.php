@@ -137,6 +137,12 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
+                                {{ Form::label('team_id', __('Select Team*'), ['class' => 'form-label']) }}
+                                <div class="form-icon-user">
+                                    {{ Form::select('team_id', $teams, null, ['class' => 'form-control team_id', 'required' => 'required', 'placeholder' => 'Select Team', 'id' => 'team_id']) }}
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
                                 {!! Form::label('company_doj', __('Company Date Of Joining'), ['class' => 'form-label']) !!}
                                 {{ Form::date('company_doj', null, ['class' => 'form-control current_date', 'required' => 'required', 'autocomplete' => 'off', 'placeholder' => 'Select Company Date Of Joining']) }}
                             </div>

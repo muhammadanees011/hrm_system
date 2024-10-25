@@ -345,8 +345,7 @@ Route::group(['middleware' => ['verified']], function () {
     Route::resource('employee', EmployeeController::class)->middleware(['auth','XSS',]);
 
     Route::resource('teams', TeamsController::class)->middleware(['auth','XSS',]);
-    Route::get('/members', [TeamsController::class, 'getMembers']);
-
+    Route::get('/teams/{team}/members', [TeamsController::class, 'getMembers'])->name('teams.members');
 
     Route::post('employee/attendance_overview', [EmployeeController::class, 'attendance_overview'])->name('employee.attendance_overview')->middleware(['auth','XSS',]);
     

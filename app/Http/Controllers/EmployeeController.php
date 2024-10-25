@@ -34,6 +34,7 @@ use App\Models\JoiningLetter;
 use App\Models\LoginDetail;
 use App\Models\PaySlip;
 use Spatie\Permission\Models\Role;
+use App\Models\Team;
 
 //use Faker\Provider\File;
 
@@ -81,6 +82,8 @@ class EmployeeController extends Controller
             $documents        = Document::where('created_by', \Auth::user()->creatorId())->get();
             $branches         = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $branches->prepend('Select Branch', '');
+            $teams           = Team::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            $teams->prepend('Select Team', '');
             $departments      = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $designations     = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $employees        = User::where('created_by', \Auth::user()->creatorId())->get();
@@ -89,7 +92,7 @@ class EmployeeController extends Controller
 
             $employeesId      = \Auth::user()->employeeIdFormat($this->employeeNumber());
             
-            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings','roles'));
+            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings','roles','teams'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -111,6 +114,7 @@ class EmployeeController extends Controller
                     'password' => 'required',
                     'department_id' => 'required',
                     'designation_id' => 'required',
+                    'team_id' => 'required',
                     'document.*' => 'required',
                     'employee_type' => 'required',
                     'probation_days' => 'required_if:employee_type,Probation|numeric|min:1',
@@ -187,6 +191,7 @@ class EmployeeController extends Controller
                     'branch_id' => $request['branch_id'],
                     'department_id' => $request['department_id'],
                     'designation_id' => $request['designation_id'],
+                    'team_id' => $request['team_id'],
                     'company_doj' => $request['company_doj'],
                     'employee_type' => $request['employee_type'],
                     'documents' => $document_implode,

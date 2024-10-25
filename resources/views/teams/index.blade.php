@@ -12,12 +12,13 @@
 @section('action-button')
 
 @can('Create Team')
-@endcan
-
 <a href="#" data-url="{{ route('teams.create') }}" data-ajax-popup="true" data-title="{{ __('Create New Team') }}"
     data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
     <i class="ti ti-plus"></i>
 </a>
+
+@endcan
+
 
 @endsection
 
@@ -46,7 +47,6 @@
                                 <td class="Action">
                                     <span>
                                         @can('Edit Team')
-                                        @endcan
                                         <div class="action-btn bg-info ms-2">
                                             <a href="#" class="mx-3 btn btn-sm  align-items-center"
                                                 data-url="{{  route('teams.edit', $team->id) }}" data-ajax-popup="true"
@@ -57,8 +57,9 @@
                                             </a>
                                         </div>
 
-                                        @can('Delete Team')
                                         @endcan
+                                        
+                                        @can('Delete Team')
                                         <div class="action-btn bg-danger ms-2">
                                             {!! Form::open(['method' => 'DELETE', 'route' => ['teams.destroy', $team->id], 'id' => 'delete-form-' . $team->id]) !!}
                                             <a href="#" class="mx-3 btn btn-sm  align-items-center bs-pass-para"
@@ -67,15 +68,17 @@
                                             </form>
                                         </div>
 
-                                        @can('See Members')
                                         @endcan
+                                        
+                                        @can('Edit Team')
                                         <div class="action-btn bg-warning ms-2">
-                                            <a href="members"
-                                                class="mx-3 btn btn-sm align-items-center bs-pass-para"
-                                                data-bs-toggle="tooltip" title="See Members" aria-label="See Members">
-                                                <i class="ti ti-users text-white"></i>
-                                            </a>
+                                            <a href="{{ route('teams.members', $team->id) }}" class="btn btn-sm  align-items-center"
+                                                data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('View Members') }}">
+                                                <i class="ti ti-user text-white"></i>
+                                                
                                         </div>
+                                        @endcan
+                                       
 
                                     </span>
                                 </td>

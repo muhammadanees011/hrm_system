@@ -36,6 +36,7 @@ class Employee extends Model
         'account_type',
         'salary',
         'created_by',
+        'team_id',
     ];
 
     public function manager()
@@ -314,6 +315,11 @@ class Employee extends Model
     public function designation()
     {
         return $this->hasOne('App\Models\Designation', 'id', 'designation_id');
+    }
+
+    public function team()
+    {
+        return $this->hasOne('App\Models\Team', 'id', 'team_id');
     }
 
     public function salaryType()

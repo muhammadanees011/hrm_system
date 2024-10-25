@@ -42,9 +42,10 @@ class TeamsController extends Controller
             return response()->json(['error' => __('Permission denied.')], 401);
         }
     }
-    public function getMembers()
+    public function getMembers(Team $team)
     {   
-        return view('team_members.index');
+        $employees = $team->employees;
+        return view('team_members.index', compact('employees')); 
     }
 
     /**
