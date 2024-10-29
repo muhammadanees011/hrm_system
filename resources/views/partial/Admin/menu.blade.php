@@ -186,7 +186,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 <!-- employee-->
 
                 <!-- payroll-->
-                @if (Gate::check('Manage Set Salary') || Gate::check('Manage Pay Slip'))
+                {{-- @if (Gate::check('Manage Set Salary') || Gate::check('Manage Pay Slip'))
                 <li class="dash-item dash-hasmenu  {{ Request::segment(1) == 'setsalary' ? 'dash-trigger active' : '' }}">
                     <a href="#!" class="dash-link"><span class="dash-micon"><i class="ti ti-receipt"></i></span><span class="dash-mtext">{{ __('Payroll') }}</span><span class="dash-arrow"><i data-feather="chevron-right"></i></span></a>
                     <ul class="dash-submenu ">
@@ -205,7 +205,7 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                         </li>   
                     </ul>
                 </li>
-                @endif
+                @endif --}}
                 <!-- payroll-->
 
                 <!-- pension-->

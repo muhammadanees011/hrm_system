@@ -961,6 +961,13 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
 
+    Route::get('attendanceemployee/user-timesheets/{employee}', [AttendanceEmployeeController::class, 'getUserAttendance'])->name('attendanceemployee.getUserAttendance')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
     //import attendance
     Route::get('import/attendance/file', [AttendanceEmployeeController::class, 'importFile'])->name('attendance.file.import');
     Route::post('import/attendance', [AttendanceEmployeeController::class, 'import'])->name('attendance.import');

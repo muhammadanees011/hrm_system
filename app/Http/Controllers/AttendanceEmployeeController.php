@@ -1221,7 +1221,7 @@ class AttendanceEmployeeController extends Controller
 
     public function getSingleUserAttendance(Request $request){
         $employeeId = $request->employeeId;
-        $selectedRange = $request->selectedRange ?? 7;
+        $selectedRange = $request->selectedRange ?? 1;
 
         $activeTimes = $lates = $overTimes = $flexiTimes = $earlyleaves = $labels = [];
         $dates = [];
@@ -1311,5 +1311,12 @@ class AttendanceEmployeeController extends Controller
             'flexiTimes' => $flexiTimes,
             'labels' => $labels
         ]);
+    }
+
+    public function getUserAttendance(Employee $employee)
+    {
+        // dd($employee);
+        
+        return view('attendance.user-graph',compact('employee'));
     }
 }
