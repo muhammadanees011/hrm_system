@@ -17,60 +17,128 @@
   </div>
 </div>
 <div class="row mt-4">
-  <div class="col-lg-3 col-md-4">
-    <div class="card card-sm shadow-sm  p-0">
-      <div class="card-header p-2">
-        <h6 style="color: #584ED2 !important" class="mb-0"><span class="ti ti-point"></span> Worked</h6>
+  <div class="col-12">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="graph-view-tab" data-bs-toggle="tab" data-bs-target="#graph-view"
+          type="button" role="tab" aria-controls="graph-view" aria-selected="true">Graph Report</button>
+        <button class="nav-link" id="list-view-tab" data-bs-toggle="tab" data-bs-target="#list-view" type="button"
+          role="tab" aria-controls="list-view" aria-selected="false">Time Sheets</button>
       </div>
-      <div class="card-body p-2 px-3" id="workedTime">
-        0 hours 0 minutes
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="graph-view" role="tabpanel" aria-labelledby="graph-view-tab">
+
+        <div class="row mt-4">
+          <div class="col-lg-3 col-md-4">
+            <div class="card card-sm shadow-sm  p-0">
+              <div class="card-header p-2">
+                <h6 style="color: #584ED2 !important" class="mb-0"><span class="ti ti-point"></span> Worked</h6>
+              </div>
+              <div class="card-body p-2 px-3" id="workedTime">
+                0 hours 0 minutes
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4">
+            <div class="card card-sm shadow-sm  p-0">
+              <div class="card-header p-2">
+                <h6 style="color: #FF4560 !important" class="mb-0"><span class="ti ti-point"></span> Late</h6>
+              </div>
+              <div class="card-body p-2 px-3" id="lateTime">
+                0 hours 0 minutes
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4">
+            <div class="card card-sm shadow-sm  p-0">
+              <div class="card-header p-2">
+                <h6 style="color: #008FFB !important" class="mb-0"><span class="ti ti-point"></span> Over time</h6>
+              </div>
+              <div class="card-body p-2 px-3" id="overTime">
+                0 hours 0 minutes
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4">
+            <div class="card card-sm shadow-sm  p-0">
+              <div class="card-header p-2">
+                <h6 style="color: #FEB019 !important" class="mb-0"><span class="ti ti-point"></span> Early Leave</h6>
+              </div>
+              <div class="card-body p-2 px-3" id="earlyLeave">
+                0 hours 0 minutes
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4 d-none">
+            <div class="card card-sm shadow-sm  p-0">
+              <div class="card-header p-2">
+                <h6 style="color: #00E396 !important" class="mb-0"><span class="ti ti-point"></span> Flexi Time</h6>
+              </div>
+              <div class="card-body p-2 px-3" id="flexiTime">
+                0 hours 0 minutes
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <div id="line-charts" style="height: 300px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="list-view-tab">
+
+
+        <div class="card mt-3 table-card">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-11">
+                <h5>{{ __('Attendance And Punctuality Report') }}</h5>
+              </div>
+            </div>
+          </div>
+          <div class="card-body table-border-style">
+            <div class="table-responsive">
+              <table class="table" id="attendance_table">
+                <thead>
+                  <tr>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="worked">
+                    <th>
+                      Worked Time
+                    </th>
+                  </tr>
+                  <tr class="late">
+                    <th>
+                      Late Time
+                    </th>
+                  </tr>
+                  <tr class="over">
+                    <th>
+                      Over Time
+                    </th>
+                  </tr>
+                  <tr class="early">
+                    <th>
+                      Early Leave
+                    </th>
+                  </tr>
+                  <tr class="flexi">
+                    <th>
+                      Flexi Leave
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="col-lg-3 col-md-4">
-    <div class="card card-sm shadow-sm  p-0">
-      <div class="card-header p-2">
-        <h6 style="color: #FF4560 !important" class="mb-0"><span class="ti ti-point"></span> Late</h6>
-      </div>
-      <div class="card-body p-2 px-3" id="lateTime">
-      0 hours 0 minutes
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-4">
-    <div class="card card-sm shadow-sm  p-0">
-      <div class="card-header p-2">
-        <h6 style="color: #008FFB !important" class="mb-0"><span class="ti ti-point"></span> Over time</h6>
-      </div>
-      <div class="card-body p-2 px-3" id="overTime">
-      0 hours 0 minutes
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-4">
-    <div class="card card-sm shadow-sm  p-0">
-      <div class="card-header p-2">
-        <h6 style="color: #FEB019 !important" class="mb-0"><span class="ti ti-point"></span> Early Leave</h6>
-      </div>
-      <div class="card-body p-2 px-3" id="earlyLeave">
-      0 hours 0 minutes
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-3 col-md-4 d-none">
-    <div class="card card-sm shadow-sm  p-0">
-      <div class="card-header p-2">
-        <h6 style="color: #00E396 !important" class="mb-0"><span class="ti ti-point"></span> Flexi Time</h6>
-      </div>
-      <div class="card-body p-2 px-3" id="flexiTime">
-      0 hours 0 minutes
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row mt-2">
-  <div class="col-lg-12 col-md-12 col-sm-12">
-    <div id="line-charts" style="height: 300px;"></div>
   </div>
 </div>
 
@@ -101,23 +169,23 @@
 
     const hours = Math.floor(value);
     const minutes = Math.round((value - hours) * 60);
-    return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+    return `${hours}h ${minutes < 10 ? '0' : ''}${minutes}m`;
     }
     function calculateTotalTime(data) {
     let totalHours = 0;
     let totalMinutes = 0;
 
     data?.forEach(value => {
-        if (typeof value === 'string') {
-            // Split the float string into hours and minutes
-            const parts = value.split('.');
-            const hours = parseInt(parts[0]) || 0; // Get hours (default to 0)
-            const minutes = (parts[1] ? parseInt(parts[1]) : 0); // Get minutes (default to 0)
-            
-            // Update total hours and minutes
-            totalHours += hours;
-            totalMinutes += minutes;
-        }
+      if (typeof value === 'string') {
+      // Split the float string into hours and minutes
+      const parts = value.split('.');
+      const hours = parseInt(parts[0]) || 0; // Get hours (default to 0)
+      const minutes = (parts[1] ? parseInt(parts[1]) : 0); // Get minutes (default to 0)
+
+      // Update total hours and minutes
+      totalHours += hours;
+      totalMinutes += minutes;
+      }
     });
 
     // Convert minutes to hours if greater than 60
@@ -129,7 +197,7 @@
     //     totalHours,
     //     totalMinutes
     // };
-}
+    }
     $(document).ready(function () {
     makeAjaxCall(employeeId, 1);
 
@@ -181,9 +249,8 @@
           data: flexiTimes
         }
         ];
-        console.log(series);
-        
-        renderStackedChart(series, getDaysOfWeek(labels));
+
+        renderStackedChart(series, labels);
       } else {
         console.log('Error occured')
       }
@@ -223,8 +290,14 @@
       plotOptions: {
       bar: {
         horizontal: false,
+        show: true,
         borderRadius: 10,
         dataLabels: {
+          enabled: true,
+        formatter: function (val, opts) {
+          alert(val)
+          return val
+        },
         total: {
           enabled: true,
           style: {
@@ -235,8 +308,22 @@
         }
       },
       },
+
+      yaxis: {
+      labels: {
+        formatter: (value) => {
+        return value + ' hours'
+        },
+      }
+      },
       xaxis: {
-      categories: userCategories
+      categories: getDaysOfWeek(userCategories),
+      labels: {
+        formatter: function (value) {
+        const date = new Date(value);
+        return date.toLocaleString('en-US', { weekday: 'narrow' });;
+        }
+      },
       },
       legend: {
       enabled: false,
@@ -251,18 +338,46 @@
     // Create the chart
     var attendanceChart = new ApexCharts(document.querySelector("#line-charts"), options);
     attendanceChart.render();
-    const workedTime =document.getElementById('workedTime');
-    const lateTime =document.getElementById('lateTime');
-    const overTime =document.getElementById('overTime');
-    const earlyLeave =document.getElementById('earlyLeave');
-    const flexiTime =document.getElementById('flexiTime');
-    console.log(calculateTotalTime(series?.[2]?.data), 'caculated time');
-    
+    const workedTime = document.getElementById('workedTime');
+    const lateTime = document.getElementById('lateTime');
+    const overTime = document.getElementById('overTime');
+    const earlyLeave = document.getElementById('earlyLeave');
+    const flexiTime = document.getElementById('flexiTime');
+    let attendance_table = document.querySelector('#attendance_table');
+
     workedTime.innerText = calculateTotalTime(series?.[0]?.data);
     lateTime.innerText = calculateTotalTime(series?.[1]?.data);
     overTime.innerText = calculateTotalTime(series?.[2]?.data);
     earlyLeave.innerText = calculateTotalTime(series?.[3]?.data);
     flexiTime.innerText = calculateTotalTime(series?.[4]?.data);
+    const weekDays = getDaysOfWeek(userCategories)
+    attendance_table.querySelector('thead tr').innerHTML = `<td></td>`
+    attendance_table.querySelector('tbody tr.worked').innerHTML = `<th>Worked Time</th>`
+    attendance_table.querySelector('tbody tr.late').innerHTML = `<th>Late Time</th>`
+    attendance_table.querySelector('tbody tr.over').innerHTML = `<th>Over Time</th>`
+    attendance_table.querySelector('tbody tr.early').innerHTML = `<th>Early Leave</th>`
+    attendance_table.querySelector('tbody tr.flexi').innerHTML = `<th>Flexi Time</th>`
+    weekDays?.forEach((category, index) => {
+      const theDate = new Date(userCategories?.[index]);
+      const formatedDate = theDate.toLocaleString('en-US', { day: "numeric", month: "short" });
+      attendance_table.querySelector('thead tr').innerHTML += `<td class="text-center"><div class="d-flex align-items-center flex-column">
+      <span>${category}</span>
+      <span>${formatedDate}</span>
+      </div></td>`;
+
+      // Rows
+      attendance_table.querySelector('tbody tr.worked').innerHTML += `
+      <td class="text-center">${formatTime(series?.[0]?.data?.[index])}</td>`;
+      attendance_table.querySelector('tbody tr.late').innerHTML += `
+      <td class="text-center">${formatTime(series?.[1]?.data?.[index])}</td>`;
+      attendance_table.querySelector('tbody tr.over').innerHTML += `
+      <td class="text-center">${formatTime(series?.[2]?.data?.[index])}</td>`;
+      attendance_table.querySelector('tbody tr.early').innerHTML += `
+      <td class="text-center">${formatTime(series?.[3]?.data?.[index])}</td>`;
+      attendance_table.querySelector('tbody tr.flexi').innerHTML += `
+      <td class="text-center">${formatTime(series?.[4]?.data?.[index])}</td>`;
+
+    });
 
     if (JSON.stringify(oldSeries) !== JSON.stringify(series)) {
       const newSeries = series;
