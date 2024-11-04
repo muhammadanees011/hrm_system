@@ -61,30 +61,49 @@
                     @endif
                     <p class="text-muted pb-0-5">
                         {{ __('My Office Time: ' . $officeTime['startTime'] . ' to ' . $officeTime['endTime']) }}</p>
-                    <div class="row">
-                        <div class="col-md-6 float-right border-right">
-                            {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post']) }}
-                            @if (empty($employeeAttendance) || $employeeAttendance->clock_out != '00:00:00')
-                                <button type="submit" value="0" name="in" id="clock_in"
-                                    class="btn btn-primary">{{ __('CLOCK IN') }}</button>
-                            @else
-                                <button type="submit" value="0" name="in" id="clock_in"
-                                    class="btn btn-primary disabled" disabled>{{ __('CLOCK IN') }}</button>
-                            @endif
-                            {{ Form::close() }}
-                        </div>
-                        <div class="col-md-6 float-left">
-                            @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
-                                {{ Form::model($employeeAttendance, ['route' => ['attendanceemployee.update', $employeeAttendance->id], 'method' => 'PUT']) }}
-                                <button type="submit" value="1" name="out" id="clock_out"
-                                    class="btn btn-danger">{{ __('CLOCK OUT') }}</button>
-                            @else
-                                <button type="submit" value="1" name="out" id="clock_out"
-                                    class="btn btn-danger disabled" disabled>{{ __('CLOCK OUT') }}</button>
-                            @endif
-                            {{ Form::close() }}
-                        </div>
-                    </div>
+                        <div class="row">
+    <div class="col-md-6 float-right border-right">
+        {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post']) }}
+        @if (empty($employeeAttendance) || $employeeAttendance->clock_out != '00:00:00')
+            <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary">{{ __('CLOCK IN') }}</button>
+        @else
+            <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary disabled" disabled>{{ __('CLOCK IN') }}</button>
+        @endif
+        {{ Form::close() }}
+    </div>
+    
+    <div class="col-md-6 float-left">
+        @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+            {{ Form::model($employeeAttendance, ['route' => ['attendanceemployee.update', $employeeAttendance->id], 'method' => 'PUT']) }}
+            <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger">{{ __('CLOCK OUT') }}</button>
+            {{ Form::close() }}
+        @else
+            <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger disabled" disabled>{{ __('CLOCK OUT') }}</button>
+        @endif
+    </div>
+    
+    <div class="col-md-12 mt-3">
+    @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+        <div class="d-flex justify-content-between">
+            {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post', 'class' => 'mr-2']) }}
+            
+            @if (empty($employeeAttendance->break_start) || $employeeAttendance->break_start === '00:00:00')
+                <!-- Show START BREAK button if break hasn't started -->
+                <button type="submit" value="start" name="break" class="btn btn-warning">{{ __('START BREAK') }}</button>
+            @elseif (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00' || empty($employeeAttendance->break_end)))
+                <!-- Show END BREAK button if break has started but not ended -->
+                <button type="submit" value="end" name="break" class="btn btn-warning">{{ __('END BREAK') }}</button>
+            @endif
+            
+            {{ Form::close() }}
+        </div>
+    @endif
+</div>
+
+
+
+</div>
+
                 </div>
             </div>
             <div class="card" style="height: 462px;">

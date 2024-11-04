@@ -21,6 +21,9 @@ class CreateAttendanceEmployeesTable extends Migration
             $table->time('clock_in');
             $table->time('clock_out');
             $table->time('late');
+            $table->time('break_start')->default('00:00:00');
+            $table->time('break_end')->default('00:00:00');
+            $table->time('total_break')->default('00:00:00');
             $table->time('early_leaving');
             $table->time('overtime');
             $table->time('total_rest');
