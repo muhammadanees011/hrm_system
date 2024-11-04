@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 @php
 $profile = \App\Models\Utility::get_file('uploads/avatar/');
+$initial = strtoupper(substr($userDetail->name, 0, 2));
 @endphp
 
 @push('script-page')
@@ -8,7 +9,25 @@ $profile = \App\Models\Utility::get_file('uploads/avatar/');
         var scrollSpy = new bootstrap.ScrollSpy(document.body, {
             target: '#useradd-sidenav',
             offset: 300
-        })
+        });
+        function handleChange(e){
+            console.log(e);
+            
+            const placeholder = window.URL.createObjectURL(e.target.files[0]);
+            const imgtag = document.querySelector('.profileimagecontainer #blah');
+            const usernamePlaceholder = document.querySelector('.profileimagecontainer .img-placeholder');
+            if (imgtag) {
+                imgtag.src =placeholder
+            }else{
+                usernamePlaceholder.classList.add('d-none');
+                const img = new Image();
+                img.src = placeholder;
+                img.id = 'blah';
+                img.width = 100;
+                img.style = 'border-radius: 50%; aspect-ratio: 1/1;'
+                document.querySelector('.profileimagecontainer label').appendChild(img);
+            }
+        }
     </script>
 @endpush
 @section('page-title')
@@ -81,13 +100,21 @@ $profile = \App\Models\Utility::get_file('uploads/avatar/');
                                 <div class="col-lg-6 col-md-6">
                                     <div class="form-group">
                                         {{ Form::label('profile', __('Avatar'), ['class' => 'col-form-label']) }}
-                                        <div class="choose-files ">
+                                        <div class="choose-files profileimagecontainer">
                                             <label for="profile">
                                                 <div class=" bg-primary profile "> <i
                                                         class="ti ti-upload px-1"></i>{{ __('Choose file here') }}
                                                 </div>
-                                                <input type="file" class="form-control file" name="profile" id="profile" onchange="document.getElementById('blah').src = window.URL.createObjectURL(this.files[0])">
-                                                <img id="blah"  width="100" style="border-radius: 50%" src="{{ !empty($userDetail->avatar) ? $profile . $userDetail->avatar : $profile . '/avatar.png' }}" />
+                                                <input type="file" class="form-control file" name="profile" id="profile" onchange="handleChange(event)">
+
+                                                @if (!empty($userDetail) && $userDetail->avatar != '')
+                                                <img id="blah"  width="100" style="border-radius: 50%" src="{{ !empty($userDetail->avatar) ? $profile . $userDetail->avatar : asset('assets/images/user/avatar-1.jpg') }}" />
+                                                @else
+
+                                                    <div class="img-placeholder bg-primary rounded-circle d-flex align-items-center justify-content-center fs-5" style="width: 64px; height: 64px;">{{ $initial }}</div>
+                                                @endif
+
+                                                
                                             </label>
                                         </div>
                                         <span
