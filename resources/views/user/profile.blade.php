@@ -11,8 +11,6 @@ $initial = strtoupper(substr($userDetail->name, 0, 2));
             offset: 300
         });
         function handleChange(e){
-            console.log(e);
-            
             const placeholder = window.URL.createObjectURL(e.target.files[0]);
             const imgtag = document.querySelector('.profileimagecontainer #blah');
             const usernamePlaceholder = document.querySelector('.profileimagecontainer .img-placeholder');
@@ -107,7 +105,7 @@ $initial = strtoupper(substr($userDetail->name, 0, 2));
                                                 </div>
                                                 <input type="file" class="form-control file" name="profile" id="profile" onchange="handleChange(event)">
 
-                                                @if (!empty($userDetail) && $userDetail->avatar != '')
+                                                @if (!empty($userDetail) && $userDetail->avatar != 'avatar.png')
                                                 <img id="blah"  width="100" style="border-radius: 50%" src="{{ !empty($userDetail->avatar) ? $profile . $userDetail->avatar : asset('assets/images/user/avatar-1.jpg') }}" />
                                                 @else
 

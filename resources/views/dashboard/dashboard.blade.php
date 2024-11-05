@@ -79,7 +79,7 @@
                     
                     <h5><i class="ti ti-clock me-2"></i> {{ __('Mark Attandance') }}</h5>
                     @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
-            <h6 class="mb-0">{{formatElapsedTime($employeeAttendance->clock_in)}}
+            <h6 class="mb-0 elpased-time">{{formatElapsedTime($employeeAttendance->clock_in)}}
             @if (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00'))
             <i class="ti ti-player-pause text-warning"></i>
             @else
@@ -170,6 +170,27 @@
 
                 </div>
             </div>
+            
+            <div class="card">
+                <div class="card-header card-body table-border-style">
+                    <h5>{{ __('Upcoming Holidays') }}</h5>
+                </div>
+                <div class="card-body">
+                   <ul class="">
+                        <li class="mb-2">
+                            <h6 class="mb-0 text-primary">Iqbal Day</h6>
+                            <span class="text-dark">November 9th 2024 | All Day</span>
+                            <p class="mb-0 text-secondary" style="font-size: 14px;">Birthdate of the famous poet Dr. Allama Iqabal</p>
+                        </li>
+                        <li class="mb-2">
+                            <h6 class="mb-0 text-primary">Christmas</h6>
+                            <span class="text-dark">Dec 25th - Dec 28th 2014</span>
+                            <p class="mb-0 text-secondary" style="font-size: 14px;">Chrismas holidays for are christans</p>
+                        </li>
+                   </ul>
+                    
+                </div>
+            </div>
             <div class="card" style="height: 462px;">
                 <div class="card-header card-body table-border-style">
                     <h5>{{ __('Meeting schedule') }}</h5>
@@ -198,6 +219,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-xl-12 col-lg-12 col-md-12">
             <div class="card">
                 <div class="card-header card-body table-border-style">
@@ -229,7 +251,7 @@
                 </div>
             </div>
         </div>
-    @else
+        @else
         <div class="col-xxl-12">
 
             {{-- start --}}
@@ -515,6 +537,7 @@
 
     @if (Auth::user()->type == 'company' || Auth::user()->type == 'hr')
     <script type="text/javascript">
+        
         $(document).ready(function() {
             get_data();
         });
@@ -580,6 +603,41 @@
     </script>
     @else
     <script>
+        function updateTimeDifference(clock_in) {
+            // Get the current time
+            const now = new Date();
+            
+            // Parse the clock_in time (format HH:MM:SS)
+            const [hours, minutes, seconds] = clock_in.split(':').map(num => parseInt(num, 10));
+            
+            // Create a Date object for clock_in, assuming today's date
+            const clockInDate = new Date(now);
+            clockInDate.setHours(hours, minutes, seconds, 0); // set the hours, minutes, and seconds to the clock_in values
+            
+            // Calculate the difference in milliseconds
+            const diffMs = now - clockInDate;
+            
+            // Convert milliseconds into hours, minutes, seconds
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHr = Math.floor(diffMin / 60);
+            
+            const remainingSec = diffSec % 60;
+            const remainingMin = diffMin % 60;
+            
+            // Display the result
+            const timeDifference = `${diffHr}:${remainingMin}:${remainingSec}`;
+            document.querySelector('.elpased-time').innerText = timeDifference;
+        }
+        const elpasedTime = document.querySelector('.elpased-time');
+        // if (elpasedTime) {
+        //     const checkIn = elpasedTime.innerText;
+        //     return
+        //     setInterval(() => {
+        //         updateTimeDifference(checkIn)
+        //     }, 1000);
+            
+        // }
         $(document).ready(function() {
             get_data();
         });
