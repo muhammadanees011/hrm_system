@@ -7,6 +7,9 @@
     $profile = \App\Models\Utility::get_file('uploads/avatar');
 
     $mode_setting = \App\Models\Utility::mode_layout();
+
+    $initial = strtoupper(substr($users->name, 0, 2));
+
 @endphp
 <header
     class="dash-header  {{ isset($mode_setting['is_sidebar_transperent']) && $mode_setting['is_sidebar_transperent'] == 'on' ? 'transprent-bg' : '' }}">
@@ -28,9 +31,12 @@
                         <span class="theme-avtar">
                             <!-- <img alt="#"
                                 src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}"
-                                class="header-avtar" style="width: 100%; border-radius: 50%;"> -->
-                                <img src="{{asset( '/assets/images/user/avatar-5.jpg' )}}" alt="{{ env('APP_NAME') }}" class="logo logo-lg" style="width: 100%; border-radius: 50%;" />
-
+                                class="logo logo-lg" style="width: 100%; border-radius: 50%;"> -->
+                                @if($users->avatar && $users->avatar != 'avatar.png' && $users->avatar != "")
+                                <img src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}" alt="{{ env('APP_NAME') }}" class="logo logo-lg" style="width: 100%; border-radius: 50%;" />
+                                @else
+                                <span class="logo logo-lg" style="width: 100%; border-radius: 50%; background-color: #f1f2f7; color: #000; display: flex; justify-content: center; align-items: center;">{{ $initial }}</span>
+                                @endif
                         </span>
                         <span class="hide-mob ms-2"> {{ __('Hi, ') }}{{ Auth::user()->name }}!
                             <i class="ti ti-chevron-down drp-arrow nocolor hide-mob"></i>

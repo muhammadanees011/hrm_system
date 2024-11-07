@@ -2404,6 +2404,32 @@ class UsersTableSeeder extends Seeder
                 "created_at" => date('Y-m-d H:i:s'),
                 "updated_at" => date('Y-m-d H:i:s'),
             ],
+            [
+                "name" => "Manage Team",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            
+            ],
+            [
+                "name" => "Create Team",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ],
+            [
+                "name" => "Edit Team",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+
+            ],
+            [
+                "name" => "Delete Team",
+                "guard_name" => "web",
+                "created_at" => date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s'),
+            ]
         ];
         Permission::insert($arrPermissions);
 
@@ -2795,6 +2821,11 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Holiday Configuration"],
             ["name" => "Edit Holiday Configuration"],
             ["name" => "Delete Holiday Configuration"],
+            ["name" => "Manage Team"],
+            ["name" => "Create Team"],
+            ["name" => "Edit Team"],
+            ["name" => "Delete Team"],
+
 
             // ["name" => "Manage Holiday CarryOver"],
             // ["name" => "Create Holiday CarryOver"],
@@ -3141,6 +3172,10 @@ class UsersTableSeeder extends Seeder
             ["name" => "Create Holiday Configuration"],
             ["name" => "Edit Holiday Configuration"],
             ["name" => "Delete Holiday Configuration"],
+            ["name" => "Manage Team"],
+            ["name" => "Create Team"],
+            ["name" => "Edit Team"],
+            ["name" => "Delete Team"],
         ];
 
         $hrRole->givePermissionTo($hrPermission);

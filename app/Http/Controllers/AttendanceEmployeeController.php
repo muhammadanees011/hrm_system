@@ -823,6 +823,11 @@ class AttendanceEmployeeController extends Controller
         $date = date("Y-m-d");
         $time = date("H:i:s");
 
+
+        if ($request->has('break')) {
+            return $this->handleBreak($request, $employeeId);
+        }
+
         if ($lastClockOutEntry != null) {
             // Calculate late based on the difference between the last clock-out time and the current clock-in time
             $lastClockOutTime = $lastClockOutEntry->clock_out;
@@ -894,6 +899,48 @@ class AttendanceEmployeeController extends Controller
             return redirect()->back()->with('success', __('Employee Successfully Clock In.'));
         }
     }
+
+    private function handleBreak(Request $request, $employeeId)
+    {
+        // Find the last attendance record for the employee
+        $lastAttendance = AttendanceEmployee::where('employee_id', $employeeId)
+            ->where('date', date('Y-m-d'))
+            ->orderBy('id', 'desc')
+            ->first();
+    
+        if ($lastAttendance && $lastAttendance->clock_out == '00:00:00') {
+            if ($request->input('break') === 'start') {
+                // Check if break_start is set
+                if (empty($lastAttendance->break_start) || $lastAttendance->break_start === '00:00:00') {
+                    // Set break start time
+                    $lastAttendance->break_start = date('H:i:s');
+                    $lastAttendance->save();
+                    return redirect()->back()->with('success', __('Break started successfully.'));
+                } else {
+                    return redirect()->back()->with('error', __('You are already on a break.'));
+                }
+            } elseif ($request->input('break') === 'end') {
+                // Check if break_end is not set and break_start is set
+                if (!empty($lastAttendance->break_start) && $lastAttendance->break_end === '00:00:00') {
+                    // Set break end time
+                    $lastAttendance->break_end = date('H:i:s');
+                    
+                    // Calculate total break time
+                    $totalBreakSeconds = strtotime($lastAttendance->break_end) - strtotime($lastAttendance->break_start);
+                    $lastAttendance->total_break = gmdate('H:i:s', max(0, $totalBreakSeconds));
+    
+                    $lastAttendance->save();
+                    return redirect()->back()->with('success', __('Break ended successfully.'));
+                } else {
+                    return redirect()->back()->with('error', __('You have not started a break yet.'));
+                }
+            }
+        }
+    
+        return redirect()->back()->with('error', __('No valid attendance record found.'));
+    }
+    
+    
 
     public function bulkAttendance(Request $request)
     {
@@ -1221,7 +1268,7 @@ class AttendanceEmployeeController extends Controller
 
     public function getSingleUserAttendance(Request $request){
         $employeeId = $request->employeeId;
-        $selectedRange = $request->selectedRange ?? 7;
+        $selectedRange = $request->selectedRange ?? 1;
 
         $activeTimes = $lates = $overTimes = $flexiTimes = $earlyleaves = $labels = [];
         $dates = [];
@@ -1311,5 +1358,12 @@ class AttendanceEmployeeController extends Controller
             'flexiTimes' => $flexiTimes,
             'labels' => $labels
         ]);
+    }
+
+    public function getUserAttendance(Employee $employee)
+    {
+        // dd($employee);
+        
+        return view('attendance.user-graph',compact('employee'));
     }
 }

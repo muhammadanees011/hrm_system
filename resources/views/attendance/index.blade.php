@@ -326,16 +326,14 @@
                             @foreach ($attendanceEmployee as $attendance)
                                 <tr>
                                     <td>
-                                        <a 
-                                            href="#"
-                                            data-url="{{ URL::to('user-graph/' . $attendance->employee_id) }}"
-                                            data-ajax-popup="true" data-size="lg" 
-                                            data-bs-toggle="tooltip" title=""
-                                            data-title="{{ __($attendance->employee->name.' Attendance Overview') }}"
-                                            data-bs-original-title="{{ __($attendance->employee->name.' Attendance Overview') }}"
-                                        >
-                                            {{ !empty($attendance->employee) ? $attendance->employee->name : '' }}
-                                        </a>
+                                    <a 
+    href="{{ URL::to('attendanceemployee/user-timesheets/' . $attendance->employee_id) }}"
+    data-bs-toggle="tooltip" title=""
+    data-title="{{ __($attendance->employee->name.' Attendance Overview') }}"
+    data-bs-original-title="{{ __($attendance->employee->name.' Attendance Overview') }}"
+>
+    {{ !empty($attendance->employee) ? $attendance->employee->name : '' }}
+</a>
                                     </td>
                                     <td>{{ \Auth::user()->dateFormat($attendance->date) }}</td>
                                     <td>{{ $attendance->status }}</td>

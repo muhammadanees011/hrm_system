@@ -15,23 +15,36 @@ class EmployeesExport implements FromCollection, WithHeadings
     * @return \Illuminate\Support\Collection
     */
     public function collection()
-    {
-        $data = Employee::get();
-        foreach($data as $k => $employees)
-        {
-            unset($employees->id,$employees->user_id,$employees->documents,$employees->tax_payer_id,$employees->is_active,$employees->created_at,$employees->updated_at);
+{
+    $employees = Employee::with(['branch', 'department', 'designation', 'salaryType'])->get();
+    $formattedData = $employees->map(function ($employee) {
+        return [
+            'name' => $employee->name, // Assuming these fields exist
+            'date_of_birth' => $employee->date_of_birth,
+            'gender' => $employee->gender,
+            'phone_number' => $employee->phone_number,
+            'address' => $employee->address,
+            'email_id' => $employee->email,
+            'password' => $employee->password, // Be cautious about exporting sensitive data
+            'employee_id' => $employee->employee_id,
+            'branch' => $employee->branch->name ?? '-',
+            'department' => $employee->department->name ?? '-',
+            'designation' => $employee->designation->name ?? '-',
+            'date_of_join' => $employee->date_of_join,
+            'account_holder_name' => $employee->account_holder_name,
+            'account_number' => $employee->account_number,
+            'bank_name' => $employee->bank_name,
+            'bank_identifier_code' => $employee->bank_identifier_code,
+            'branch_location' => $employee->branch_location,
+            'salary_type' => $employee->salaryType->name ?? '-',
+            'salary' => Employee::employee_salary($employee->salary),
+            'created_by' => Employee::login_user($employee->created_by),
+        ];
+    });
 
-            $data[$k]["branch_id"]=!empty($employees->branch_id) ? $employees->branch->name : '-';
-            $data[$k]["department_id"]=!empty($employees->department_id) ? $employees->department->name : '-';
-            $data[$k]["designation_id"]= !empty($employees->designation_id) ? $employees->designation->name : '-';
-            $data[$k]["salary_type"]=!empty($employees->salary_type) ? $employees->salaryType->name :'-';
-            $data[$k]["salary"]=Employee::employee_salary($employees->salary);
-            $data[$k]["created_by"]=Employee::login_user($employees->created_by);
-            
-        }
-        
-        return $data;
-    }
+    return $formattedData;
+}
+
 
     public function headings(): array
     {

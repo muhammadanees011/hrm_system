@@ -33,6 +33,8 @@ use App\Models\ExperienceCertificate;
 use App\Models\JoiningLetter;
 use App\Models\LoginDetail;
 use App\Models\PaySlip;
+use Spatie\Permission\Models\Role;
+use App\Models\Team;
 
 //use Faker\Provider\File;
 
@@ -80,14 +82,17 @@ class EmployeeController extends Controller
             $documents        = Document::where('created_by', \Auth::user()->creatorId())->get();
             $branches         = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $branches->prepend('Select Branch', '');
+            $teams           = Team::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            $teams->prepend('Select Team', '');
             $departments      = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $designations     = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $employees        = User::where('created_by', \Auth::user()->creatorId())->get();
             $managers = User::where('type', 'manager')->get()->pluck('name', 'id');
+            $roles = Role::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
 
             $employeesId      = \Auth::user()->employeeIdFormat($this->employeeNumber());
             
-            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings'));
+            return view('employee.create', compact('managers','employees', 'employeesId', 'departments', 'designations', 'documents', 'branches', 'company_settings','roles','teams'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -109,6 +114,7 @@ class EmployeeController extends Controller
                     'password' => 'required',
                     'department_id' => 'required',
                     'designation_id' => 'required',
+                    'team_id' => 'required',
                     'document.*' => 'required',
                     'employee_type' => 'required',
                     'probation_days' => 'required_if:employee_type,Probation|numeric|min:1',
@@ -157,7 +163,11 @@ class EmployeeController extends Controller
                 ]
             );
             $user->save();
-            $user->assignRole('Employee');
+            if ($request['roles']) {
+                $user->assignRole($request['roles']);
+            }else{
+                $user->assignRole('Employee');
+            }
 
 
             if (!empty($request->document) && !is_null($request->document)) {
@@ -181,6 +191,7 @@ class EmployeeController extends Controller
                     'branch_id' => $request['branch_id'],
                     'department_id' => $request['department_id'],
                     'designation_id' => $request['designation_id'],
+                    'team_id' => $request['team_id'],
                     'company_doj' => $request['company_doj'],
                     'employee_type' => $request['employee_type'],
                     'documents' => $document_implode,
@@ -585,30 +596,32 @@ class EmployeeController extends Controller
     }
 
     public function meetTeam(Request $request)
-    {
-        $employees = Employee::where('created_by', \Auth::user()->creatorId())->with(['designation', 'user']);
-        if (!empty($request->branch)) {
-            $employees->where('branch_id', $request->branch);
-        }
-        if (!empty($request->department)) {
-            $employees->where('department_id', $request->department);
-        }
-        if (!empty($request->designation)) {
-            $employees->where('designation_id', $request->designation);
-        }
-        $employees = $employees->get();
+{
+    $authUser = \Auth::user();
+    $teamId = $authUser->employee->team_id;
+    $managerId = $authUser->employee->manager_id;
+    
+    // Retrieve employees within the same team
+    $employees = Employee::where('team_id', $teamId)
+        ->with(['designation', 'user', 'manager'])
+        ->get()
+        ->groupBy('manager_id');
 
-        $brances = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-        $brances->prepend('All', '0');
+    // Filter out only the branches, departments, and designations as dropdown options
+    $branches = Branch::where('created_by', $authUser->creatorId())->get()->pluck('name', 'id');
+    $branches->prepend('All', '0');
 
-        $departments = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-        $departments->prepend('All', '0');
+    $departments = Department::where('created_by', $authUser->creatorId())->get()->pluck('name', 'id');
+    $departments->prepend('All', '0');
 
-        $designations = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-        $designations->prepend('All', '0');
+    $designations = Designation::where('created_by', $authUser->creatorId())->get()->pluck('name', 'id');
+    $designations->prepend('All', '0');
 
-        return view('employee.meetTeam', compact('employees', 'departments', 'designations', 'brances'));
-    }
+    return view('employee.meetTeam', compact('employees', 'branches', 'departments', 'designations', 'managerId'));
+}
+
+
+    
 
 
     public function profileShow($id)

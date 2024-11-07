@@ -30,6 +30,7 @@ class CreateEmployeesTable extends Migration
             $table->integer('branch_id');
             $table->integer('department_id');
             $table->integer('designation_id');
+            $table->integer('team_id');
             $table->string('company_doj')->nullable();
             $table->string('documents')->nullable();
 

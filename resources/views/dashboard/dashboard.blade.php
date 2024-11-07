@@ -6,7 +6,30 @@
 
 @php
     $setting = App\Models\Utility::settings();
-    
+    function formatElapsedTime($clockIn) {
+        // Check if clock-in time is not '00:00:00'
+            // dd($clockIn);
+        if ($clockIn !== '00:00:00') {
+            // Create a DateTime object for the clock-in time
+            $checkInTime = \Carbon\Carbon::createFromFormat('H:i:s', $clockIn);
+            // Get the current time
+            $currentTime = \Carbon\Carbon::now();
+
+            // If the date is also important, you might want to include it:
+            // Assuming you also have a date field, e.g., $date
+            // $date = '2024-11-04'; // Example date from your array
+            //$checkInTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date . ' ' . $clockIn);
+
+            // Calculate the difference
+            $elapsedTime = $currentTime->diff($checkInTime);
+
+            // Format the elapsed time as needed (e.g., hours:minutes:seconds)
+            return sprintf('%02d:%02d:%02d', $elapsedTime->h, $elapsedTime->i, $elapsedTime->s);
+        }
+
+        return null; // Return null if clock-in time is '00:00:00'
+    }
+
 @endphp
 
 {{-- @section('breadcrumb')
@@ -51,9 +74,19 @@
             </div>
         </div>
         <div class="col-xxl-6">
-            <div class="card"style="height: 230px;">
-                <div class="card-header">
-                    <h5>{{ __('Mark Attandance') }}</h5>
+            <div class="card">
+                <div class="card-header d-flex align-items-center gap-2 flex-wrap justify-content-between">
+                    
+                    <h5><i class="ti ti-clock me-2"></i> {{ __('Mark Attandance') }}</h5>
+                    @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+            <h6 class="mb-0 elpased-time">{{formatElapsedTime($employeeAttendance->clock_in)}}
+            @if (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00'))
+            <i class="ti ti-player-pause text-warning"></i>
+            @else
+            <i class="ti ti-player-play text-primary"></i>
+            @endif
+            </h6>
+        @endif
                 </div>
                 <div class="card-body">
                     @if(!empty($flexiTime))
@@ -61,30 +94,100 @@
                     @endif
                     <p class="text-muted pb-0-5">
                         {{ __('My Office Time: ' . $officeTime['startTime'] . ' to ' . $officeTime['endTime']) }}</p>
-                    <div class="row">
-                        <div class="col-md-6 float-right border-right">
-                            {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post']) }}
-                            @if (empty($employeeAttendance) || $employeeAttendance->clock_out != '00:00:00')
-                                <button type="submit" value="0" name="in" id="clock_in"
-                                    class="btn btn-primary">{{ __('CLOCK IN') }}</button>
-                            @else
-                                <button type="submit" value="0" name="in" id="clock_in"
-                                    class="btn btn-primary disabled" disabled>{{ __('CLOCK IN') }}</button>
-                            @endif
-                            {{ Form::close() }}
-                        </div>
-                        <div class="col-md-6 float-left">
-                            @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
-                                {{ Form::model($employeeAttendance, ['route' => ['attendanceemployee.update', $employeeAttendance->id], 'method' => 'PUT']) }}
-                                <button type="submit" value="1" name="out" id="clock_out"
-                                    class="btn btn-danger">{{ __('CLOCK OUT') }}</button>
-                            @else
-                                <button type="submit" value="1" name="out" id="clock_out"
-                                    class="btn btn-danger disabled" disabled>{{ __('CLOCK OUT') }}</button>
-                            @endif
-                            {{ Form::close() }}
-                        </div>
+                        <div class="row">
+                    <div class="col-md-4 border-right">
+                        {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post']) }}
+                        @if (empty($employeeAttendance) || $employeeAttendance->clock_out != '00:00:00')
+                            <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-play">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 7v5l2 2" />
+                                <path d="M17 22l5 -3l-5 -3z" />
+                                <path d="M13.017 20.943a9 9 0 1 1 7.831 -7.292" />
+                            </svg>
+                                {{ __('CLOCK IN') }}</button>
+                        @else
+                            <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary disabled" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-play">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 7v5l2 2" />
+                            <path d="M17 22l5 -3l-5 -3z" />
+                            <path d="M13.017 20.943a9 9 0 1 1 7.831 -7.292" />
+                            </svg>
+                            {{ __('CLOCK IN') }}</button>
+                        @endif
+                        {{ Form::close() }}
                     </div>
+    
+                    <div class="col-md-4">
+        @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+        <div class="d-flex justify-content-between">
+            {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post', 'class' => 'mr-2']) }}
+            
+            @if (empty($employeeAttendance->break_start) || $employeeAttendance->break_start === '00:00:00')
+                <!-- Show START BREAK button if break hasn't started -->
+                <button type="submit" value="start" name="break" class="btn btn-warning text-nowrap text-truncate">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-pause">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M20.942 13.018a9 9 0 1 0 -7.909 7.922" />
+                <path d="M12 7v5l2 2" />
+                <path d="M17 17v5" />
+                <path d="M21 17v5" />
+                </svg>
+                    {{ __('START BREAK') }}</button>
+            @elseif (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00' || empty($employeeAttendance->break_end)))
+                <!-- Show END BREAK button if break has started but not ended -->
+                <button type="submit" value="end" name="break" class="btn btn-warning">{{ __('END BREAK') }}</button>
+            @endif
+            
+            {{ Form::close() }}
+        </div>
+    @endif
+</div>
+    <div class="col-md-4">
+        @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+            {{ Form::model($employeeAttendance, ['route' => ['attendanceemployee.update', $employeeAttendance->id], 'method' => 'PUT']) }}
+            <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-stop">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M21 12a9 9 0 1 0 -9 9" />
+            <path d="M12 7v5l1 1" />
+            <path d="M16 16h6v6h-6z" />
+            </svg>
+            {{ __('CLOCK OUT') }}</button>
+            
+            {{ Form::close() }}
+        @else
+            <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger disabled" disabled>{{ __('CLOCK OUT') }}</button>
+        @endif
+    </div>
+    
+
+
+
+</div>
+
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header card-body table-border-style">
+                    <h5>{{ __('Upcoming Holidays') }}</h5>
+                </div>
+                <div class="card-body">
+                   <ul class="">
+                    @foreach ($leaves as $leave)
+                    <li class="mb-2">
+                        <h6 class="mb-0 text-primary">{{ $leave->leaveType->title}}|{{ ucfirst(str_replace('_',' ', $leave->leave_duration)) }}</h6>
+                        <span class="text-dark"> <b>Start Date : </b> {{\Auth::user()->dateFormat($leave->start_date)}} </span>
+                        <span class="text-dark"><b>End Date : </b> {{\Auth::user()->dateFormat($leave->end_date)}} </span>
+                        <p class="mb-0 text-secondary" style="font-size: 14px;">{{ $leave->leave_reason }}</p>
+                    </li>    
+                    @endforeach
+                      
+                   </ul>
+                    
                 </div>
             </div>
             <div class="card" style="height: 462px;">
@@ -115,6 +218,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-xl-12 col-lg-12 col-md-12">
             <div class="card">
                 <div class="card-header card-body table-border-style">
@@ -146,7 +250,7 @@
                 </div>
             </div>
         </div>
-    @else
+        @else
         <div class="col-xxl-12">
 
             {{-- start --}}
@@ -432,6 +536,7 @@
 
     @if (Auth::user()->type == 'company' || Auth::user()->type == 'hr')
     <script type="text/javascript">
+        
         $(document).ready(function() {
             get_data();
         });
@@ -497,6 +602,41 @@
     </script>
     @else
     <script>
+        function updateTimeDifference(clock_in) {
+            // Get the current time
+            const now = new Date();
+            
+            // Parse the clock_in time (format HH:MM:SS)
+            const [hours, minutes, seconds] = clock_in.split(':').map(num => parseInt(num, 10));
+            
+            // Create a Date object for clock_in, assuming today's date
+            const clockInDate = new Date(now);
+            clockInDate.setHours(hours, minutes, seconds, 0); // set the hours, minutes, and seconds to the clock_in values
+            
+            // Calculate the difference in milliseconds
+            const diffMs = now - clockInDate;
+            
+            // Convert milliseconds into hours, minutes, seconds
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHr = Math.floor(diffMin / 60);
+            
+            const remainingSec = diffSec % 60;
+            const remainingMin = diffMin % 60;
+            
+            // Display the result
+            const timeDifference = `${diffHr}:${remainingMin}:${remainingSec}`;
+            document.querySelector('.elpased-time').innerText = timeDifference;
+        }
+        const elpasedTime = document.querySelector('.elpased-time');
+        // if (elpasedTime) {
+        //     const checkIn = elpasedTime.innerText;
+        //     return
+        //     setInterval(() => {
+        //         updateTimeDifference(checkIn)
+        //     }, 1000);
+            
+        // }
         $(document).ready(function() {
             get_data();
         });

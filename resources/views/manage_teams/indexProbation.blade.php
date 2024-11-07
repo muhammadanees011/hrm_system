@@ -1,162 +1,30 @@
 @extends('layouts.admin')
 
 @section('page-title')
-{{ __('Manage Employee') }}
+{{ __('Manage Employee Probations') }}
 @endsection
 
 @section('breadcrumb')
 <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-<li class="breadcrumb-item">{{ __('Employee') }}</li>
+<li class="breadcrumb-item">{{ __('Probation') }}</li>
 @endsection
 
 @section('action-button')
+<a href="{{ route('employee.export') }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Export') }}" class="btn btn-sm btn-primary">
+    <i class="ti ti-file-export"></i>
+</a>
 
-<div class="employees-actions">
- 
-<div class="employees-nav me-2">
-    <div class="nav-titles">
-        <div class="dropdown">
-        <button class="dropbtn">Documents &#9660;</button>
-        <div class="dropdown-content">
-            <!-- <a href="{{ route('document-upload.index') }}" target="_blank">Documents </a> -->
-            <a href="{{ route('documentdirectories.index') }}">Employee Documents</a>
-        </div>
-        </div>
-    </div>
-</div>
-
-<div class="employees-nav me-2">
-    <div class="nav-titles">
-        <div class="dropdown">
-        <button class="dropbtn">Leaves &#9660;</button>
-        <div class="dropdown-content">
-            <a href="{{ route('leave.index') }}">Leave Request </a>
-            <a href="{{ route('carryover.index') }}" >CarryOver Request</a>
-            <a href="{{ route('leave.team') }}">Team Time Off</a>
-            <a href="{{ route('holiday.index') }}">Holidays</a>
-        </div>
-        </div>
-    </div>
-</div>
-
-{{-- <div class="employees-nav me-2">
-    <div class="nav-titles">
-        <div class="dropdown">
-        <button class="dropbtn">Payrolls &#9660;</button>
-        <div class="dropdown-content">
-        <a href="{{ route('setsalary.index') }}">Set Salary </a>
-        <a href="{{ route('payslip.index') }}">Payslip </a>
-        </div>
-        </div>
-    </div>
-</div> --}}
-
-<div class="employees-nav me-2">
-    <div class="nav-titles">
-        <div class="dropdown">
-        <button class="dropbtn">Performance &#9660;</button>
-        <div class="dropdown-content">
-            <a href="{{ route('performancecycle.index') }}">{{ __("Manage Performance") }} </a>
-            <a href="{{ route('meetingtemplate.index') }}">{{ __("1 on 1's") }} </a>
-            <a href="{{ route('employeereviews.index') }}">{{ __('Employee Reviews') }}</a>
-            <a href="{{ route('appraisal.index') }}">{{ __('Appraisal') }}</a>
-            <a href="{{ route('trainingevent.index') }}">{{ __('Manage Training Events') }}</a>
-            <a href="{{ route('trainingeventrequest.index') }}">{{ __('Training Event Requests') }}</a>
-            <a href="{{ route('employee.probation.index') }}">{{ __('Probation') }}</a>
-            <a href="{{ route('promotion.index') }}">{{ __('Employee Promotion') }}</a>
-            <a href="{{ route('warning.index') }}">{{ __('Employee Warnings') }}</a>
-        </div>
-        </div>
-    </div>
-</div>
-
-<div>
-    <a href="{{ route('employee.export') }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Export') }}" class="btn btn-sm btn-warning">
-        <i class="ti ti-file-export"></i>
-    </a>
-    <a href="#" data-url="{{ route('employee.file.import') }}" data-ajax-popup="true" data-title="{{ __('Import  employee CSV file') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Import') }}">
-        <i class="ti ti-file"></i>
-    </a>
-    @can('Create Employee')
-    <a href="{{ route('employee.create') }}" data-title="{{ __('Create New Employee') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-warning" data-bs-original-title="{{ __('Create') }}">
-        <i class="ti ti-plus"></i>
-    </a>
-    @endcan
-</div>
-
-</div>
-
+<a href="#" data-url="{{ route('employee.file.import') }}" data-ajax-popup="true" data-title="{{ __('Import  employee CSV file') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Import') }}">
+    <i class="ti ti-file"></i>
+</a>
+@can('Create Employee')
+<a href="{{ route('employee.create') }}" data-title="{{ __('Create New Employee') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+    <i class="ti ti-plus"></i>
+</a>
+@endcan
 @endsection
 
 @section('content')
-
-
-<style>
-
-.employees-actions{
-    display:flex;
-    justify-content:space-between;
-}
-
-/* Dropdown container */
-.dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  /* Dropdown button */
-  .dropbtn {
-    background-color: orange;
-    color: white;
-    padding: 6px;
-    padding-left: 1.3rem;
-    padding-right: 1.3rem;
-    font-size: 12px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  
-  /* Dropdown content */
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    right: 1px;
-    font-size: 12px;
-  }
-  
-  /* Links inside the dropdown */
-  .dropdown-content a {
-    color: black !important;
-    padding: 5px 12px;
-    text-decoration: none;
-    display: block;
-  }
-  
-  /* Change color of links on hover */
-  .dropdown-content a:hover {
-    background-color: orange;
-    color:white !important;
-}
-  
-  /* Show the dropdown menu on hover */
-  .dropdown:hover .dropdown-content {display: block;}
-  
-  /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .dropbtn {color: white;}
-  
-
-
-
-</style>
-
-
-
-
 <div class="col-xl-12">
     <div class="card">
         <div class="card-header card-body table-border-style">
@@ -165,16 +33,17 @@
                 <table class="table" id="pc-dt-simple">
                     <thead>
                         <tr>
+                            <th>{{ __('Employee ID') }}</th>
                             <th>{{ __('Name') }}</th>
                             <th>{{ __('Email') }}</th>
                             <th>{{ __('Branch') }}</th>
-                            <th>{{ __('Manager') }}</th>
                             <th>{{ __('Department') }}</th>
                             <th>{{ __('Designation') }}</th>
                             <th>{{ __('Date Of Joining') }}</th>
-                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Total Duration') }}</th>
+                            <th>{{ __('Duration Left') }}</th>
                             @if (Gate::check('Edit Employee') || Gate::check('Delete Employee'))
-                            <th width="200px">{{ __('Action') }}</th>
+                            <!-- <th width="200px">{{ __('Action') }}</th> -->
                             @endif
                         </tr>
                     </thead>
@@ -182,18 +51,16 @@
                         @foreach ($employees as $employee)
                         <tr>
                             <td>
-                                <a href="{{ route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}">
-                                    <img class="rounded-circle me-1" src="{{asset( '/assets/images/user/avatar-4.jpg' )}}" alt="{{ env('APP_NAME') }}"  style="height: 15%;width: 15%" />
-                                    {{ $employee->name }}
-                                    <i class="ti ti-arrow-right"></i>
-                                </a>
+                                @can('Show Employee')
+                                <a class="btn btn-outline-primary" href="{{ route('employee.show', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}">{{ \Auth::user()->employeeIdFormat($employee->employee_id) }}</a>
+                                @else
+                                <a href="#" class="btn btn-outline-primary">{{ \Auth::user()->employeeIdFormat($employee->employee_id) }}</a>
+                                @endcan
                             </td>
+                            <td>{{ $employee->name }}</td>
                             <td>{{ !empty($employee->email) ? $employee->email : '-' }}</td>
                             <td>
                                 {{ !empty($employee->branch_id) ? $employee->branch->name : '-' }}
-                            </td>
-                            <td>
-                                {{ !empty($employee->manager_id) ? $employee->manager->name : '-' }}
                             </td>
                             <td>
                                 {{ !empty($employee->department_id) ? $employee->department->name : '-' }}
@@ -205,15 +72,36 @@
                                 {{ \Auth::user()->dateFormat($employee->company_doj) }}
                             </td>
                             <td>
-                                {{ $employee->employee_type }}
+                                {{ $employee->probationDetails->duration . ' Days'}}
+                            </td>
+                            <td>
+                                @php
+                                $probationDetails = $employee->probationDetails;
+                                if ($probationDetails) {
+                                $startDate = strtotime($probationDetails->started_date);
+                                $currentDate = strtotime(date('Y-m-d'));
+                                $durationLeft = $probationDetails->duration - floor(($currentDate - $startDate) / (60 * 60 * 24));
+
+                                echo max(0, $durationLeft) . ' Days';
+                                }
+                                @endphp
                             </td>
                             @if (Gate::check('Edit Employee') || Gate::check('Delete Employee'))
-                            <td class="Action">
+                            <!-- <td class="Action">
                                 @if ($employee->is_active == 1)
                                 <span>
+                                    @can('Edit Employee Type')
+                                    <div class="action-btn bg-warning ms-2">
+                                        {!! Form::open(['method' => 'put', 'route' => ['employee.probation.update', $employee->id], 'id' => 'probation-update-form-' . $employee->id]) !!}
+                                        <button class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Convert to Permanent Employee') }}" type="submit">
+                                            <i class="ti ti-arrows-right-left text-white"></i>
+                                        </button>
+                                        </form>
+                                    </div>
+                                    @endcan
 
                                     @can('Show Personal File')
-                                    <div class="action-btn bg-warning ms-2">
+                                    <div class="action-btn bg-primary ms-2">
                                         <a href="{{ route('employee.personalFile', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}" class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Personal File') }}">
                                             <i class="ti ti-file text-white"></i>
                                         </a>
@@ -239,7 +127,7 @@
                                 @else
                                 <i class="ti ti-lock"></i>
                                 @endif
-                            </td>
+                            </td> -->
                             @endif
                         </tr>
                         @endforeach
