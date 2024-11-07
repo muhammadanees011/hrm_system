@@ -175,9 +175,12 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                 @endif
     
                 @endif
+                @if (\Auth::user()->type == 'employee')
                 <li class="dash-item {{ Request::segment(1) == 'meet-team' ? 'active' : '' }}">
                     <a href="{{ route('employee.meetTeam') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-users"></i></span><span class="dash-mtext">{{ __('Meet Team') }}</span></a>
                 </li>
+                @endif
+               
 
                 {{-- <li class="dash-item {{ Request::segment(1) == 'video' ? 'active' : '' }}">
                 <a href="{{ route('video.index') }}" class="dash-link"><span class="dash-micon"><i class="ti ti-video"></i></span><span class="dash-mtext">{{ __('Videos') }}</span></a>

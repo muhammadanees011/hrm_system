@@ -105,7 +105,7 @@ $initial = strtoupper(substr($userDetail->name, 0, 2));
                                                 </div>
                                                 <input type="file" class="form-control file" name="profile" id="profile" onchange="handleChange(event)">
 
-                                                @if (!empty($userDetail) && $userDetail->avatar != 'avatar.png')
+                                                @if (!empty($userDetail) && $userDetail->avatar != 'avatar.png' && $userDetail->avatar != "")
                                                 <img id="blah"  width="100" style="border-radius: 50%" src="{{ !empty($userDetail->avatar) ? $profile . $userDetail->avatar : asset('assets/images/user/avatar-1.jpg') }}" />
                                                 @else
 

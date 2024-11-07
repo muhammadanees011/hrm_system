@@ -596,30 +596,32 @@ class EmployeeController extends Controller
     }
 
     public function meetTeam(Request $request)
-    {
-        $employees = Employee::where('created_by', \Auth::user()->creatorId())->with(['designation', 'user']);
-        if (!empty($request->branch)) {
-            $employees->where('branch_id', $request->branch);
-        }
-        if (!empty($request->department)) {
-            $employees->where('department_id', $request->department);
-        }
-        if (!empty($request->designation)) {
-            $employees->where('designation_id', $request->designation);
-        }
-        $employees = $employees->get();
+{
+    $authUser = \Auth::user();
+    $teamId = $authUser->employee->team_id;
+    $managerId = $authUser->employee->manager_id;
+    
+    // Retrieve employees within the same team
+    $employees = Employee::where('team_id', $teamId)
+        ->with(['designation', 'user', 'manager'])
+        ->get()
+        ->groupBy('manager_id');
 
-        $brances = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-        $brances->prepend('All', '0');
+    // Filter out only the branches, departments, and designations as dropdown options
+    $branches = Branch::where('created_by', $authUser->creatorId())->get()->pluck('name', 'id');
+    $branches->prepend('All', '0');
 
-        $departments = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-        $departments->prepend('All', '0');
+    $departments = Department::where('created_by', $authUser->creatorId())->get()->pluck('name', 'id');
+    $departments->prepend('All', '0');
 
-        $designations = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
-        $designations->prepend('All', '0');
+    $designations = Designation::where('created_by', $authUser->creatorId())->get()->pluck('name', 'id');
+    $designations->prepend('All', '0');
 
-        return view('employee.meetTeam', compact('employees', 'departments', 'designations', 'brances'));
-    }
+    return view('employee.meetTeam', compact('employees', 'branches', 'departments', 'designations', 'managerId'));
+}
+
+
+    
 
 
     public function profileShow($id)

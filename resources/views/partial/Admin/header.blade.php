@@ -32,7 +32,7 @@
                             <!-- <img alt="#"
                                 src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}"
                                 class="logo logo-lg" style="width: 100%; border-radius: 50%;"> -->
-                                @if($users->avatar)
+                                @if($users->avatar && $users->avatar != 'avatar.png' && $users->avatar != "")
                                 <img src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}" alt="{{ env('APP_NAME') }}" class="logo logo-lg" style="width: 100%; border-radius: 50%;" />
                                 @else
                                 <span class="logo logo-lg" style="width: 100%; border-radius: 50%; background-color: #f1f2f7; color: #000; display: flex; justify-content: center; align-items: center;">{{ $initial }}</span>
