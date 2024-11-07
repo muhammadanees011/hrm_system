@@ -177,16 +177,15 @@
                 </div>
                 <div class="card-body">
                    <ul class="">
-                        <li class="mb-2">
-                            <h6 class="mb-0 text-primary">Iqbal Day</h6>
-                            <span class="text-dark">November 9th 2024 | All Day</span>
-                            <p class="mb-0 text-secondary" style="font-size: 14px;">Birthdate of the famous poet Dr. Allama Iqabal</p>
-                        </li>
-                        <li class="mb-2">
-                            <h6 class="mb-0 text-primary">Christmas</h6>
-                            <span class="text-dark">Dec 25th - Dec 28th 2014</span>
-                            <p class="mb-0 text-secondary" style="font-size: 14px;">Chrismas holidays for are christans</p>
-                        </li>
+                    @foreach ($leaves as $leave)
+                    <li class="mb-2">
+                        <h6 class="mb-0 text-primary">{{ $leave->leaveType->title}}|{{ ucfirst(str_replace('_',' ', $leave->leave_duration)) }}</h6>
+                        <span class="text-dark"> <b>Start Date : </b> {{\Auth::user()->dateFormat($leave->start_date)}} </span>
+                        <span class="text-dark"><b>End Date : </b> {{\Auth::user()->dateFormat($leave->end_date)}} </span>
+                        <p class="mb-0 text-secondary" style="font-size: 14px;">{{ $leave->leave_reason }}</p>
+                    </li>    
+                    @endforeach
+                      
                    </ul>
                     
                 </div>

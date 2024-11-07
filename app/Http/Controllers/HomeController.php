@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\FlexiTime;
 use App\Models\Job;
 use App\Models\LandingPageSection;
+use App\Models\Leave as LocalLeave;
 use App\Models\Meeting;
 use App\Models\Payees;
 use App\Models\Payer;
@@ -91,7 +92,9 @@ class HomeController extends Controller
                 $officeTime['endTime']   = Utility::getValByName('company_end_time');
 
                 $flexiTime = FlexiTime::where('status','approved')->where('start_date', '>=', $date)->Where('end_date','<=', $date)->first();
-                return view('dashboard.dashboard', compact('arrEvents', 'announcements', 'employees', 'meetings', 'employeeAttendance', 'officeTime','flexiTime'));
+                $leaves = LocalLeave::where('created_by', '=', \Auth::user()->creatorId())->with(['employees', 'leaveType'])->orderBy('id', 'DESC')->get();
+        
+                return view('dashboard.dashboard', compact('arrEvents', 'announcements', 'employees', 'meetings', 'employeeAttendance', 'officeTime','flexiTime','leaves'));
             }
             else
             {
