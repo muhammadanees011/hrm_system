@@ -35,6 +35,7 @@ use App\Models\LoginDetail;
 use App\Models\PaySlip;
 use Spatie\Permission\Models\Role;
 use App\Models\Team;
+use App\Models\Notification;
 
 //use Faker\Provider\File;
 
@@ -305,7 +306,7 @@ class EmployeeController extends Controller
 
                 return redirect()->back()->with('error', $messages->first());
             }
-
+            $originalEmployee = Employee::findOrFail($id);
             $employee = Employee::findOrFail($id);
 
             if ($request['employee_type'] == 'Probation') {
@@ -363,13 +364,72 @@ class EmployeeController extends Controller
             $input    = $request->all();
             $employee->fill($input)->save();
 
-            // $notification=new Notification();
-            // $notification->sender_id=\Auth::user()->id;
-            // $notification->receiver_id=$eventrequest->employees->user_id;
-            // $notification->title='Your event perticipation request changed to '.$request->status;
-            // $notification->body =\Auth::user()->name.' has changed Your event perticipation request to '.$request->status.'';
-            // $notification->read=false;
+            // $notification = new Notification();
+            // $notification->sender_id = \Auth::user()->id;
+            // $notification->receiver_id = $employee->user_id;
+            // $notification->title = 'Your profile has been updated';
+            // $notification->body = \Auth::user()->name . ' has updated your profile details.';
+            // $notification->read = false;
             // $notification->save();
+
+            $hrAndAdminUsers = \App\Models\User::whereIn('type', ['hr', 'company'])->get();
+$updatedFields = [];
+
+// Compare fields and identify which ones have been updated
+if ($originalEmployee->name !== $request->name) {
+    $updatedFields[] = 'Name';
+}
+if ($originalEmployee->phone !== $request->phone) {
+    $updatedFields[] = 'Phone';
+}
+if ($originalEmployee->dob !== $request->dob) {
+    $updatedFields[] = 'Date of Birth';
+}
+if ($originalEmployee->gender !== $request->gender) {
+    $updatedFields[] = 'Gender';
+}
+if ($originalEmployee->address !== $request->address) {
+    $updatedFields[] = 'Address';
+}
+if ($originalEmployee->account_holder_name !== $request->account_holder_name) {
+    $updatedFields[] = 'Account Holder Name';
+}
+if ($originalEmployee->account_number !== $request->account_number) {
+    $updatedFields[] = 'Account Number';
+}
+if ($originalEmployee->bank_name !== $request->bank_name) {
+    $updatedFields[] = 'Bank Name';
+}
+if ($originalEmployee->bank_identifier_code !== $request->bank_identifier_code) {
+    $updatedFields[] = 'Bank Identifier Code';
+}
+if ($originalEmployee->branch_location !== $request->branch_location) {
+    $updatedFields[] = 'Branch Location';
+}
+if ($originalEmployee->tax_payer_id !== $request->tax_payer_id) {
+    $updatedFields[] = 'Tax Payer ID';
+}
+// Generate notification body based on updated fields
+if (!empty($updatedFields)) {
+    $updatedFieldsList = implode(', ', $updatedFields);
+    $notificationBody = 'The following fields of employee ' . $employee->name . ' have been updated by ' . \Auth::user()->name . ': ' . $updatedFieldsList . '.';
+} else {
+    $notificationBody = 'The profile of employee ' . $employee->name . ' has been updated by ' . \Auth::user()->name . '.';
+}
+
+// Send notifications to HR and Admin users
+foreach ($hrAndAdminUsers as $user) {
+    $notification = new Notification();
+    $notification->sender_id = \Auth::user()->id;
+    $notification->receiver_id = $user->id;
+    $notification->title = 'Employee profile updated';
+    $notification->body = $notificationBody;
+    $notification->read = false;
+    $notification->save();
+}
+
+
+            
 
             if ($request->salary) {
                 return redirect()->route('setsalary.index')->with('success', 'Employee successfully updated.');

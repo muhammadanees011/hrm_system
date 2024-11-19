@@ -86,11 +86,18 @@
                             <div>
                                 <a href="#" class="show-listView"></a>
                                 @foreach($notifications as $notification)
-                                <div class="mb-1 d-flex">
-                                <i class="fas fa-arrow-right ms-4 mt-1"></i><p style="font-size:12px;" class="ms-2">{{$notification->title}}</p>
-                                </div>
+                                    <div class="mb-1 d-flex">
+                                        <i class="fas fa-arrow-right ms-4 mt-1"></i>
+                                        <p style="font-size:12px;" class="ms-2">
+                                            <strong>{{ $notification->title }}</strong>
+                                        </p>
+                                    </div>
+                                    <div class="mb-2 ms-4">
+                                        <p style="font-size:12px;">{{ $notification->body }}</p>
+                                    </div>
                                 @endforeach
                             </div>
+                            
                         </div>
                         <div class="noti-footer">
                             <div class="d-grid">

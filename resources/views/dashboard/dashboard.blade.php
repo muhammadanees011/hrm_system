@@ -45,6 +45,122 @@
 
 
     @if (\Auth::user()->type == 'employee')
+    
+    <div class="col-xxl-12">
+            
+            <div class="card">
+                    <div class="card-header d-flex align-items-center gap-2 flex-wrap justify-content-between">
+                        
+                        <h5>{{ __('Mark Attandance') }}</h5>
+                        @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+                <h6 class="mb-0 elpased-time">{{formatElapsedTime($employeeAttendance->clock_in)}}
+                @if (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00'))
+                <i class="ti ti-player-pause text-warning"></i>
+                @else
+                <i class="ti ti-player-play text-primary"></i>
+                @endif
+                </h6>
+            @endif
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center py-0 gap-4">
+                            <div class="col-auto p-3" style="background: rgba(88,78,210,0.2);border-radius: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-success" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-check">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M20.942 13.021a9 9 0 1 0 -9.407 7.967" />
+  <path d="M12 7v5l3 3" />
+  <path d="M15 19l2 2l4 -4" />
+</svg>
+                            </div>
+                            <div class="col-10">
+                                <h6 class="text-warning">Tip: Don't Forget to Clock In!</h6>
+                            @if(!empty($flexiTime))
+                            <p class="text-warning p-1">Your request time of {{$flexiTime->hours}} hours for today will be adjusted when you clockout.</p> 
+                        @endif
+                        <p class="text-muted pb-0-5">
+                            {{ __('My Office Time: ' . $officeTime['startTime'] . ' to ' . $officeTime['endTime']) }}</p>
+                            <div class="d-flex align-items-center gap-3">
+                            <div class="">
+                            {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post']) }}
+                            @if (empty($employeeAttendance) || $employeeAttendance->clock_out != '00:00:00')
+                                <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-play">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M12 7v5l2 2" />
+                                    <path d="M17 22l5 -3l-5 -3z" />
+                                    <path d="M13.017 20.943a9 9 0 1 1 7.831 -7.292" />
+                                </svg>
+                                    {{ __('CLOCK IN') }}</button>
+                            @else
+                                <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary disabled" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-play">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 7v5l2 2" />
+                                <path d="M17 22l5 -3l-5 -3z" />
+                                <path d="M13.017 20.943a9 9 0 1 1 7.831 -7.292" />
+                                </svg>
+                                {{ __('CLOCK IN') }}</button>
+                            @endif
+                            {{ Form::close() }}
+                        </div>
+        
+                        <div class="">
+            @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+            <div class="d-flex justify-content-between">
+                {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post', 'class' => 'mr-2']) }}
+                
+                @if (empty($employeeAttendance->break_start) || $employeeAttendance->break_start === '00:00:00')
+                    <!-- Show START BREAK button if break hasn't started -->
+                    <button type="submit" value="start" name="break" class="btn btn-warning text-nowrap text-truncate">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-pause">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M20.942 13.018a9 9 0 1 0 -7.909 7.922" />
+                    <path d="M12 7v5l2 2" />
+                    <path d="M17 17v5" />
+                    <path d="M21 17v5" />
+                    </svg>
+                        {{ __('START BREAK') }}</button>
+                @elseif (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00' || empty($employeeAttendance->break_end)))
+                    <!-- Show END BREAK button if break has started but not ended -->
+                    <button type="submit" value="end" name="break" class="btn btn-warning">{{ __('END BREAK') }}</button>
+                @endif
+                
+                {{ Form::close() }}
+            </div>
+        @endif
+    </div>
+        <div class="">
+            @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
+                {{ Form::model($employeeAttendance, ['route' => ['attendanceemployee.update', $employeeAttendance->id], 'method' => 'PUT']) }}
+                <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger">
+                
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-stop">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M21 12a9 9 0 1 0 -9 9" />
+                <path d="M12 7v5l1 1" />
+                <path d="M16 16h6v6h-6z" />
+                </svg>
+                {{ __('CLOCK OUT') }}</button>
+                
+                {{ Form::close() }}
+            @else
+                <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger disabled" disabled>{{ __('CLOCK OUT') }}</button>
+            @endif
+        </div>
+                            </div>
+                            <div class="row">
+                        
+        
+    
+    
+    
+    </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+            </div>
         <div class="col-xxl-6">
             <div class="card">
                 <div class="card-header">
@@ -74,102 +190,6 @@
             </div>
         </div>
         <div class="col-xxl-6">
-            <div class="card">
-                <div class="card-header d-flex align-items-center gap-2 flex-wrap justify-content-between">
-                    
-                    <h5><i class="ti ti-clock me-2"></i> {{ __('Mark Attandance') }}</h5>
-                    @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
-            <h6 class="mb-0 elpased-time">{{formatElapsedTime($employeeAttendance->clock_in)}}
-            @if (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00'))
-            <i class="ti ti-player-pause text-warning"></i>
-            @else
-            <i class="ti ti-player-play text-primary"></i>
-            @endif
-            </h6>
-        @endif
-                </div>
-                <div class="card-body">
-                    @if(!empty($flexiTime))
-                        <p class="text-warning p-1">Your request time of {{$flexiTime->hours}} hours for today will be adjusted when you clockout.</p> 
-                    @endif
-                    <p class="text-muted pb-0-5">
-                        {{ __('My Office Time: ' . $officeTime['startTime'] . ' to ' . $officeTime['endTime']) }}</p>
-                        <div class="row">
-                    <div class="col-md-4 border-right">
-                        {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post']) }}
-                        @if (empty($employeeAttendance) || $employeeAttendance->clock_out != '00:00:00')
-                            <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-play">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M12 7v5l2 2" />
-                                <path d="M17 22l5 -3l-5 -3z" />
-                                <path d="M13.017 20.943a9 9 0 1 1 7.831 -7.292" />
-                            </svg>
-                                {{ __('CLOCK IN') }}</button>
-                        @else
-                            <button type="submit" value="0" name="in" id="clock_in" class="btn btn-primary disabled" disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-play">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M12 7v5l2 2" />
-                            <path d="M17 22l5 -3l-5 -3z" />
-                            <path d="M13.017 20.943a9 9 0 1 1 7.831 -7.292" />
-                            </svg>
-                            {{ __('CLOCK IN') }}</button>
-                        @endif
-                        {{ Form::close() }}
-                    </div>
-    
-                    <div class="col-md-4">
-        @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
-        <div class="d-flex justify-content-between">
-            {{ Form::open(['url' => 'attendanceemployee/attendance', 'method' => 'post', 'class' => 'mr-2']) }}
-            
-            @if (empty($employeeAttendance->break_start) || $employeeAttendance->break_start === '00:00:00')
-                <!-- Show START BREAK button if break hasn't started -->
-                <button type="submit" value="start" name="break" class="btn btn-warning text-nowrap text-truncate">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-pause">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M20.942 13.018a9 9 0 1 0 -7.909 7.922" />
-                <path d="M12 7v5l2 2" />
-                <path d="M17 17v5" />
-                <path d="M21 17v5" />
-                </svg>
-                    {{ __('START BREAK') }}</button>
-            @elseif (!empty($employeeAttendance->break_start) && ($employeeAttendance->break_end === '00:00:00' || empty($employeeAttendance->break_end)))
-                <!-- Show END BREAK button if break has started but not ended -->
-                <button type="submit" value="end" name="break" class="btn btn-warning">{{ __('END BREAK') }}</button>
-            @endif
-            
-            {{ Form::close() }}
-        </div>
-    @endif
-</div>
-    <div class="col-md-4">
-        @if (!empty($employeeAttendance) && $employeeAttendance->clock_out == '00:00:00')
-            {{ Form::model($employeeAttendance, ['route' => ['attendanceemployee.update', $employeeAttendance->id], 'method' => 'PUT']) }}
-            <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger">
-            
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-clock-stop">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M21 12a9 9 0 1 0 -9 9" />
-            <path d="M12 7v5l1 1" />
-            <path d="M16 16h6v6h-6z" />
-            </svg>
-            {{ __('CLOCK OUT') }}</button>
-            
-            {{ Form::close() }}
-        @else
-            <button type="submit" value="1" name="out" id="clock_out" class="btn btn-danger disabled" disabled>{{ __('CLOCK OUT') }}</button>
-        @endif
-    </div>
-    
-
-
-
-</div>
-
-                </div>
-            </div>
             
             <div class="card">
                 <div class="card-header card-body table-border-style">
