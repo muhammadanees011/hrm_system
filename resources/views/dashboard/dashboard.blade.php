@@ -839,8 +839,8 @@
             window.addEventListener('DOMContentLoaded', () => {
 
                 // if auth user employee table have istour_done = 0 then start tour
-                const isTourDone = '{{ Auth::user()->employee->istour_done }}';
-                if (isTourDone == 0) {
+                const employee = '{{ Auth::user()->employee }}';
+                if (employee && employee.istour_done == 0) {
                     startTour();
                 }
             })
