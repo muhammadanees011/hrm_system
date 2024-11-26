@@ -321,7 +321,7 @@
 
     }
     window.addEventListener('DOMContentLoaded', () => {
-            const employee = '{{ Auth::user()->employee }}';
+        const employee = {!! json_encode(Auth::user()->employee) !!};
             if (employee && employee.istour_done == 0) {
                 startTour();
             }
