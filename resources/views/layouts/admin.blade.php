@@ -86,7 +86,9 @@
 
     <!-- vendor css -->
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css') }}">
+    <link rel="stylesheet" href="{{ asset('libs/introjs/introjs.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/hrmstyles.css') }}">
 
     <style>
         :root {
@@ -278,6 +280,7 @@
 <![endif]-->
     <!-- Warning Section Ends -->
     <!-- Required Js -->
+    <script src="{{ asset('libs/introjs/intro.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/choices.min.js') }}"></script>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/jquery.form.js') }}"></script>

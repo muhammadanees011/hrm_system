@@ -288,6 +288,13 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
 
+    Route::post('employee/tourdone', [EmployeeController::class, 'tourdone'])->name('employee.tourdone')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
     Route::post('employee/getdepartment', [EmployeeController::class, 'getdepartment'])->name('employee.getdepartment')->middleware(
         [
             'auth',
@@ -609,7 +616,7 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('/employees/leavesummary', [LeaveSummaryController::class, 'employees'])->name('leavesummary.employees')->middleware(['auth', 'XSS',]);
     Route::get('/employees/leavesummary/{id}', [LeaveSummaryController::class, 'employeeLeaveSummary'])->name('leavesummary.employee')->middleware(['auth', 'XSS',]);
     Route::get('/delete/leavesummary/{id}/{employee_id}', [LeaveSummaryController::class, 'destroy'])->name('leavesummary.destroy')->middleware(['auth', 'XSS',]);
-
+    
     Route::resource('carryover', CarryOverController::class)->middleware(['auth', 'XSS',]);
     Route::get('carryover/{id}/action', [CarryOverController::class, 'action'])->name('carryover.action')->middleware(['auth', 'XSS',]);
     Route::post('carryover/changeaction', [CarryOverController::class, 'changeaction'])->name('carryover.changeaction')->middleware(['auth', 'XSS',]);

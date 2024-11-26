@@ -1197,4 +1197,15 @@ foreach ($hrAndAdminUsers as $user) {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+
+    public function tourdone(Request $request)
+    {
+        $employee = Employee::find(\Auth::user()->employee->id);
+        $employee->istour_done = 1;
+        $employee->save();
+
+        return response()->json(['success' => true, 'message' => __('Tour done successfully.')], 200);
+    }
+    
+    
 }

@@ -57,8 +57,8 @@
 
                     $('.department_id').empty();
                     var emp_selct = `<select class="form-control department_id" name="department_id" id="choices-multiple"
-                                                    placeholder="Select Department" >
-                                                    </select>`;
+                                                                placeholder="Select Department" >
+                                                                </select>`;
                     $('.department_div').html(emp_selct);
 
                     $('.department_id').append('<option value="0"> {{ __('All') }} </option>');
@@ -186,14 +186,14 @@
                             </div>
 
                             <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 month">
-                                <div class="btn-box">
+                                <div class="btn-box change-monthly-attendance-view">
                                     {{ Form::label('month', __('Month'), ['class' => 'form-label']) }}
                                     {{ Form::month('month', isset($_GET['month']) ? $_GET['month'] : date('Y-m'), ['class' => 'month-btn form-control month-btn']) }}
                                 </div>
                             </div>
-                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 date">
-                                <div class="btn-box">
-                                    {{ Form::label('date', __('Date'), ['class' => 'form-label']) }}
+                            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 date ">
+                                <div class="btn-box" id="change-monthly-attendance-view">
+                                    {{ Form::label('date', __('Date'), ['class' => 'form-label ']) }}
                                     {{ Form::date('date', isset($_GET['date']) ? $_GET['date'] : '', ['class' => 'form-control month-btn']) }}
                                 </div>
                             </div>
@@ -261,7 +261,7 @@
 <div class="col-xl-12">
     <div class="row">
         <div class="col-xl-7">
-            <div class="card">
+            <div class="card" id="attendanceoverviewcard">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="col-lg-10 col-md-10 col-sm-10">
@@ -274,7 +274,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-5">
+        <div class="col-xl-5" id="specific-attandance">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -284,7 +284,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-12 specific-date-attendance">
                         {{ Form::date('overview_date', isset($_GET['overview_date']) ? $_GET['overview_date'] : date('Y-m-d'), ['class' => 'form-control month-btn overview-date']) }}
                     </div>
                     <div id="donut-chart"></div>
@@ -300,30 +300,30 @@
     <div class="card">
         <div class="card-header card-body table-border-style">
             @if (!$employee_id)
-            
-            <div class="table-responsive">
-                <table class="table" id="pc-dt-simple">
-                    <thead>
-                        <tr>
-                            @if (\Auth::user()->type != 'employee')
-                                <th>{{ __('Employee') }}</th>
-                            @endif
-                            <th>{{ __('Date') }}</th>
-                            <th>{{ __('Status') }}</th>
-                            <th>{{ __('Clock In') }}</th>
-                            <th>{{ __('Clock Out') }}</th>
-                            <th>{{ __('Late') }}</th>
-                            <th>{{ __('Early Leaving') }}</th>
-                            <th>{{ __('Overtime') }}</th>
-                            <th>{{ __('FlexiTime') }}</th>
-                            @if (Gate::check('Edit Attendance') || Gate::check('Delete Attendance'))
-                                <th width="200px">{{ __('Action') }}</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
 
-                        @foreach ($attendanceEmployee as $attendance)
+                <div class="table-responsive">
+                    <table class="table" id="pc-dt-simple">
+                        <thead>
+                            <tr>
+                                @if (\Auth::user()->type != 'employee')
+                                    <th>{{ __('Employee') }}</th>
+                                @endif
+                                <th>{{ __('Date') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Clock In') }}</th>
+                                <th>{{ __('Clock Out') }}</th>
+                                <th>{{ __('Late') }}</th>
+                                <th>{{ __('Early Leaving') }}</th>
+                                <th>{{ __('Overtime') }}</th>
+                                <th>{{ __('FlexiTime') }}</th>
+                                @if (Gate::check('Edit Attendance') || Gate::check('Delete Attendance'))
+                                    <th width="200px">{{ __('Action') }}</th>
+                                @endif
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach ($attendanceEmployee as $attendance)
                                         <tr>
                                             <td>
                                                 <a href="{{ URL::to('attendanceemployee/user-timesheets/' . $attendance->employee_id) }}"
@@ -345,185 +345,185 @@
                                             <td>{{$attendance->requested_time ?? ""}}</td>
                                             <td class="Action">
                                                 @if (Gate::check('Edit Attendance') || Gate::check('Delete Attendance'))
-                                                                        <span>
-                                                                            @can('Edit Attendance')
-                                                                                <div class="action-btn bg-info ms-2">
-                                                                                    <a href="#" class="mx-3 btn btn-sm  align-items-center" data-size="lg"
-                                                                                        data-url="{{ URL::to('attendanceemployee/' . $attendance->id . '/edit') }}"
-                                                                                        data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip" title=""
-                                                                                        data-title="{{ __('Edit Attendance') }}"
-                                                                                        data-bs-original-title="{{ __('Edit') }}">
-                                                                                        <i class="ti ti-pencil text-white"></i>
-                                                                                    </a>
-                                                                                </div>
-                                                                            @endcan
+                                                                    <span>
+                                                                        @can('Edit Attendance')
+                                                                            <div class="action-btn bg-info ms-2">
+                                                                                <a href="#" class="mx-3 btn btn-sm  align-items-center" data-size="lg"
+                                                                                    data-url="{{ URL::to('attendanceemployee/' . $attendance->id . '/edit') }}"
+                                                                                    data-ajax-popup="true" data-size="md" data-bs-toggle="tooltip" title=""
+                                                                                    data-title="{{ __('Edit Attendance') }}"
+                                                                                    data-bs-original-title="{{ __('Edit') }}">
+                                                                                    <i class="ti ti-pencil text-white"></i>
+                                                                                </a>
+                                                                            </div>
+                                                                        @endcan
 
-                                                                            @can('Delete Attendance')
-                                                                                                        <div class="action-btn bg-danger ms-2">
-                                                                                                            {!! Form::open([
-                                                                                    'method' => 'DELETE',
-                                                                                    'route' => ['attendanceemployee.destroy', $attendance->id],
-                                                                                    'id' => 'delete-form-' . $attendance->id,
-                                                                                ]) !!}
-                                                                                                            <a href="#" class="mx-3 btn btn-sm  align-items-center bs-pass-para"
-                                                                                                                data-bs-toggle="tooltip" title="" data-bs-original-title="Delete"
-                                                                                                                aria-label="Delete"><i class="ti ti-trash text-white text-white"></i></a>
-                                                                                                            </form>
-                                                                                                        </div>
-                                                                            @endcan
-                                                                        </span>
+                                                                        @can('Delete Attendance')
+                                                                                                <div class="action-btn bg-danger ms-2">
+                                                                                                    {!! Form::open([
+                                                                                'method' => 'DELETE',
+                                                                                'route' => ['attendanceemployee.destroy', $attendance->id],
+                                                                                'id' => 'delete-form-' . $attendance->id,
+                                                                            ]) !!}
+                                                                                                    <a href="#" class="mx-3 btn btn-sm  align-items-center bs-pass-para"
+                                                                                                        data-bs-toggle="tooltip" title="" data-bs-original-title="Delete"
+                                                                                                        aria-label="Delete"><i class="ti ti-trash text-white text-white"></i></a>
+                                                                                                    </form>
+                                                                                                </div>
+                                                                        @endcan
+                                                                    </span>
                                                 @endif
                                             </td>
                                         </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                <div id="user-chart" class="chart-container">
-                    {{-- This is where the chart will be rendered --}}
+                    <div id="user-chart" class="chart-container">
+                        {{-- This is where the chart will be rendered --}}
+                    </div>
                 </div>
-            </div>
             @else
-            <div class="row">
-                <div class="col-12">
-                    <label for="attandance_range">Filter By Range</label>
-                    {{ Form::select('attandance_range', ["Day", "Week", "Month"], "Day", ['class' => 'form-control select2', 'id' => 'attandance_range']) }}
+                <div class="row">
+                    <div class="col-12" id="changetimesheetrange">
+                        <label for="attandance_range">Filter By Range</label>
+                        {{ Form::select('attandance_range', ["Day", "Week", "Month"], "Day", ['class' => 'form-control select2', 'id' => 'attandance_range']) }}
+                    </div>
                 </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-12">
-                    <nav>
-                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <button class="nav-link active" id="graph-view-tab" data-bs-toggle="tab"
-                                data-bs-target="#graph-view" type="button" role="tab" aria-controls="graph-view"
-                                aria-selected="true">Graph Report</button>
-                            <button class="nav-link" id="list-view-tab" data-bs-toggle="tab" data-bs-target="#list-view"
-                                type="button" role="tab" aria-controls="list-view" aria-selected="false">Time
-                                Sheets</button>
-                        </div>
-                    </nav>
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="graph-view" role="tabpanel"
-                            aria-labelledby="graph-view-tab">
+                <div class="row mt-4" id="timesheets">
+                    <div class="col-12">
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="graph-view-tab" data-bs-toggle="tab"
+                                    data-bs-target="#graph-view" type="button" role="tab" aria-controls="graph-view"
+                                    aria-selected="true">Graph Report</button>
+                                <button class="nav-link" id="list-view-tab" data-bs-toggle="tab" data-bs-target="#list-view"
+                                    type="button" role="tab" aria-controls="list-view" aria-selected="false">Time
+                                    Sheets</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="graph-view" role="tabpanel"
+                                aria-labelledby="graph-view-tab">
 
-                            <div class="row mt-4">
-                                <div class="col-lg-3 col-md-4">
-                                    <div class="card card-sm shadow-sm  p-0">
-                                        <div class="card-header p-2">
-                                            <h6 style="color: #584ED2 !important" class="mb-0"><span
-                                                    class="ti ti-point"></span> Worked</h6>
+                                <div class="row mt-4">
+                                    <div class="col-lg-3 col-md-4">
+                                        <div class="card card-sm shadow-sm  p-0">
+                                            <div class="card-header p-2">
+                                                <h6 style="color: #584ED2 !important" class="mb-0"><span
+                                                        class="ti ti-point"></span> Worked</h6>
+                                            </div>
+                                            <div class="card-body p-2 px-3" id="workedTime">
+                                                0 hours 0 minutes
+                                            </div>
                                         </div>
-                                        <div class="card-body p-2 px-3" id="workedTime">
-                                            0 hours 0 minutes
+                                    </div>
+                                    <div class="col-lg-3 col-md-4">
+                                        <div class="card card-sm shadow-sm  p-0">
+                                            <div class="card-header p-2">
+                                                <h6 style="color: #FF4560 !important" class="mb-0"><span
+                                                        class="ti ti-point"></span> Late</h6>
+                                            </div>
+                                            <div class="card-body p-2 px-3" id="lateTime">
+                                                0 hours 0 minutes
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-4">
+                                        <div class="card card-sm shadow-sm  p-0">
+                                            <div class="card-header p-2">
+                                                <h6 style="color: #008FFB !important" class="mb-0"><span
+                                                        class="ti ti-point"></span> Over time</h6>
+                                            </div>
+                                            <div class="card-body p-2 px-3" id="overTime">
+                                                0 hours 0 minutes
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-4">
+                                        <div class="card card-sm shadow-sm  p-0">
+                                            <div class="card-header p-2">
+                                                <h6 style="color: #FEB019 !important" class="mb-0"><span
+                                                        class="ti ti-point"></span> Early Leave</h6>
+                                            </div>
+                                            <div class="card-body p-2 px-3" id="earlyLeave">
+                                                0 hours 0 minutes
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-4 d-none">
+                                        <div class="card card-sm shadow-sm  p-0">
+                                            <div class="card-header p-2">
+                                                <h6 style="color: #00E396 !important" class="mb-0"><span
+                                                        class="ti ti-point"></span> Flexi Time</h6>
+                                            </div>
+                                            <div class="card-body p-2 px-3" id="flexiTime">
+                                                0 hours 0 minutes
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-4">
-                                    <div class="card card-sm shadow-sm  p-0">
-                                        <div class="card-header p-2">
-                                            <h6 style="color: #FF4560 !important" class="mb-0"><span
-                                                    class="ti ti-point"></span> Late</h6>
-                                        </div>
-                                        <div class="card-body p-2 px-3" id="lateTime">
-                                            0 hours 0 minutes
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-4">
-                                    <div class="card card-sm shadow-sm  p-0">
-                                        <div class="card-header p-2">
-                                            <h6 style="color: #008FFB !important" class="mb-0"><span
-                                                    class="ti ti-point"></span> Over time</h6>
-                                        </div>
-                                        <div class="card-body p-2 px-3" id="overTime">
-                                            0 hours 0 minutes
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-4">
-                                    <div class="card card-sm shadow-sm  p-0">
-                                        <div class="card-header p-2">
-                                            <h6 style="color: #FEB019 !important" class="mb-0"><span
-                                                    class="ti ti-point"></span> Early Leave</h6>
-                                        </div>
-                                        <div class="card-body p-2 px-3" id="earlyLeave">
-                                            0 hours 0 minutes
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-4 d-none">
-                                    <div class="card card-sm shadow-sm  p-0">
-                                        <div class="card-header p-2">
-                                            <h6 style="color: #00E396 !important" class="mb-0"><span
-                                                    class="ti ti-point"></span> Flexi Time</h6>
-                                        </div>
-                                        <div class="card-body p-2 px-3" id="flexiTime">
-                                            0 hours 0 minutes
-                                        </div>
+                                <div class="row mt-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div id="line-charts" style="height: 300px;"></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-2">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div id="line-charts" style="height: 300px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="list-view-tab">
+                            <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="list-view-tab">
 
 
-                            <div class="card mt-3 table-card">
-                                <div class="card-header">
-                                    <div class="row">
-                                        <div class="col-11">
-                                            <h5>{{ __('Attendance And Punctuality Report') }}</h5>
+                                <div class="card mt-3 table-card">
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h5>{{ __('Attendance And Punctuality Report') }}</h5>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card-body table-border-style">
-                                    <div class="table-responsive">
-                                        <table class="table" id="attendance_table">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="worked">
-                                                    <th>
-                                                        Worked Time
-                                                    </th>
-                                                </tr>
-                                                <tr class="late">
-                                                    <th>
-                                                        Late Time
-                                                    </th>
-                                                </tr>
-                                                <tr class="over">
-                                                    <th>
-                                                        Over Time
-                                                    </th>
-                                                </tr>
-                                                <tr class="early">
-                                                    <th>
-                                                        Early Leave
-                                                    </th>
-                                                </tr>
-                                                <tr class="flexi">
-                                                    <th>
-                                                        Flexi Leave
-                                                    </th>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="card-body table-border-style">
+                                        <div class="table-responsive">
+                                            <table class="table" id="attendance_table">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="worked">
+                                                        <th>
+                                                            Worked Time
+                                                        </th>
+                                                    </tr>
+                                                    <tr class="late">
+                                                        <th>
+                                                            Late Time
+                                                        </th>
+                                                    </tr>
+                                                    <tr class="over">
+                                                        <th>
+                                                            Over Time
+                                                        </th>
+                                                    </tr>
+                                                    <tr class="early">
+                                                        <th>
+                                                            Early Leave
+                                                        </th>
+                                                    </tr>
+                                                    <tr class="flexi">
+                                                        <th>
+                                                            Flexi Leave
+                                                        </th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
+
             @endif
             @endsection
 
@@ -538,7 +538,6 @@
                         // Chart data and options for attendance chart
                         var attendanceData = {!! json_encode($attendanceData) !!};
                         var labels = {!! json_encode($labels) !!};
-                        console.log(attendanceData, labels);
                         var attendanceOptions = {
                             chart: {
                                 // height: 400,
@@ -810,21 +809,21 @@
                             const theDate = new Date(userCategories?.[index]);
                             const formatedDate = theDate.toLocaleString('en-US', { day: "numeric", month: "short" });
                             attendance_table.querySelector('thead tr').innerHTML += `<td class="text-center"><div class="d-flex align-items-center flex-column">
-                      <span>${category}</span>
-                      <span>${formatedDate}</span>
-                      </div></td>`;
+                                  <span>${category}</span>
+                                  <span>${formatedDate}</span>
+                                  </div></td>`;
 
                             // Rows
                             attendance_table.querySelector('tbody tr.worked').innerHTML += `
-                      <td class="text-center">${formatTime(series?.[0]?.data?.[index])}</td>`;
+                                  <td class="text-center">${formatTime(series?.[0]?.data?.[index])}</td>`;
                             attendance_table.querySelector('tbody tr.late').innerHTML += `
-                      <td class="text-center">${formatTime(series?.[1]?.data?.[index])}</td>`;
+                                  <td class="text-center">${formatTime(series?.[1]?.data?.[index])}</td>`;
                             attendance_table.querySelector('tbody tr.over').innerHTML += `
-                      <td class="text-center">${formatTime(series?.[2]?.data?.[index])}</td>`;
+                                  <td class="text-center">${formatTime(series?.[2]?.data?.[index])}</td>`;
                             attendance_table.querySelector('tbody tr.early').innerHTML += `
-                      <td class="text-center">${formatTime(series?.[3]?.data?.[index])}</td>`;
+                                  <td class="text-center">${formatTime(series?.[3]?.data?.[index])}</td>`;
                             attendance_table.querySelector('tbody tr.flexi').innerHTML += `
-                      <td class="text-center">${formatTime(series?.[4]?.data?.[index])}</td>`;
+                                  <td class="text-center">${formatTime(series?.[4]?.data?.[index])}</td>`;
 
                         });
 
@@ -839,6 +838,115 @@
                             });
                         }
                     }
+                </script>
+                <script>
+                    function startTour() {
+                        var tour = introJs();
+
+                        const attandanceOverview = document.querySelector('#attendanceoverviewcard');
+                        const selectMonthlyAttandance = document.querySelector('.change-monthly-attendance-view');
+                        const selectSpecificAttandance = document.querySelector('.specific-date-attendance');
+                        const specificAttandance = document.querySelectorAll('#specific-attandance')
+                        tour.setOptions({
+                            steps: [
+                                {
+                                    element: attandanceOverview,
+                                    intro: 'This is your overall attendance overview.',
+                                    title: 'Attandance Overview',
+                                    position: 'right'
+                                },
+                                {
+                                    element: selectMonthlyAttandance,
+                                    intro: "Here you can select a different month to view the attendance overview.",
+                                    title: 'Specific Month Attandance Overview'
+                                },
+                                {
+                                    element: '#donut-chart',
+                                    intro: "This graph shows attendance data for specific dates.",
+                                    title: 'Daily Attandance Overview',
+                                    position: 'left'
+                                },
+                                {
+                                    element: selectSpecificAttandance,
+                                    intro: 'Use this option to select a specific date for the attendance overview.',
+                                    title: 'Custom Date Overview'
+                                },
+                                {
+                                    element: '#timesheets',
+                                    intro: 'Here you can view the Timesheet data in graphical form, showing monthly, weekly, or daily attendance.',
+                                    position: 'bottom',
+                                    title: 'Time Sheets Data'
+                                },
+                                {
+                                    element: '#changetimesheetrange',
+                                    intro: "Change the time range for the view here.",
+                                    title: 'Specific Time Range'
+                                },
+                                {
+                                    element: '#graph-view-tab',
+                                    intro: 'This tab displays a graphical overview of your timesheets.',
+                                    title: 'Graph View'
+                                },
+                                {
+                                    element: '#list-view-tab',
+                                    intro: 'This tab displays a tabular overview of your timesheets.',
+                                    title: 'Table View'
+                                },
+                                {
+                                    intro: 'You’ve now learned about the main features of the app.',
+                                    title: 'Congratulations!'
+                                },
+                                {
+                                    intro: 'Feel free to explore the rest of the app on your own.',
+                                    title: 'Tour Completed'
+                                },
+                                {
+                                    intro: 'Good luck and enjoy using the app!',
+                                    title: 'Good Luck'
+                                },
+                            ],
+
+                            buttonClass: 'btn btn-warning btn-sm fw-default rounded-pill',
+                            showProgress: true,
+                            exitOnOverlayClick: false,
+                            nextLabel: `&nbsp; Next <i class="ti ti-chevron-right"></i>`,
+                            prevLabel: `<i class="ti ti-chevron-left"></i> Back &nbsp;`,
+                            skipLabel: '<i class="ti ti-x"></i>',
+
+                            // Set custom transition duration (in milliseconds)
+                            transitionDuration: 2000, // 500ms for each transition
+
+                            // Set a custom timing function for smooth transition (ease, linear, etc.)
+                            transitionTimingFunction: 'ease-out'
+                        });
+
+
+
+                        tour.start();
+                        tour.onexit(function () {
+                            $.ajax({
+                                url: '{{ route('employee.tourdone') }}',
+                                type: 'POST',
+                                data: {
+                                    "tour": 'attendance',
+                                    "_token": "{{ csrf_token() }}",
+                                },
+                                success: function (response) {
+                                    alert('Tour Completed');
+                                }
+                            });
+                        });
+
+
+                    }
+
+                    window.addEventListener('DOMContentLoaded', () => {
+                        const isTourDone = '{{ Auth::user()->employee->istour_done }}';
+                        if (isTourDone == 0) {
+                            startTour();
+                        }
+                    })
+
                 </script>
 
 

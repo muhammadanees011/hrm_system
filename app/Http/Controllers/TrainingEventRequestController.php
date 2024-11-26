@@ -58,6 +58,17 @@ class TrainingEventRequestController extends Controller
         $eventrequest->training_event_id=$request->training_event_id;
         $eventrequest->status='Pending';
         $eventrequest->save();
+
+        $hrAndAdminUsers = \App\Models\User::whereIn('type', ['hr', 'company'])->get();
+        foreach ($hrAndAdminUsers as $key => $hrAndAdminUser) {
+            $notification=new Notification();
+            $notification->sender_id=\Auth::user()->id;
+            $notification->receiver_id=$hrAndAdminUser->id;
+            $notification->title='New event perticipation request';
+            $notification->body =\Auth::user()->name.' has submitted a new event perticipation request';
+            $notification->read=false;
+            $notification->save();
+        }
         return redirect()->back()->with('success', __('Request successfully submitted.'));
     }
 
@@ -81,6 +92,7 @@ class TrainingEventRequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    
     public function update(Request $request, $id)
     {
         $validator = \Validator::make(
@@ -107,6 +119,9 @@ class TrainingEventRequestController extends Controller
         }
         $eventrequest->status=$request->status;
         $eventrequest->save();
+
+        
+      
         return redirect()->back()->with('success', __('Request status successfully updated.'));
     }
 

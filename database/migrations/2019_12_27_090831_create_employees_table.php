@@ -45,6 +45,8 @@ class CreateEmployeesTable extends Migration
             $table->float('salary', 25,2)->nullable();
             $table->integer('is_active')->default('1');
             $table->integer('created_by');
+            $table->integer('istour_done')->default('0');
+
             $table->timestamps();
         }
         );

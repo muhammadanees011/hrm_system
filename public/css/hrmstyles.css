@@ -1,0 +1,89 @@
+.introjs-prevbutton,
+.introjs-nextbutton {
+    color: #fff !important;
+    font-family: var(--bs-body-font-family) !important;
+}
+
+.introjs-skipbutton {
+    /* background-color: #fff; */
+    border-radius: 50%;
+    top: 50%;
+    right: 6px;
+    translate: 0 -50%;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    color: #fff !important;
+    /* color: var(--bs-warning) !important; */
+}
+
+.introjs-helperLayer {
+    box-shadow: rgb(255 157 0) 0px 0px 1px 2px, rgb(86 78 209 / 20%) 0px 0px 0px 5000px !important;
+}
+
+.introjs-progress {
+    margin: 0;
+    border-radius: 0;
+    height: 4px;
+}
+
+.introjs-progressbar {
+    background-color: var(--bs-warning) !important;
+}
+
+.introjs-tooltip-title {
+    color: #fff !important;
+    /* color: #584ED2 !important; */
+    font-weight: 700;
+    font-size: 16px;
+    font-family: var(--bs-body-font-family) !important;
+}
+
+.introjs-tooltip-header {
+    position: relative;
+    background-color: var(--bs-warning);
+    border-radius: 15px 15px 0 0;
+    padding-bottom: 8px;
+}
+
+.introjs-bullets a.active {
+    background-color: var(--bs-warning) !important;
+}
+
+.fw-default {
+    font-weight: 400 !important;
+}
+
+.introjs-tooltipbuttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--bs-body-font-family) !important;
+    justify-content: flex-end;
+    padding: 1rem 0.5rem;
+}
+
+.introjs-tooltip {
+    max-width: 600px !important;
+    min-width: 400px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 3px 30px rgb(255 157 0 / 15%) !important;
+    transition: transform 1s ease, opacity 1s ease;
+}
+
+.introjs-tooltiptext {
+    font-family: var(--bs-body-font-family) !important;
+}
+
+.introjs-tooltiptext h6,
+.introjs-tooltiptext h4,
+.introjs-tooltiptext h1 {
+    font-family: var(--bs-body-font-family) !important;
+}
+
+.introjs-tooltiptext p {
+    font-family: var(--bs-body-font-family) !important;
+    font-size: var(--bs-body-font-size) !important;
+    font-weight: var(--bs-body-font-weight) !important;
+    line-height: var(--bs-body-line-height) !important;
+}
