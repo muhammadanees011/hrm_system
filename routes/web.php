@@ -1221,6 +1221,13 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
     );
+
+    Route::get('report/sessions', [ReportController::class, 'sessions'])->name('report.sessions')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
     Route::get('report/p11-report', [ReportController::class, 'p11report'])->name('report.p11-report');
     Route::get('report/leave', [ReportController::class, 'leave'])->name('report.leave')->middleware(
         [
@@ -1463,6 +1470,19 @@ Route::group(['middleware' => ['verified']], function () {
 
 
     Route::get('job-onboard', [JobApplicationController::class, 'jobOnBoard'])->name('job.on.board')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::get('onboarding-checklist', [JobApplicationController::class, 'onboardingChecklist'])->name('onboarding-checklist.index')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::get('new-employees-checklist', [JobApplicationController::class, 'newEmployeesChecklist'])->name('onboarding-checklist.new-employees-checklist')->middleware(
         [
             'auth',
             'XSS',

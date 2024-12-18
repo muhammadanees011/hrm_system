@@ -338,6 +338,16 @@ class JobApplicationController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+    public function onboardingChecklist()
+    {
+        return view('onboarding-checklist.index');
+        
+    }
+    public function newEmployeesChecklist()
+    {
+        return view('onboarding-checklist.new-employees-checklist');
+        
+    }
 
     public function jobBoardStore(Request $request, $id)
     {

@@ -18,8 +18,10 @@ use App\Models\Leave;
 use App\Models\LeaveType;
 use App\Models\PaySlip;
 use App\Models\TimeSheet;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -854,4 +856,47 @@ class ReportController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+   
+
+    public function sessions(Request $request)
+{
+    if (\Auth::user()->can('Manage Report')) {
+        // Base query for sessions
+        $query = DB::table('sessions')
+            ->leftJoin('users', 'sessions.user_id', '=', 'users.id')
+            ->select(
+                'sessions.id as session_id',
+                'users.id as user_id',
+                'users.name',
+                'users.email',
+                'sessions.ip_address',
+                'sessions.last_activity'
+            );
+
+        // Filter by date range only if 'start_date' and 'end_date' are provided
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->input('start_date'))->timestamp;
+            $endDate = Carbon::parse($request->input('end_date'))->timestamp;
+            $query->whereBetween('sessions.last_activity', [$startDate, $endDate]);
+        } else {
+            // Default last 30 days
+            $startDate = Carbon::now()->subDays(30)->timestamp;
+            $endDate = Carbon::now()->timestamp;
+            $query->whereBetween('sessions.last_activity', [$startDate, $endDate]);
+        }
+        $teams = Team::all();
+        $selectedTeamId = $request->input('team_id', null);
+
+        // Execute query to get the filtered sessions
+        $sessions = $query->orderBy('sessions.last_activity', 'desc')->get();
+
+        // Pass the start and end dates back to the view for form display
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+
+        return view('report.sessions', compact('sessions', 'startDate', 'endDate', 'teams', 'selectedTeamId'));
+    } else {
+        return redirect()->back()->with('error', __('Permission denied.'));
+    }
+}
 }

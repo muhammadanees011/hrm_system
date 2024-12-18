@@ -66,6 +66,9 @@ class="dash-sidebar light-sidebar {{ isset($mode_setting['is_sidebar_transperent
                                     <li class="dash-item">
                                         <a class="dash-link" href="{{ route('report.p11-report') }}">{{ __('P11 Report') }}</a>
                                     </li>
+                                    <li class="dash-item">
+                                        <a class="dash-link" href="{{ route('report.sessions') }}">{{ __('Sessions') }}</a>
+                                    </li>
 
                                     <li class="dash-item">
                                         <a class="dash-link" href="{{ route('report.monthly.attendance') }}">{{ __('Monthly Attendance') }}</a>
