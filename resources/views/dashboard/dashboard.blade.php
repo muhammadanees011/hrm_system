@@ -46,7 +46,22 @@
 
 
 @if (\Auth::user()->type == 'employee')
-
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyPolicyModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Privacy Policy</h1>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closePrivacyModal()">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
     <div class="col-xxl-12">
 
         <div class="card">
@@ -643,6 +658,17 @@
         </script>
     @else
         <script>
+            function showPrivacyPolicy(){
+                const policyModal = document.querySelector('#privacyPolicyModal .modal-body');
+                policyModal.innerHTML = `<h1>Hi this is policy`;
+                new bootstrap.Modal('#privacyPolicyModal').show();
+            }
+            function closePrivacyModal(){
+                bootstrap.Modal.getInstance('#privacyPolicyModal').hide();
+            }
+            setTimeout(()=>{
+                showPrivacyPolicy()
+            }, 3000)
             function startTour() {
                 var tour = introJs();
 

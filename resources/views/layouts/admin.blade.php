@@ -89,6 +89,10 @@
     <link rel="stylesheet" href="{{ asset('libs/introjs/introjs.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <link rel="stylesheet" href="{{ asset('css/hrmstyles.css') }}">
+    
+<link rel="stylesheet" href="{{ asset('css/summernote/summernote-bs4.css') }}">
+
+<script src="{{ asset('css/summernote/summernote-bs4.js') }}"></script>
 
     <style>
         :root {

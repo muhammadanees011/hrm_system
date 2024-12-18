@@ -8,6 +8,13 @@
             </a>
         @endcan
 
+        @can('Manage Branch')
+            <a href="{{ route('privacy-policy.index') }}"
+                class="list-group-item list-group-item-action border-0 {{ request()->is('privacy-policy*') ? 'active' : '' }}">{{ __('Privacy Policy') }}
+                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+            </a>
+        @endcan
+
         @can('Manage Department')
             <a href="{{ route('department.index') }}"
                 class="list-group-item list-group-item-action border-0 {{ request()->is('department*') ? 'active' : '' }}">{{ __('Department') }}
