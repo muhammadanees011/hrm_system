@@ -79,14 +79,16 @@ class ContractController extends Controller
 
                 // Contracts Summary
                 $cnt_contract                = [];
+                $creatorId = \Auth::user()->creatorId();
                 $cnt_contract['total']       = \App\Models\Contract::getContractSummary($contracts);
                 $cnt_contract['this_month']  = \App\Models\Contract::getContractSummary($curr_month);
                 $cnt_contract['this_week']   = \App\Models\Contract::getContractSummary($curr_week);
                 $cnt_contract['last_30days'] = \App\Models\Contract::getContractSummary($last_30days);
+                $contractType = ContractType::with(['getContracts' => function ($q) use ($creatorId) {
+                    $q->where('employee_name', $creatorId);
+                }])->get();
 
-                $contractType = ContractType::with('getContracts', function($q){
-                    $q->where('employee_name',  \Auth::user()->creatorId());
-                })->get();
+                
 
                 $contract_type = [];
                 foreach($contractType as $key   =>  $typ) {

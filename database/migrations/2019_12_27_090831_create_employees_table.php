@@ -46,6 +46,7 @@ class CreateEmployeesTable extends Migration
             $table->integer('is_active')->default('1');
             $table->integer('created_by');
             $table->integer('istour_done')->default('0');
+            $table->integer('privacy_policy')->default('0');
 
             $table->timestamps();
         }

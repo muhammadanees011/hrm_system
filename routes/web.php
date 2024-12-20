@@ -403,6 +403,11 @@ Route::group(['middleware' => ['verified']], function () {
             'XSS',
         ]
         );
+
+
+    Route::get('/privacypolicy/modal', [PrivacyPolicyController::class, 'modal'])->name('privacy-policy.modal')->middleware(['auth', 'XSS',]);
+    
+    Route::post('/privacypolicy/accept', [PrivacyPolicyController::class, 'accept'])->name('privacy-policy.accept')->middleware(['auth', 'XSS',]);
     
     Route::resource('branch', BranchController::class)->middleware(
         [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\PrivacyPolicy;
 use Illuminate\Http\Request;
 
@@ -77,4 +78,36 @@ class PrivacyPolicyController extends Controller
     {
         //
     }
+
+    public function modal()
+    {
+        $privacyPolicy = PrivacyPolicy::where('status', 'active')->first();
+    
+        if ($privacyPolicy) {
+            return response()->json([
+                'title' => $privacyPolicy->name,
+                'content' => $privacyPolicy->requirement,
+            ]);
+        }
+    
+        return response()->json([
+            'title' => 'Privacy Policy',
+            'content' => 'Privacy policy is currently unavailable.',
+        ], 404);
+    }
+
+    public function accept()
+{
+    $employee = Employee::where('user_id', auth()->id())->first();
+    
+
+    if ($employee) {
+        // Update the privacy_policy field to 1
+        $employee = Employee::where('user_id', auth()->id())->update(['privacy_policy' => 1]);
+
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false, 'message' => 'User is not an employee or no access.'], 403);
+}
 }

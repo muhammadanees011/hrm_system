@@ -48,7 +48,7 @@
 @if (\Auth::user()->type == 'employee')
 <!-- Privacy Policy Modal -->
 <div class="modal fade" id="privacyPolicyModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-fullscreen">
+  <div class="modal-dialog ">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Privacy Policy</h1>
@@ -658,14 +658,60 @@
         </script>
     @else
         <script>
-            function showPrivacyPolicy(){
-                const policyModal = document.querySelector('#privacyPolicyModal .modal-body');
-                policyModal.innerHTML = `<h1>Hi this is policy`;
-                new bootstrap.Modal('#privacyPolicyModal').show();
-            }
-            function closePrivacyModal(){
-                bootstrap.Modal.getInstance('#privacyPolicyModal').hide();
-            }
+           function showPrivacyPolicy() {
+    const policyModal = document.querySelector('#privacyPolicyModal .modal-body');
+    const employee = {!! json_encode(Auth::user()->employee) !!};
+                if (employee && employee.privacy_policy == 0) {
+                    $.ajax({
+                url: "{{ route('privacy-policy.modal') }}", // Laravel route helper
+                method: "GET",
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Indicate that this is an AJAX request
+                },
+                success: function (data) {
+                    if (data && data.content) {
+                        // Update the modal content with the privacy policy
+                        policyModal.innerHTML = `<h1>${data.title}</h1><p>${data.content}</p>`;
+                    } else {
+                        policyModal.innerHTML = `<p>Privacy policy is currently unavailable.</p>`;
+                    }
+
+                    // Show the modal
+                    new bootstrap.Modal('#privacyPolicyModal').show();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching the privacy policy:', error);
+                    policyModal.innerHTML = `<p>Failed to load the privacy policy. Please try again later.</p>`;
+                    new bootstrap.Modal('#privacyPolicyModal').show();
+                }
+            });    
+                }
+   
+                
+                }
+                function closePrivacyModal() {
+                        // Send AJAX request to update the privacy policy status
+                        $.ajax({
+                            url: "{{ route('privacy-policy.accept') }}", // Laravel route to update privacy policy
+                            method: "POST",
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for security
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    console.log("Privacy policy accepted.");
+                                    // Close the modal
+                                    bootstrap.Modal.getInstance('#privacyPolicyModal').hide();
+                                } else {
+                                    console.error("Failed to update privacy policy status.");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error updating privacy policy status:", error);
+                            }
+                        });
+                    }
             setTimeout(()=>{
                 showPrivacyPolicy()
             }, 3000)
