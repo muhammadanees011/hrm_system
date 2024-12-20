@@ -132,6 +132,7 @@ use App\Http\Controllers\MeetingTemplateController;
 use App\Http\Controllers\MeetingTemplatePointController;
 use App\Http\Controllers\DocumentDirectoryController;
 use App\Http\Controllers\CompensationReviewController;
+use App\Http\Controllers\PrivacyPolicyController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
@@ -396,10 +397,13 @@ Route::group(['middleware' => ['verified']], function () {
     );
     Route::get('/documentDirectory', [DocumentController::class, 'documentDirectory'])->name('document.directory')->middleware(['auth', 'XSS',]);
 
-    Route::get('/privacy-policy', [BranchController::class, 'getPrivacyPolicy'])->name('privacy-policy.index')->middleware(['auth', 'XSS',]);
-    Route::get('/privacy-policy/create', [BranchController::class, 'createPrivacyPolicy'])->name('privacy-policy.create')->middleware(['auth', 'XSS',]);
-    Route::get('privacy-policy/edit', [BranchController::class, 'editPrivacyPolicy'])->name('privacy-policy.edit')->middleware(['auth', 'XSS',]);
-
+    Route::resource('privacy-policy', PrivacyPolicyController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+        );
+    
     Route::resource('branch', BranchController::class)->middleware(
         [
             'auth',

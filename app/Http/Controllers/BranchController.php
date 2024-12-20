@@ -29,23 +29,7 @@ class BranchController extends Controller
             return response()->json(['error' => __('Permission denied.')], 401);
         }
     }
-    public function createPrivacyPolicy()
-    {
-        return view('privacy-policy.create');
-    }
-    public function editPrivacyPolicy()
-    {
-        return view('privacy-policy.edit');
-    }
-    public function getPrivacyPolicy()
-    {
-        return view('privacy-policy.index');
-        // if (\Auth::user()->can('Create Branch')) {
-        // } else {
-        //     return response()->json(['error' => __('Permission denied.')], 401);
-        // }
-    }
-
+    
     public function store(Request $request)
     {
         if (\Auth::user()->can('Create Branch')) {
