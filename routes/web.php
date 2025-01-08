@@ -1632,6 +1632,8 @@ Route::group(['middleware' => ['verified']], function () {
     Route::post('import/employee', [EmployeeController::class, 'import'])->name('employee.import');
     Route::get('export/employee', [EmployeeController::class, 'export'])->name('employee.export');
 
+
+
     // Timesheet Import & Export
 
     Route::get('import/timesheet/file', [TimeSheetController::class, 'importFile'])->name('timesheet.file.import');
@@ -1744,6 +1746,12 @@ Route::group(['middleware' => ['verified']], function () {
     Route::get('setting/joiningletter/', [SettingsController::class, 'index'])->name('get.joiningletter.language');
     Route::get('employee/pdf/{id}', [EmployeeController::class, 'joiningletterPdf'])->name('joiningletter.download.pdf');
     Route::get('employee/doc/{id}', [EmployeeController::class, 'joiningletterDoc'])->name('joininglatter.download.doc');
+
+
+
+    Route::post('employee/changes/{id}/accept', [EmployeeController::class, 'acceptChanges'])->name('employee.changes.accept');
+    Route::post('employee/changes/{id}/reject', [EmployeeController::class, 'rejectChanges'])->name('employee.changes.reject');
+
 
     //Experience Certificate
     Route::post('setting/exp/{lang?}', [SettingsController::class, 'experienceCertificateupdate'])->name('experiencecertificate.update');

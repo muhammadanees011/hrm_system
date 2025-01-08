@@ -11,6 +11,49 @@
     $initial = strtoupper(substr($users->name, 0, 2));
 
 @endphp
+<style>
+    .notification-accept-btn {
+    all: unset;
+    background-color: #59AE36;
+    font-size: 15px;
+    padding: 0 7px 2px 7px;
+    border-radius: 12px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    border: 1px solid #59AE36;
+    gap: 2px;
+    }
+    .notification-accept-btn span{
+        font-size: 12px;
+    }
+    .notification-accept-btn:hover{
+        background-color:rgb(90, 190, 50);
+        border-color: rgb(90, 190, 50);
+    }
+
+.notification-reject-btn {
+    all: unset;
+    border:1px solid var(--bs-danger);
+    font-size: 15px;
+    padding: 2px 7px;
+    border-radius: 12px;
+    color: var(--bs-danger);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.notification-reject-btn span{
+        font-size: 12px;
+    }
+.notification-reject-btn:hover{
+        background-color: var(--bs-danger);
+        color: #fff;
+    }
+    .show-listView:hover{
+        background-color: red;
+    }
+</style>
 <header
     class="dash-header  {{ isset($mode_setting['is_sidebar_transperent']) && $mode_setting['is_sidebar_transperent'] == 'on' ? 'transprent-bg' : '' }}">
     <div class="header-wrapper">
@@ -33,9 +76,9 @@
                                 src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}"
                                 class="logo logo-lg" style="width: 100%; border-radius: 50%;"> -->
                                 @if($users->avatar && $users->avatar != 'avatar.png' && $users->avatar != "")
-                                <img src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}" alt="{{ env('APP_NAME') }}" class="logo logo-lg" style="width: 100%; border-radius: 50%;" />
+                                    <img src="{{ !empty($users->avatar) ? $profile . '/' . $users->avatar : $profile . '/avatar.png' }}" alt="{{ env('APP_NAME') }}" class="logo logo-lg" style="width: 100%; border-radius: 50%;" />
                                 @else
-                                <span class="logo logo-lg" style="width: 100%; border-radius: 50%; background-color: #f1f2f7; color: #000; display: flex; justify-content: center; align-items: center;">{{ $initial }}</span>
+                                    <span class="logo logo-lg" style="width: 100%; border-radius: 50%; background-color: #f1f2f7; color: #000; display: flex; justify-content: center; align-items: center;">{{ $initial }}</span>
                                 @endif
                         </span>
                         <span class="hide-mob ms-2"> {{ __('Hi, ') }}{{ Auth::user()->name }}!
@@ -85,16 +128,32 @@
                         <div class="notification-body dropdown-list-notifications">
                             <div>
                                 <a href="#" class="show-listView"></a>
+                                
                                 @foreach($notifications as $notification)
-                                    <div class="mb-1 d-flex">
-                                        <i class="fas fa-arrow-right ms-4 mt-1"></i>
+                                @if($notification->read == 0)
+                                    <div class="mb-1 d-flex align-items-start noti">
+                                        <i class="fas fa-arrow-right ms-4"></i>
                                         <p style="font-size:12px;" class="ms-2">
                                             <strong>{{ $notification->title }}</strong>
                                         </p>
+                                        
                                     </div>
                                     <div class="mb-2 ms-4">
                                         <p style="font-size:12px;">{{ $notification->body }}</p>
                                     </div>
+                                    @if(Auth::user()->type != 'employee')
+                                    <div class="d-flex align-item-start justify-content-end gap-2 ms-auto me-4">
+                                        <button class="notification-reject-btn btn btn-danger" data-id="{{ $notification->id+1 }}" title="Reject Changes">
+                                            <i class="ti ti-x"></i> Reject
+                                        </button>
+                                        <button class="notification-accept-btn btn btn-success" data-id="{{ $notification->id+1 }}" title="Accept Changes">
+                                            <i class="ti ti-check"></i> Accept
+                                        </button>
+                                    </div>
+                                    @endif
+                                    @endif
+                                    
+                                    <hr>
                                 @endforeach
                             </div>
                             
@@ -299,7 +358,7 @@
 
         //             const notificationList = $('#notification-list');
         //             const notificationBody = notificationList.find('.notification-body .dropdown-list-notifications');
-                    
+
         //             // Clear existing notifications
         //             notificationBody.empty();
 
@@ -328,6 +387,48 @@
         //         }
         //     });
         // }
+        const csrfToken = "{{ csrf_token() }}";
+        $(document).ready(function () {
+    // Accept Changes
+    $('.notification-accept-btn').click(function () {
+        const id = $(this).data('id');
+        const url = "{{ route('employee.changes.accept', ':id') }}".replace(':id', id);
+
+        handleNotificationAction(url, 'Changes accepted successfully.');
+    });
+
+    // Reject Changes
+    $('.notification-reject-btn').click(function () {
+        const id = $(this).data('id');
+        const url = "{{ route('employee.changes.reject', ':id') }}".replace(':id', id);
+
+        handleNotificationAction(url, 'Changes rejected successfully.');
+    });
+
+    // General AJAX Function
+    function handleNotificationAction(url, successMessage) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert(successMessage); // Feedback to the user
+                    location.reload(); // Reload to reflect changes
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+            error: function (xhr) {
+                console.error('Error:', xhr.responseText);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+});
+
 
     </script>
 @endpush

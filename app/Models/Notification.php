@@ -9,6 +9,17 @@ class Notification extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'sender_id',
+        'receiver_id',
+        'title',
+        'body',
+        'status',
+        'read',
+        'type',
+        'data',
+    ];
+
     public function sender()
     {
         return $this->hasOne('App\Models\User', 'id', 'sender_id')->select(['id', 'name']);

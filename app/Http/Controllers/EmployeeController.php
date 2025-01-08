@@ -36,6 +36,7 @@ use App\Models\PaySlip;
 use Spatie\Permission\Models\Role;
 use App\Models\Team;
 use App\Models\Notification;
+use App\Models\ChangeLog;
 
 //use Faker\Provider\File;
 
@@ -373,60 +374,85 @@ class EmployeeController extends Controller
             // $notification->save();
 
             $hrAndAdminUsers = \App\Models\User::whereIn('type', ['hr', 'company'])->get();
-$updatedFields = [];
+                $updatedFields = [];
 
-// Compare fields and identify which ones have been updated
-if ($originalEmployee->name !== $request->name) {
-    $updatedFields[] = 'Name';
-}
-if ($originalEmployee->phone !== $request->phone) {
-    $updatedFields[] = 'Phone';
-}
-if ($originalEmployee->dob !== $request->dob) {
-    $updatedFields[] = 'Date of Birth';
-}
-if ($originalEmployee->gender !== $request->gender) {
-    $updatedFields[] = 'Gender';
-}
-if ($originalEmployee->address !== $request->address) {
-    $updatedFields[] = 'Address';
-}
-if ($originalEmployee->account_holder_name !== $request->account_holder_name) {
-    $updatedFields[] = 'Account Holder Name';
-}
-if ($originalEmployee->account_number !== $request->account_number) {
-    $updatedFields[] = 'Account Number';
-}
-if ($originalEmployee->bank_name !== $request->bank_name) {
-    $updatedFields[] = 'Bank Name';
-}
-if ($originalEmployee->bank_identifier_code !== $request->bank_identifier_code) {
-    $updatedFields[] = 'Bank Identifier Code';
-}
-if ($originalEmployee->branch_location !== $request->branch_location) {
-    $updatedFields[] = 'Branch Location';
-}
-if ($originalEmployee->tax_payer_id !== $request->tax_payer_id) {
-    $updatedFields[] = 'Tax Payer ID';
-}
-// Generate notification body based on updated fields
-if (!empty($updatedFields)) {
-    $updatedFieldsList = implode(', ', $updatedFields);
-    $notificationBody = 'The following fields of employee ' . $employee->name . ' have been updated by ' . \Auth::user()->name . ': ' . $updatedFieldsList . '.';
-} else {
-    $notificationBody = 'The profile of employee ' . $employee->name . ' has been updated by ' . \Auth::user()->name . '.';
-}
+                // Compare fields and identify which ones have been updated
+                if ($originalEmployee->name !== $request->name) {
+                    $updatedFields['name'] = ['old' => $originalEmployee->name, 'new' => $request->name];
+                }
+                if ($originalEmployee->phone !== $request->phone) {
+                    $updatedFields['phone'] = ['old' => $originalEmployee->phone, 'new' => $request->phone];
+                }
+                if ($originalEmployee->dob !== $request->dob) {
+                    $updatedFields['dob'] = ['old' => $originalEmployee->dob, 'new' => $request->dob];
+                }
+                if ($originalEmployee->gender !== $request->gender) {
+                    $updatedFields['gender'] = ['old' => $originalEmployee->gender, 'new' => $request->gender];
+                }
+                if ($originalEmployee->address !== $request->address) {
+                    $updatedFields['address'] = ['old' => $originalEmployee->address, 'new' => $request->address];
+                }
+                if ($originalEmployee->account_holder_name !== $request->account_holder_name) {
+                    $updatedFields['account_holder_name'] = ['old' => $originalEmployee->account_holder_name, 'new' => $request->account_holder_name];
+                }
+                if ($originalEmployee->account_number !== $request->account_number) {
+                    $updatedFields['account_number'] = ['old' => $originalEmployee->account_number, 'new' => $request->account_number];
+                }
+                if ($originalEmployee->bank_name !== $request->bank_name) {
+                    $updatedFields['bank_name'] = ['old' => $originalEmployee->bank_name, 'new' => $request->bank_name];
+                }
+                if ($originalEmployee->bank_identifier_code !== $request->bank_identifier_code) {
+                    $updatedFields['bank_identifier_code'] = ['old' => $originalEmployee->bank_identifier_code, 'new' => $request->bank_identifier_code];
+                }
+                if ($originalEmployee->branch_location !== $request->branch_location) {
+                    $updatedFields['branch_location'] = ['old' => $originalEmployee->branch_location, 'new' => $request->branch_location];
+                }
+                if ($originalEmployee->tax_payer_id !== $request->tax_payer_id) {
+                    $updatedFields['tax_payer_id'] = ['old' => $originalEmployee->tax_payer_id, 'new' => $request->tax_payer_id];
+                }
+                // Generate notification body based on updated fields
+                if (!empty($updatedFields)) {
 
-// Send notifications to HR and Admin users
-foreach ($hrAndAdminUsers as $user) {
-    $notification = new Notification();
-    $notification->sender_id = \Auth::user()->id;
-    $notification->receiver_id = $user->id;
-    $notification->title = 'Employee profile updated';
-    $notification->body = $notificationBody;
-    $notification->read = false;
-    $notification->save();
-}
+                    $oldValues = [];
+                    $newValues = [];
+                
+                    foreach ($updatedFields as $field => $values) {
+                        $oldValues[$field] = $values['old'];
+                        $newValues[$field] = $values['new'];
+                    }
+
+                     $changeLog= ChangeLog::create([
+                        'employee_id' => $employee->id,
+                        'changed_by' => \Auth::id(),
+                        'old_values' => json_encode($oldValues),
+                        'new_values' => json_encode($newValues),
+                        'status' => 'pending',
+                    ]);
+
+                    $changelogId = $changeLog->id;
+
+                    
+                    
+                    $updatedFieldsList = implode(', ', array_keys($updatedFields));
+                    $notificationBody = 'The following fields of employee ' . $employee->name . ' have been updated by ' . \Auth::user()->name . ': ' . $updatedFieldsList . '.';
+                } else {
+                    $notificationBody = 'The profile of employee ' . $employee->name . ' has been updated by ' . \Auth::user()->name . '.';
+                }
+
+                // Send notifications to HR and Admin users
+                foreach ($hrAndAdminUsers as $user) {
+                    $notification = new Notification();
+                    $notification->sender_id = \Auth::user()->id;
+                    $notification->receiver_id = $user->id;
+                    $notification->title = 'Employee profile Changes';
+                    $notification->body = $notificationBody;
+                    $notification->read = false;
+                    $notification->save();
+
+                    //add notification id to change log 
+                    $changeLog->notification_id = $notification->id;
+                    $changeLog->save();
+                }
 
 
             
@@ -1206,6 +1232,68 @@ foreach ($hrAndAdminUsers as $user) {
 
         return response()->json(['success' => true, 'message' => __('Tour done successfully.')], 200);
     }
+
+    public function acceptChanges($id)
+    {
+        try {
+            $changeLog = ChangeLog::where('notification_id', $id)->where('status', 'pending')->first();
+            $employee = Employee::findOrFail($changeLog->employee_id);
+    
+            $newValues = json_decode($changeLog->new_values, true);
+            $employee->update($newValues);
+    
+            $changeLog->status = 'accepted';
+            $changeLog->save();
+
+            $notification = Notification::where('id', $id)->first();
+            $notification->read = 1;
+            $notification->save();
+    
+            Notification::create([
+                'sender_id' => \Auth::id(),
+                'receiver_id' => $employee->user_id,
+                'title' => 'Profile changes approved',
+                'body' => 'Your profile changes have been approved.',
+                'read' => false,
+            ]);
+    
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function rejectChanges($id)
+{
+    try {
+        $changeLog = ChangeLog::where('notification_id', $id)->where('status', 'pending')->first();
+        
+        // Revert the changes back to old values
+        $oldValues = json_decode($changeLog->old_values, true);
+        $employee = Employee::find($changeLog->employee_id);
+        $employee->update($oldValues);
+
+        $changeLog->status = 'rejected';
+        $changeLog->save();
+
+        Notification::create([
+            'sender_id' => \Auth::id(),
+            'receiver_id' => $changeLog->changed_by,
+            'title' => 'Profile changes rejected',
+            'body' => 'Your profile changes have been rejected.',
+            'read' => false,
+        ]);
+
+        $notification = Notification::where('id', $id)->first();
+        $notification->read = 1;
+        $notification->save();
+
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+}
+
     
     
 }
