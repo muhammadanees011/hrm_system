@@ -133,6 +133,9 @@ use App\Http\Controllers\MeetingTemplatePointController;
 use App\Http\Controllers\DocumentDirectoryController;
 use App\Http\Controllers\CompensationReviewController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\EmployeeEducationController;
+use App\Http\Controllers\EmployeeExperienceController;
+use App\Http\Controllers\EmployeeSkillsController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
@@ -351,6 +354,12 @@ Route::group(['middleware' => ['verified']], function () {
 
 
     Route::resource('employee', EmployeeController::class)->middleware(['auth','XSS',]);
+
+    Route::resource('employee-education', EmployeeEducationController::class)->middleware(['auth','XSS',]);
+
+    Route::resource('employee-experience', EmployeeExperienceController::class)->middleware(['auth','XSS',]);
+
+    Route::resource('employee-skills', EmployeeSkillsController::class)->middleware(['auth','XSS',]);
 
     Route::resource('teams', TeamsController::class)->middleware(['auth','XSS',]);
     Route::get('/teams/{team}/members', [TeamsController::class, 'getMembers'])->name('teams.members');

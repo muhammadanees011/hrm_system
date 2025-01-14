@@ -37,6 +37,9 @@ use Spatie\Permission\Models\Role;
 use App\Models\Team;
 use App\Models\Notification;
 use App\Models\ChangeLog;
+use App\Models\EmployeeEducation;
+use App\Models\EmployeeExperience;
+use App\Models\EmployeeSkills;
 
 //use Faker\Provider\File;
 
@@ -625,9 +628,12 @@ class EmployeeController extends Controller
             $employee     = Employee::find($empId);
             $employeesId  = \Auth::user()->employeeIdFormat($employee->employee_id);
             $attendanceEmployee = AttendanceEmployee::where('employee_id', $employee->employee_id)->get();
+            $educations = EmployeeEducation::where('employee_id', $employee->employee_id)->get();
+            $experiences = EmployeeExperience::where('employee_id', $employee->employee_id)->get();
+            $skills = EmployeeSkills::where('employee_id', $employee->employee_id)->get();
             
             // $attendanceOverview=[0,30,0,0];
-            return view('employee.show', compact('attendanceOverview','attendanceEmployee','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
+            return view('employee.show', compact('skills','experiences','educations','attendanceOverview','attendanceEmployee','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }
@@ -712,6 +718,7 @@ class EmployeeController extends Controller
 
     public function profileShow($id)
     {
+        
         if (\Auth::user()->can('Show Employee Profile')) {
             try {
                 $empId        = \Illuminate\Support\Facades\Crypt::decrypt($id);
@@ -741,6 +748,7 @@ class EmployeeController extends Controller
             $lateTimeattendancesCount = $late_time_attendances->count();
             $absentCount = $day - $attendances->count();
             $attendancesCount = $attendances->count();
+            
             $labels[] = $date;
     
             $attendanceData = [
@@ -771,13 +779,15 @@ class EmployeeController extends Controller
             $branches     = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $departments  = Department::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
             $designations = Designation::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            $educations = EmployeeEducation::where('employee_id', $employees->employee_id)->get();
+            $experiences = EmployeeExperience::where('employee_id', $employees->employee_id)->get();
+            $skills = EmployeeSkills::where('employee_id', $employees->employee_id)->get();
             $employee     = Employee::find($empId);
             if ($employee == null) {
                 $employee     = Employee::where('user_id', $empId)->first();
             }
             $employeesId  = \Auth::user()->employeeIdFormat($employee->employee_id);
-
-            return view('employee.show', compact('attendanceOverview','attendanceEmployee','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
+            return view('employee.show', compact('skills','experiences','educations','attendanceOverview','attendanceEmployee','employee', 'employeesId', 'branches', 'departments', 'designations', 'documents'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
         }

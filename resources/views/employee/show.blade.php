@@ -16,7 +16,7 @@
     <div class="float-end">
         @can('edit employee')
             <a href="{{ route('employee.edit', \Illuminate\Support\Facades\Crypt::encrypt($employee->id)) }}"
-                data-bs-toggle="tooltip" title="{{ __('Edit') }}"class="btn btn-sm btn-primary">
+                data-bs-toggle="tooltip" title="{{ __('Edit') }}" class="btn btn-sm btn-primary">
                 <i class="ti ti-pencil"></i>
             </a>
         @endcan
@@ -416,6 +416,71 @@
                 </div>
             </div>
             @endif
+
+            
+                                               
+            <div class="row">
+                <!-- Education-->
+                <div class="col-md-6">
+                    <div class="card set-card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0">{{ __('Education') }} <span class="badge rounded-circle text-bg-primary">{{ $educations->count()}}</span></h5>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#educationModal"><i class="ti ti-plus"></i></button>
+                                <x-education-modal :employeesId="$employee->id" formAction="{{ route('employee-education.store') }}"></x-education-modal>  
+                            </div>
+                        </div>
+                        <div class="card-body table-border-style" style=" overflow:auto">
+                            @foreach ($educations as $education)
+                            <x-education-card :education="$education"></x-education-card>
+
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <!-- Experience-->
+                <div class="col-md-6">
+                    <div class="card set-card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0">{{ __('Experience') }} 
+                                    <span class="badge rounded-circle text-bg-primary">{{ $experiences->count() }}</span>
+                                </h5>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#experienceModal">
+                                    <i class="ti ti-plus"></i>
+                                </button>
+                                <x-experience-modal :employeesId="$employee->id" id="experienceModal" title="Add Experience" :formAction="route('employee-experience.store')"></x-modal>
+                            </div>
+                        </div>
+                        <div class="card-body table-border-style" style=" overflow:auto">
+                            @foreach ($experiences as $experience)
+                                <x-experience-card :experience="$experience" />
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <!-- Skills-->
+                <div class="col-md-6">
+                    <div class="card set-card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0">{{ __('Skills') }} 
+                                    <span class="badge rounded-circle text-bg-primary">{{ $skills->count() }}</span>
+                                </h5>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#skillsModal">
+                                    <i class="ti ti-plus"></i>
+                                </button>
+                                <x-skills-modal  :employeesId="$employee->id" id="skillsModal" title="Add Skill" :formAction="route('employee-skills.store')"></x-modal>
+                            </div>
+                        </div>
+                        <div class="card-body table-border-style" style="overflow:auto">
+                            @foreach ($skills as $skill)
+                                <x-skill-card :skill="$skill" />
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
