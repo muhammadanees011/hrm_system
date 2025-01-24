@@ -6,7 +6,7 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-<li class="breadcrumb-item"><a href="{{ url('pension-optout') }}">{{ __('Benefits Opt-outs') }}</a></li>
+<li class="breadcrumb-item"><a href="{{ url('benefits-optout') }}">{{ __('Benefits Opt-outs') }}</a></li>
 <li class="breadcrumb-item">{{ __('Create Benefits Opt-out') }}</li>
 @endsection
 
@@ -20,7 +20,7 @@
 
 <div class="">
     <div class="">
-        {{ Form::open(['route' => ['pension-optout.store'], 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
+        {{ Form::open(['route' => ['benefits-optout.store'], 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
         <div class="row">
             <div class="col-md-6">
                 <div class="card em-card">
@@ -33,12 +33,12 @@
                             <div class="form-group col-md-6">
                                 {{ Form::label('employee_id', __('Select Employee*'), ['class' => 'form-label']) }}
                                 <div class="form-icon-user">
-                                    {{-- Form::select('employee_id', $employees, null, ['class' => 'form-control employee_id', 'required' => 'required', 'placeholder' => 'Select Employee', 'id' => 'employee_id']) --}}
+                                    {{ Form::select('employee_id', $employees, null, ['class' => 'form-control employee_id', 'required' => 'required', 'placeholder' => 'Select Employee', 'id' => 'employee_id']) }}
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 {!! Form::label('date', __('Opt-out Date'), ['class' => 'form-label']) !!}<span class="text-danger pl-1">*</span>
-                                {{-- Form::date('date', null, ['class' => 'form-control current_date', 'required' => 'required', 'autocomplete' => 'off', 'placeholder' => 'Select Opt-out date']) --}}
+                                {{ Form::date('date', null, ['class' => 'form-control current_date', 'required' => 'required', 'autocomplete' => 'off', 'placeholder' => 'Select Opt-out date']) }}
                             </div>
                             <div class="form-group">
                                 {!! Form::label('reasons', __('Opt-out Reasons'), ['class' => 'form-label']) !!}<span class="text-danger pl-1">*</span>
@@ -85,7 +85,7 @@
 
     function getEmployee(eid) {
         $.ajax({
-            url: '{{route('pensionOptout.emp')}}',
+            url: '{{route('benefitsOptOut.emp')}}',
             type: 'POST',
             data: {
                 "emp_id": eid,
@@ -106,7 +106,7 @@
                 <div style="font-size: 18px;line-height: 2.5rem;"><b>Department Name:</b> ${data.employee.department.name}</div>
                 <div style="font-size: 18px;line-height: 2.5rem;"><b>Designation:</b> ${data.employee.designation.name}</div>
                 <hr>
-                <div style="font-size: 18px;line-height: 2.5rem;"><b>Benefits Scheme:</b> ${data.employee.pension_optin.pension_scheme.scheme_name}</div>
+                <div style="font-size: 18px;line-height: 2.5rem;"><b>Benefit Scheme:</b> ${data.employee.benefit_optin.benefit_scheme.scheme_name}</div>
             `);
             }
         });

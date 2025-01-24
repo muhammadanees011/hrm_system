@@ -33,16 +33,17 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($optIns as $optIn)
                         <tr>
-                            <td> $optIn->employee->name </td>
-                            <td> $optIn->pensionScheme->scheme_name </td>
-                            <td> \Auth::user()->dateFormat($optIn->date) </td>
-                            <td> $optIn->status </td>
+                            <td> {{$optIn->employee->name }}</td>
+                            <td> {{$optIn->benefitscheme->scheme_name}} </td>
+                            <td> {{\Auth::user()->dateFormat($optIn->date) }} </td>
+                            <td> {{$optIn->status}} </td>
                             <td class="Action">
                                 <span>
                                     @can('Edit Pension OptIn')
                                     <div class="action-btn bg-info ms-2">
-                                        <a href=" route('benefits-opt-ins.edit', $optIn->id) " class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Edit') }}">
+                                        <a href="{{ route('benefits-opt-ins.edit', $optIn->id) }}" class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" title="" data-bs-original-title="{{ __('Edit') }}">
                                             <i class="ti ti-pencil text-white"></i>
                                         </a>
                                     </div>
@@ -50,6 +51,7 @@
 
                                     @can('Delete Pension OptIn')
                                     <div class="action-btn bg-danger ms-2">
+                                        {!! Form::open(['method' => 'DELETE', 'route' => ['benefits-opt-ins.destroy', $optIn->id], 'id' => 'delete-form-' . $optIn->id]) !!}
                                         <a href="#" class="mx-3 btn btn-sm  align-items-center bs-pass-para" data-bs-toggle="tooltip" title="" data-bs-original-title="Delete" aria-label="Delete"><i class="ti ti-trash text-white text-white"></i></a>
                                         </form>
                                     </div>
@@ -57,6 +59,7 @@
                                 </span>
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

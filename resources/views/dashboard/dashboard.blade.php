@@ -44,6 +44,25 @@
     </div>
 @endif
 
+<style>
+    .text-with-indicator-danger::before{
+        content: 's';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--bs-danger);
+        color: var(--bs-danger);
+    }
+    .text-with-indicator-primary::before{
+        /* content: 's'; */
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--bs-primary);
+        /* color: var(--bs-primary); */
+    }
+</style>
+
 
 @if (\Auth::user()->type == 'employee')
 <!-- Privacy Policy Modal -->
@@ -461,34 +480,51 @@
 
     <div class="col-xxl-12">
         <div class="row">
-            <div class="col-xl-5">
+            <div class="col-xl-6">
 
                 <div class="card">
                     <div class="card-header card-body table-border-style">
-                        <h5>{{ __('Meeting schedule') }}</h5>
-                    </div>
-                    <div class="card-body" style="height: 324px; overflow:auto">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('Title') }}</th>
-                                        <th>{{ __('Date') }}</th>
-                                        <th>{{ __('Time') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list">
-                                    @foreach ($meetings as $meeting)
-                                        <tr>
-                                            <td>{{ $meeting->title }}</td>
-                                            <td>{{ \Auth::user()->dateFormat($meeting->date) }}</td>
-                                            <td>{{ \Auth::user()->timeFormat($meeting->time) }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <h5>{{ __('Complains & Requests') }}</h5>
+                        <div class="d-flex mt-1">
+                            @if($benefitsRequests->count() > 0)
+                            <span class="text-bg-primary badge rounded-pill me-2">Benefits Request</span>
+                            @endif
+                            @if($complaints->count() > 0)
+                            <span class="text-bg-danger badge rounded-pill">Complains</span>
+                            @endif
+                            </div>
                         </div>
+                     
+                       
+                        <div class="card-body py-1" style="height: 324px; overflow:auto">
+                            @foreach($benefitsRequests as $benefitsRequest)
+                            <div class="card border-start border-2 border-primary mb-2">
+                                <div class="card-body py-2">
+                                    <h5 class="card-title mb-0 text-primary">{{ $benefitsRequest->benefit->scheme_name}} </h5>
+                                    <span class="text-secondary fw-normal" style="font-size: 12px;"><span class="dot-indicator-primary"></span>{{ $benefitsRequest->created_at}}</span>
+                                    <p class="card-text text-secondary m-0">{{$benefitsRequest->reason}}</p>
+                                    <div style="font-size: 12px">By: <a href="#" class="card-link">{{ $benefitsRequest->employee->name}}</a></div>
+                                </div>
+                            </div>
+                            @endforeach
+
+                            @foreach ($complaints as $complaint)
+
+                            <div class="card border-start border-2 border-danger mb-2">
+                                <div class="card-body py-2">
+                                    <h5 class="card-title mb-0 text-danger">{{ $complaint->title }}</h5>
+                                    <span class="text-secondary fw-normal" style="font-size: 12px;"><span class="dot-indicator-primary"></span> {{ $complaint->created_at}}</span>
+                                    <p class="card-text text-secondary m-0">{{ $complaint->description}}</p>
+                                    <div style="font-size: 12px">By: <a href="#" class="card-link">{{$complaint->complainer->name}}</a></div>
+                                </div>
+                            </div>
+                                
+                                
+                            @endforeach
+    
                     </div>
+
+                  
                 </div>
 
                 <div class="card">
@@ -518,7 +554,7 @@
                 </div>
 
             </div>
-            <div class="col-xl-7">
+            <div class="col-xl-6">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
@@ -550,8 +586,36 @@
             </div>
         </div>
     </div>
-
-    <div class="col-xl-12 col-lg-12 col-md-12">
+    <div class="col-lg-5">
+                                        <div class="card">
+                    <div class="card-header card-body table-border-style">
+                        <h5>{{ __('Meeting schedule') }}</h5>
+                    </div>
+                    <div class="card-body" style="height: 324px; overflow:auto">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Title') }}</th>
+                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Time') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list">
+                                    @foreach ($meetings as $meeting)
+                                        <tr>
+                                            <td>{{ $meeting->title }}</td>
+                                            <td>{{ \Auth::user()->dateFormat($meeting->date) }}</td>
+                                            <td>{{ \Auth::user()->timeFormat($meeting->time) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+    </div>
+    <div class="col-lg-7">
         <div class="card">
             <div class="card-header card-body table-border-style">
                 <h5>{{ __('Announcement List') }}</h5>

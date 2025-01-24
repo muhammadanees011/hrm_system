@@ -37,6 +37,39 @@ class LeaveController extends Controller
             return redirect()->back()->with('error', __('Permission denied.'));
         }
     }
+    public function leaveAllowance()
+    {
+        
+        return view('leave.allowance');
+    }
+    public function viewAllowance()
+    {
+        if (\Auth::user()->can('Create Leave')) {
+            if (Auth::user()->type == 'employee') {
+                $employees = Employee::where('user_id', '=', \Auth::user()->id)->first();
+            } else {
+                $employees = Employee::where('created_by', '=', \Auth::user()->creatorId())->get()->pluck('name', 'id');
+            }
+            $leavetypes      = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
+            $leavetypes_days = LeaveType::where('created_by', '=', \Auth::user()->creatorId())->get();
+            
+            $hours = [];
+
+            $startTime = Utility::getValByName('company_start_time');
+            $endTime   = Utility::getValByName('company_end_time');
+            $start = Carbon::createFromTimeString($startTime);
+            $end = Carbon::createFromTimeString($endTime);
+
+            $hours = [];
+            for ($hour = $start->copy(); $hour <= $end; $hour->addHour()) {
+                $hours[$hour->format('H:i')] = $hour->format('H:i');
+            }
+            
+            return view('leave.allowance-create', compact('employees', 'leavetypes', 'leavetypes_days', 'hours'));
+        } else {
+            return response()->json(['error' => __('Permission denied.')], 401);
+        }
+    }
 
     public function create()
     {

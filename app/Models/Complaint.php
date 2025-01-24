@@ -29,4 +29,12 @@ class Complaint extends Model
     {
         return Employee::where('id',$complaint_against)->first();
     }
+
+    public function complainer()
+    {
+        return $this->belongsTo('App\Models\Employee', 'complaint_from', 'id');
+    }
+    
+
+    
 }

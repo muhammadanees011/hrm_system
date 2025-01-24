@@ -1,4 +1,4 @@
-{{ Form::open(['url' => 'pension-schemes', 'method' => 'post']) }}
+{{ Form::open(['url' => 'benefits-schemes', 'method' => 'post']) }}
 <div class="modal-body">
 
     <div class="row">

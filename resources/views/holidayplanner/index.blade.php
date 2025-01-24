@@ -79,6 +79,7 @@
                 <div class="dropdown-content">
                     <a href="{{ route('leaveentitlement.index') }}">{{ __("Leave Entitlement Report") }} </a>
                     <a href="{{ route('leave.index') }}">{{ __("Leave Request") }} </a>
+                    <a href="{{ route('leave.allowance') }}">{{ __("Leave Allowance") }} </a>
                     <a href="{{ route('carryover.index') }}">{{ __('Leave CarryOver Request') }}</a>
                     <a href="{{ route('leave.team') }}">{{ __('Team Time Off') }}</a>
                     <a href="#"  data-url="{{ route('leave.leave_setting') }}" data-ajax-popup="true" data-title="{{ __('Leave Settings') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('Leave Settings') }}">{{ __('Holiday Clashes Setting') }}</a>

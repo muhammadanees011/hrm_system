@@ -136,6 +136,10 @@ use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\EmployeeEducationController;
 use App\Http\Controllers\EmployeeExperienceController;
 use App\Http\Controllers\EmployeeSkillsController;
+use App\Http\Controllers\BenefitsSchemeController;
+use App\Http\Controllers\BenefitsOptInController;
+use App\Http\Controllers\BenefitsOptOutController;
+use App\Http\Controllers\BenefitsRequestController;
 use App\Models\Employee;
 use App\Models\JobTemplate;
 use Illuminate\Support\Facades\Artisan;
@@ -360,7 +364,7 @@ Route::group(['middleware' => ['verified']], function () {
     Route::resource('employee-experience', EmployeeExperienceController::class)->middleware(['auth','XSS',]);
 
     Route::resource('employee-skills', EmployeeSkillsController::class)->middleware(['auth','XSS',]);
-
+  
     Route::resource('teams', TeamsController::class)->middleware(['auth','XSS',]);
     Route::get('/teams/{team}/members', [TeamsController::class, 'getMembers'])->name('teams.members');
 
@@ -554,6 +558,12 @@ Route::group(['middleware' => ['verified']], function () {
     Route::resource('saturationdeduction', SaturationDeductionController::class)->middleware(['auth', 'XSS',]);
     Route::resource('overtime', OvertimeController::class)->middleware(['auth', 'XSS',]);
 
+
+    
+    Route::resource('setsalary', SetSalaryController::class)->middleware(['auth','XSS',]);
+    Route::get('payroll/manage', [SetSalaryController::class,'payrollmanage'])->name('payroll.manage')->middleware(['auth','XSS',]);
+    Route::get('payroll/setup', [SetSalaryController::class,'payrollsetup'])->name('payroll.setup')->middleware(['auth','XSS',]);
+    Route::post('payroll/setup', [SetSalaryController::class,'payrollsetupUpdate'])->name('payroll_setup.update')->middleware(['auth','XSS',]);
     //payroll-setup
     Route::get('bonus/create/{id?}', [BonusController::class,'create'])->name('bonus.create')->middleware(['auth', 'XSS',]);
     Route::post('bonus/store', [BonusController::class,'store'])->name('bonus.store')->middleware(['auth', 'XSS',]);
@@ -747,10 +757,75 @@ Route::group(['middleware' => ['verified']], function () {
     );
 
 
-    Route::resource('setsalary', SetSalaryController::class)->middleware(['auth','XSS',]);
-    Route::get('payroll/manage', [SetSalaryController::class,'payrollmanage'])->name('payroll.manage')->middleware(['auth','XSS',]);
-    Route::get('payroll/setup', [SetSalaryController::class,'payrollsetup'])->name('payroll.setup')->middleware(['auth','XSS',]);
-    Route::post('payroll/setup', [SetSalaryController::class,'payrollsetupUpdate'])->name('payroll_setup.update')->middleware(['auth','XSS',]);
+    // Benefits
+    Route::resource('benefits-schemes', BenefitsSchemeController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    
+    Route::resource('benefits-opt-ins', BenefitsOptInController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+    Route::post('benefits-opt-ins/employee', [BenefitsOptInController::class, 'getEmployee'])->name('benefitOptIn.emp')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::resource('benefits-optout', BenefitsOptOutController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+
+    Route::post('benefits-opt-optout/employee', [BenefitsOptOutController::class, 'getEmployee'])->name('benefitsOptOut.emp')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+   
+    Route::get('benefits-request/create', [BenefitsRequestController::class, 'create'])->name('benefitsRequest.create')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::post('benefits-request/store', [BenefitsRequestController::class, 'store'])->name('benefitsRequest.store')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::get('benefits-request', [BenefitsRequestController::class, 'index'])->name('benefitsRequest.index')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::get('benefits-request/approve/{id}', [BenefitsRequestController::class, 'approve'])->name('benefitsRequest.approve')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::get('benefits-request/reject/{id}', [BenefitsRequestController::class, 'reject'])->name('benefitsRequest.reject')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+
+
 
     Route::get('payslip/paysalary/{id}/{date}', [PaySlipController::class, 'paysalary'])->name('payslip.paysalary')->middleware(
         [
@@ -910,6 +985,18 @@ Route::group(['middleware' => ['verified']], function () {
         ]
     );
     Route::resource('leave', LeaveController::class)->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::get('leave-allowance', [LeaveController::class, 'leaveAllowance'])->name('leave.allowance')->middleware(
+        [
+            'auth',
+            'XSS',
+        ]
+    );
+    Route::get('view-allowance', [LeaveController::class, 'viewAllowance'])->name('leave.view-allowanace')->middleware(
         [
             'auth',
             'XSS',

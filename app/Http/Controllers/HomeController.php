@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AccountList;
 use App\Models\Announcement;
 use App\Models\AttendanceEmployee;
+use App\Models\BenefitsRequest;
+use App\Models\Complaint;
 use App\Models\Employee;
 use App\Models\Event;
 use App\Models\FlexiTime;
@@ -93,6 +95,8 @@ class HomeController extends Controller
 
                 $flexiTime = FlexiTime::where('status','approved')->where('start_date', '>=', $date)->Where('end_date','<=', $date)->first();
                 $leaves = LocalLeave::where('created_by', '=', \Auth::user()->creatorId())->with(['employees', 'leaveType'])->orderBy('id', 'DESC')->get();
+
+                
         
                 return view('dashboard.dashboard', compact('arrEvents', 'announcements', 'employees', 'meetings', 'employeeAttendance', 'officeTime','flexiTime','leaves'));
             }
@@ -143,8 +147,10 @@ class HomeController extends Controller
                 $totalPayer = Payer::where('created_by', '=', \Auth::user()->creatorId())->count();
 
                 $meetings = Meeting::where('created_by', '=', \Auth::user()->creatorId())->limit(5)->get();
-
-                return view('dashboard.dashboard', compact('arrEvents', 'announcements', 'activeJob','inActiveJOb','meetings', 'countEmployee', 'countUser', 'countTicket', 'countOpenTicket', 'countCloseTicket', 'notClockIns', 'countEmployee', 'accountBalance', 'totalPayee', 'totalPayer'));
+                
+                $complaints = Complaint::with('complainer')->get();
+                $benefitsRequests = BenefitsRequest::with('employee','benefit')->where('status','Pending')->get();
+                return view('dashboard.dashboard', compact('benefitsRequests','complaints','arrEvents', 'announcements', 'activeJob','inActiveJOb','meetings', 'countEmployee', 'countUser', 'countTicket', 'countOpenTicket', 'countCloseTicket', 'notClockIns', 'countEmployee', 'accountBalance', 'totalPayee', 'totalPayer'));
             }
         }
         else

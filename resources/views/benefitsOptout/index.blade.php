@@ -32,10 +32,11 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($optouts as $optout)
                         <tr>
-                            <td> $optout->employee->name </td>
-                            <td> \Auth::user()->dateFormat($optout->date) </td>
-                            <td> $optout->reasons </td>
+                            <td>{{ $optout->employee->name}} </td>
+                            <td> {{\Auth::user()->dateFormat($optout->date) }}</td>
+                            <td> {{$optout->reasons}} </td>
                             <td class="Action">
                                 <span>
                                     @can('Edit Pension Optout')
@@ -56,6 +57,7 @@
                                 </span>
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

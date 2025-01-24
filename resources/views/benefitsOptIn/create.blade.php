@@ -6,8 +6,8 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-<li class="breadcrumb-item"><a href="{{ url('benefits-optout') }}">{{ __('Benefits Opt-ins') }}</a></li>
-<li class="breadcrumb-item">{{ __('Create Benefits Opt-in') }}</li>
+<li class="breadcrumb-item"><a href="{{ url('benefits-optout') }}">{{ __('benefits Opt-ins') }}</a></li>
+<li class="breadcrumb-item">{{ __('Create benefits Opt-in') }}</li>
 @endsection
 
 
@@ -20,7 +20,7 @@
 
 <div class="">
     <div class="">
-        {{ Form::open(['route' => ['pension-opt-ins.store'], 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
+        {{ Form::open(['route' => ['benefits-opt-ins.store'], 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
         <div class="row">
             <div class="col-md-6">
                 <div class="card em-card">
@@ -33,20 +33,18 @@
                             <div class="form-group">
                                 {{ Form::label('employee_id', __('Select Employee*'), ['class' => 'form-label']) }}
                                 <div class="form-icon-user">
-                                  {{--   {{ Form::select('employee_id' , null, ['class' => 'form-control employee_id', 'required' => 'required', 'placeholder' => 'Select Employeeasd', 'id' => 'employee_id']) }} --}}
+                                    {{ Form::select('employee_id', $employees, null, ['class' => 'form-control employee_id', 'required' => 'required', 'placeholder' => 'Select Employee', 'id' => 'employee_id']) }}
                                 </div>
-                                <!--, $employees -->
                             </div>
                             <div class="form-group">
-                                {{ Form::label('pension_scheme_id', __('Select Benefits Scheme*'), ['class' => 'form-label']) }}
+                                {{ Form::label('benefits', __('Select benefits Scheme*'), ['class' => 'form-label']) }}
                                 <div class="form-icon-user">
-                                    {{-- {{ Form::select('pension_scheme_id', null, ['class' => 'form-control pension_scheme_id', 'required' => 'required', 'placeholder' => 'Select Benefits Scheme', 'id' => 'pension_scheme_id']) }} --}}
+                                    {{ Form::select('benefit_scheme_id', $benefitsSchemes, null, ['class' => 'form-control benefit_scheme_id', 'required' => 'required', 'placeholder' => 'Select benefits Scheme', 'id' => 'benefits_scheme_id']) }}
                                 </div>
-                                <!-- , $pensionSchemes -->
                             </div>
                             <div class="form-group">
                                 {!! Form::label('date', __('Opt-in Date'), ['class' => 'form-label']) !!}<span class="text-danger pl-1">*</span>
-                               {{-- {{ Form::date('date', null, ['class' => 'form-control current_date', 'required' => 'required', 'autocomplete' => 'off', 'placeholder' => 'Select Opt-in date']) }} --}}
+                                {{ Form::date('date', null, ['class' => 'form-control current_date', 'required' => 'required', 'autocomplete' => 'off', 'placeholder' => 'Select Opt-in date']) }}
                             </div>
                         </div>
                     </div>
@@ -85,7 +83,7 @@
 
     function getEmployee(eid) {
         $.ajax({
-            url: '{{route('pensionOptIn.emp')}}',
+            url: '{{route('benefitOptIn.emp')}}',
             type: 'POST',
             data: {
                 "emp_id": eid,
