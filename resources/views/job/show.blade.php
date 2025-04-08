@@ -38,7 +38,7 @@
                                 </tr>
                                 <tr>
                                     <td>{{__('Department')}}</td>
-                                    <td class="">{{ $job->departments->name }}</td>
+                                    <td class="">{{ $job->departments ? $job->departments->name :'Not Assigned' }}</td>
                                 </tr>
                                 <tr>
                                     <td>{{__('Contract Type')}}</td>

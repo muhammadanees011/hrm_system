@@ -4,7 +4,7 @@
         @if (\Auth::user()->type != 'employee')
             <div class="col-md-12">
                 <div class="form-group">
-                    {{ Form::label('employee_id', __('Employee'), ['class' => 'col-form-label']) }}
+                    {{ Form::label('employee_id', __('Employee*'), ['class' => 'col-form-label']) }}
                     {{ Form::select('employee_id', $employees, $eclaim->employee_id, ['class' => 'form-control select2', 'id' => 'employee_id', 'placeholder' => __('Select Employee')]) }}
                 </div>
             </div>
@@ -15,7 +15,7 @@
         @endif
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                {{ Form::label('type_id', __('Eclaim Type'), ['class' => 'form-label']) }}
+                {{ Form::label('type_id', __('Eclaim Type*'), ['class' => 'form-label']) }}
                 <div class="form-icon-user">
                     {{ Form::select('type_id', $eClaimTypes, null, ['class' => 'form-control select2', 'required' => 'required', 'placeholder' => __('Select Eclaim Type')]) }}
                 </div>
@@ -24,7 +24,7 @@
 
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                {{ Form::label('amount', __('Amount'), ['class' => 'form-label']) }}
+                {{ Form::label('amount', __('Amount*'), ['class' => 'form-label']) }}
                 <div class="form-icon-user">
                     {{ Form::number('amount', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Amount')]) }}
                 </div>
@@ -38,7 +38,7 @@
 
         <div class="col-lg-12 col-md-12 col-sm-12">
     <div class="form-group">
-        {{ Form::label('receipt', __('Receipt'), ['class' => 'col-form-label']) }}
+        {{ Form::label('receipt', __('Receipt (Image only)'), ['class' => 'col-form-label']) }}
         <div class="choose-files">
             <label for="receipt">
                 <div class="bg-primary receipt"> <i class="ti ti-upload px-1"></i>{{ __('Choose file here') }}</div>
@@ -56,7 +56,7 @@
 
         <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="form-group">
-                {{ Form::label('description', __('Description'), ['class' => 'col-form-label']) }}
+                {{ Form::label('description*', __('Description*'), ['class' => 'col-form-label']) }}
                 {{ Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3']) }}
             </div>
         </div>

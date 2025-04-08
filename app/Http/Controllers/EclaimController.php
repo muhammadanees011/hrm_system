@@ -49,48 +49,48 @@ class EclaimController extends Controller
     }
 
     public function store(Request $request)
-{
-    if (\Auth::user()->can('Create Eclaim')) {
+    {
+        if (\Auth::user()->can('Create Eclaim')) {
 
-        $validator = \Validator::make(
-            $request->all(),
-            [
-                'employee_id' => 'required',
-                'type_id' => 'required',
-                'amount' => 'required',
-                'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Assuming you're only allowing image files
-                'description' => 'required',
-            ]
-        );
-        
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            $validator = \Validator::make(
+                $request->all(),
+                [
+                    'employee_id' => 'required',
+                    'type_id' => 'required',
+                    'amount' => 'required',
+                    'receipt' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240', // Assuming you're only allowing image files
+                    'description' => 'required',
+                ]
+            );
+            
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            if ($request->hasFile('receipt')) {
+                $file = $request->file('receipt');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = public_path() . '/eclaimreceipts';
+                $file->move($path,$fileName);
+            }
+            
+
+            $history = [['time' => now(), 'message' => 'New Eclaim Requested Generated', 'username' => Auth::user()->name]];
+            $eClaimType = new Eclaim();
+            $eClaimType->type_id = $request->type_id;
+            $eClaimType->amount = $request->amount;
+            $eClaimType->description = $request->description;
+            $eClaimType->receipt = $fileName ?? ''; // Assigning the filename if it exists, otherwise empty string
+            $eClaimType->created_by = \Auth::user()->creatorId();
+            $eClaimType->history = json_encode($history);
+            $eClaimType->employee_id =  $request->employee_id;
+            $eClaimType->save();
+
+            return redirect()->route('eclaim.index')->with('success', __('Eclaim successfully created.'));
+        } else {
+            return redirect()->back()->with('error', __('Permission denied.'));
         }
-
-        if ($request->hasFile('receipt')) {
-            $file = $request->file('receipt');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = public_path() . '/eclaimreceipts';
-            $file->move($path,$fileName);
-        }
-        
-
-        $history = [['time' => now(), 'message' => 'New Eclaim Requested Generated', 'username' => Auth::user()->name]];
-        $eClaimType = new Eclaim();
-        $eClaimType->type_id = $request->type_id;
-        $eClaimType->amount = $request->amount;
-        $eClaimType->description = $request->description;
-        $eClaimType->receipt = $fileName ?? ''; // Assigning the filename if it exists, otherwise empty string
-        $eClaimType->created_by = \Auth::user()->creatorId();
-        $eClaimType->history = json_encode($history);
-        $eClaimType->employee_id =  $request->employee_id;
-        $eClaimType->save();
-
-        return redirect()->route('eclaim.index')->with('success', __('Eclaim successfully created.'));
-    } else {
-        return redirect()->back()->with('error', __('Permission denied.'));
     }
-}
 
 
     public function show(EclaimType $eclaim)

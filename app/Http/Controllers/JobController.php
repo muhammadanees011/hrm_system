@@ -56,7 +56,6 @@ class JobController extends Controller
 
     public function store(Request $request)
     {
-
         if (\Auth::user()->can('Create Job')) {
 
             $validator = \Validator::make(
@@ -64,7 +63,7 @@ class JobController extends Controller
                 [
                     'title' => 'required',
                     'branch' => 'required',
-                    'department' => 'required',
+                    'department' => 'nullable',
                     'contract_type' => 'required',
                     'category' => 'required',
                     'skill' => 'required',
@@ -154,7 +153,7 @@ class JobController extends Controller
                 [
                     'title' => 'required',
                     'branch' => 'required',
-                    'department' => 'required',
+                    'department' => 'nullable',
                     'contract_type' => 'required',
                     'category' => 'required',
                     'skill' => 'required',
