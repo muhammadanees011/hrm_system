@@ -128,6 +128,7 @@ $chatgpt = Utility::getValByName('enable_chatgpt');
             <button class="dropbtn">Recruitment &#9660;</button>
             <div class="dropdown-content">
                 <a href="{{ route('job.index') }}">{{ __("Jobs") }} </a>
+                <a href="{{ route('job-requisition.index') }}">{{ __("Job Requisition") }} </a>
                 <a href="{{ route('job.create') }}">{{ __("Job Create") }} </a>
                 <a href="{{ route('job-template.index') }}">{{ __('Job Templates') }}</a>
                 <a href="{{ route('job-application.index') }}">{{ __('Job Application') }}</a>
@@ -192,7 +193,7 @@ $chatgpt = Utility::getValByName('enable_chatgpt');
                     </div>
                     <div class="form-group col-md-6">
                         {!! Form::label('category', __('Job Category'), ['class' => 'col-form-label']) !!}
-                        {{ Form::select('category', $categories, null, ['class' => 'form-control select2', 'required' => 'required']) }}
+                        {{ Form::select('category', $categories, null, ['class' => 'form-control select2', 'required']) }}
                     </div>
 
                     <div class="form-group col-md-6">

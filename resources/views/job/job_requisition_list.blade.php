@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('page-title')
-{{ __('Manage Job') }}
+{{ __('Manage Job Requisition') }}
 @endsection
 
 @php
@@ -30,7 +30,7 @@ $lang = Auth::user()->lang;
 @section('action-button')
 
 @can('Create Job')
-<a href="{{ route('job.create') }}" data-ajax-popup="true" data-size="md" data-title="{{ __('Create New Job') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
+<a href="{{ route('job-requisition.create') }}" data-ajax-popup="true" data-size="md" data-title="{{ __('Create New Job Requisition') }}" data-bs-toggle="tooltip" title="" class="btn btn-sm btn-primary" data-bs-original-title="{{ __('Create') }}">
     <i class="ti ti-plus"></i>
 </a>
 @endcan
@@ -112,77 +112,6 @@ $lang = Auth::user()->lang;
     </div>
 </div>
 
-<div class="col-lg-4 col-md-6">
-    <div class="card">
-        <div class="card-body">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mb-3 mb-sm-0">
-                    <div class="d-flex align-items-center">
-                        <div class="theme-avtar bg-primary">
-                            <i class="ti ti-cast"></i>
-                        </div>
-                        <div class="ms-3">
-                            <small class="text-muted">{{__('Total')}}</small>
-                            <h6 class="m-0">{{__('Jobs')}}</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-auto text-end">
-                    <h4 class="m-0">{{$data['total']}}</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-lg-4 col-md-6">
-    <div class="card">
-        <div class="card-body">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mb-3 mb-sm-0">
-                    <div class="d-flex align-items-center">
-                        <div class="theme-avtar bg-info">
-                            <i class="ti ti-cast"></i>
-                        </div>
-                        <div class="ms-3">
-                            <small class="text-muted">{{__('Active')}}</small>
-                            <h6 class="m-0">{{__('Jobs')}}</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-auto text-end">
-                    <h4 class="m-0">{{$data['active']}}</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-lg-4 col-md-6">
-    <div class="card">
-        <div class="card-body">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mb-3 mb-sm-0">
-                    <div class="d-flex align-items-center">
-                        <div class="theme-avtar bg-warning">
-                            <i class="ti ti-cast"></i>
-                        </div>
-                        <div class="ms-3">
-                            <small class="text-muted">{{__('Inactive')}}</small>
-                            <h6 class="m-0">{{__('Jobs')}}</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-auto text-end">
-                    <h4 class="m-0">{{$data['in_active']}}</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-
 <div class="col-xl-12">
     <div class="card">
         <div class="card-header card-body table-border-style">
@@ -191,10 +120,9 @@ $lang = Auth::user()->lang;
                 <table class="table" id="pc-dt-simple">
                     <thead>
                         <tr>
-                            <th>{{ __('Branch') }}</th>
+                            <th>{{ __('Requester') }}</th>
                             <th>{{ __('Title') }}</th>
                             <th>{{ __('Start Date') }}</th>
-                            <th>{{ __('End Date') }}</th>
                             <th>{{ __('Status') }}</th>
                             <th>{{ __('Created At') }}</th>
                             @if (Gate::check('Edit Job') || Gate::check('Delete Job') || Gate::check('Show Job'))
@@ -205,30 +133,28 @@ $lang = Auth::user()->lang;
                     <tbody>
                         @foreach ($jobs as $job)
                         <tr>
-                            <td>{{ !empty($job->branch) ? $job->branches->name : __('All') }}</td>
-                            <td>{{ $job->title }}</td>
+                            <td>{{ $job->createdBy->name }}</td>
+                            <td>{{ $job->job_title }}</td>
                             <td>{{ \Auth::user()->dateFormat($job->start_date) }}</td>
-                            <td>{{ \Auth::user()->dateFormat($job->end_date) }}</td>
                             <td>
-                                @if ($job->status == 'active')
-                                <span class="badge bg-success p-2 px-3 rounded status-badge">{{ App\Models\Job::$status[$job->status] }}</span>
+                                @if ($job->status == 'Approved')
+                                <span class="badge bg-success p-2 px-3 rounded status-badge">{{ $job->status }}</span>
                                 @else
-                                <span class="badge bg-danger p-2 px-3 rounded status-badge">{{ App\Models\Job::$status[$job->status] }}</span>
+                                <span class="badge bg-danger p-2 px-3 rounded status-badge">{{ $job->status }}</span>
                                 @endif
                             </td>
                             <td>{{ \Auth::user()->dateFormat($job->created_at) }}</td>
                             <td class="Action">
                                 @if (Gate::check('Edit Job') || Gate::check('Delete Job') || Gate::check('Show Job'))
                                 <span>
-                                    @can('Copy Job')
-                                    <div class="action-btn bg-secondary ms-2">
-                                        <a href="{{ route('job.copy', $job->id) }}" class="mx-3 btn btn-sm  align-items-center" data-url="" data-ajax-popup="true" data-title="{{ __('Copy Job') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('Copy') }}">
-                                            <i class="ti ti-copy text-white"></i>
-                                        </a>
-                                    </div>
-                                    @endcan
 
-                                    @can('Show Job')
+                                <div class="action-btn bg-primary ms-2">
+                                    <a href="{{ route('job-requisition.approve', $job->id) }}"
+                                    class="bg-primary text-white" data-toggle="tooltip"
+                                    data-original-title="{{ __('Approve') }}"><i class="fas fa-exchange-alt"></i></a>
+                                </div>
+
+                                    <!-- @can('Show Job')
                                     <div class="action-btn bg-warning ms-2">
                                         <a href="{{ route('job.show', $job->id) }}" class="mx-3 btn btn-sm  align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('Job Detail') }}">
                                             <i class="ti ti-eye text-white"></i>
@@ -243,28 +169,16 @@ $lang = Auth::user()->lang;
                                             <i class="ti ti-pencil text-white"></i>
                                         </a>
                                     </div>
-                                    @endcan
+                                    @endcan -->
 
                                     @can('Delete Job')
                                     <div class="action-btn bg-danger ms-2">
-                                        {!! Form::open(['method' => 'DELETE', 'route' => ['job.destroy', $job->id], 'id' => 'delete-form-' . $job->id]) !!}
+                                        {!! Form::open(['method' => 'DELETE', 'route' => ['job-requisition.destroy', $job->id], 'id' => 'delete-form-' . $job->id]) !!}
                                         <a href="#!" class="mx-3 btn btn-sm  align-items-center bs-pass-para" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ __('Delete') }}">
                                             <i class="ti ti-trash text-white"></i></a>
                                         {!! Form::close() !!}
                                     </div>
                                     @endcan
-
-                                    <div class="dropdown action-btn bg-primary ms-2">
-                                        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="jobPlatformsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="ti ti-share text-white"></i>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="jobPlatformsDropdown">
-                                            <a class="dropdown-item" href="#">LinkedIn</a>
-                                            <a class="dropdown-item" href="#">Glassdoor</a>
-                                            <a class="dropdown-item" href="#">Indeed</a>
-                                            <a class="dropdown-item" href="#">Facebook</a>
-                                        </div>
-                                    </div>
                                 </span>
                                 @endif
                             </td>

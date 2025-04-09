@@ -73,7 +73,7 @@ $endHour = str_pad($leave->end_time, 2, '0', STR_PAD_LEFT) . ':00';
     <div class="col-md-12">
     <div class="form-group">
         {{ Form::label('leave_duration', __('Leave Duration'), ['class' => 'col-form-label']) }}
-        {{ Form::select('leave_duration', ['' => 'Select Duration', 'half_day' => 'Half Day', 'full_day' => 'Full Day'], $leave->leave_duration, ['class' => 'form-control select', 'id' => 'leave_duration']) }}
+        {{ Form::select('leave_duration', ['' => 'Select Duration', 'half_day' => 'Half Day', 'full_day' => 'Full Day', 'full_day' => '1 Hour', 'full_day' => '2 Hours', 'full_day' => '3 Hours'], $leave->leave_duration, ['class' => 'form-control select', 'id' => 'leave_duration']) }}
     </div>
 </div>
 

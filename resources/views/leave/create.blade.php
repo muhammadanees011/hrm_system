@@ -74,6 +74,10 @@
                     <option value="">{{ __('Select Leave Duration') }}</option>
                         <option value="half_day">Half Day </option>
                         <option value="full_day">Full Day </option>
+                        <option value="full_day">1 Hour </option>
+                        <option value="full_day">2 Hours </option>
+                        <option value="full_day">3 Hours </option>
+
                 </select>
             </div>
         </div>

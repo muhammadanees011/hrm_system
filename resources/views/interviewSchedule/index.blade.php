@@ -176,6 +176,7 @@
             <button class="dropbtn">Recruitment &#9660;</button>
             <div class="dropdown-content">
                 <a href="{{ route('job.index') }}">{{ __("Jobs") }} </a>
+                <a href="{{ route('job-requisition.index') }}">{{ __("Job Requisition") }} </a>
                 <a href="{{ route('job.create') }}">{{ __("Job Create") }} </a>
                 <a href="{{ route('job-template.index') }}">{{ __('Job Templates') }}</a>
                 <a href="{{ route('job-application.index') }}">{{ __('Job Application') }}</a>

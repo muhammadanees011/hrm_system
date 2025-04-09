@@ -130,6 +130,7 @@ use App\Http\Controllers\HolidayConfigurationController;
 use App\Http\Controllers\ReviewQuestionController;
 use App\Http\Controllers\MeetingTemplateController;
 use App\Http\Controllers\MeetingTemplatePointController;
+use App\Http\Controllers\JobRequisitionController;
 use App\Http\Controllers\DocumentDirectoryController;
 use App\Http\Controllers\CompensationReviewController;
 use App\Models\Employee;
@@ -1335,6 +1336,7 @@ Route::group(['middleware' => ['verified']], function () {
     Route::post('job/files/upload', [JobController::class, 'filesUpload'])->name('job.files.upload');
     Route::post('job/edit/files/upload', [JobController::class, 'editFilesUpload'])->name('job.edit.files.upload');
     Route::delete('job/files/delete/{id}/{redirect}', [JobController::class, 'fileDelete'])->name('job.files.delete');
+    Route::get('job/requisition/create', [JobController::class, 'job_requisition_create'])->name('job.requisition.create');
 
     // Route::get('career/{id}/{lang}', [JobController::class, 'career'])->name('career');
     // Route::get('job/requirement/{code}/{lang}', [JobController::class, 'jobRequirement'])->name('job.requirement');
@@ -1344,7 +1346,8 @@ Route::group(['middleware' => ['verified']], function () {
     Route::put('holiday-configuration/{id}', [HolidayConfigurationController::class, 'update'])->name('holiday-configuraton.update');
     Route::resource('holiday-configuration', HolidayConfigurationController::class)->middleware(['auth', 'XSS']);
 
-
+    Route::resource('job-requisition', JobRequisitionController::class)->middleware( [ 'auth','XSS',]);
+    Route::get('job-requisition/approve/{id}', [JobRequisitionController::class,'approve'])->name('job-requisition.approve')->middleware( [ 'auth','XSS',]);
 
     Route::resource('position', PositionController::class)->middleware(
         [

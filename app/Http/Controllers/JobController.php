@@ -39,7 +39,7 @@ class JobController extends Controller
     public function create()
     {
         $categories = JobCategory::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');
-        $categories->prepend('--', '');
+        // $categories->prepend('--', '');
 
         $branches = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
         $branches->prepend('All', 0);
@@ -125,7 +125,7 @@ class JobController extends Controller
     {
 
         $categories = JobCategory::where('created_by', \Auth::user()->creatorId())->get()->pluck('title', 'id');
-        $categories->prepend('--', '');
+        // $categories->prepend('--', '');
 
         $branches = Branch::where('created_by', \Auth::user()->creatorId())->get()->pluck('name', 'id');
         $branches->prepend('All', 0);
